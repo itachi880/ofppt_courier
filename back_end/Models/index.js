@@ -299,7 +299,6 @@ function parse_condition(condition) {
   }
   return sql.join(" and ");
 }
-
 /**
  * Helper function to escape special characters in SQL queries
  * @param {string} string
@@ -326,9 +325,9 @@ function escapeChar(string) {
     "!": "\\!",
     "@": "\\@",
   };
-
-  return string
-    .split("")
-    .map((char) => badChars[char] || char)
-    .join("");
+    let res='';
+    for(let i=0;i<string.length;i++){
+      res+=badChars[string[i]]|| string[i]
+    }
+    return res
 }

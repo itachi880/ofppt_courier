@@ -1,17 +1,8 @@
 const { db } = require("../database");
+//tables schema types
 
 /**
- *@typedef {object} Schema
- * @property {string} value - Description of the column property.
- * @property {string} operateur - Description of the column property.
- * @typedef {Record<string, Schema>} All
- * @typedef {object} Condition
- * @property {(Condition|fullcondition)[]} and - Logical `AND` conditions
- * @property {(Condition|fullcondition)[]} or - Logical `OR` conditions
- * @typedef {(All & Condition)} fullcondition
- */
-/**
- * @typedef {object} User
+ * @typedef {object} User user table schema
  * @property {number} id
  * @property {string} email
  * @property {string} password
@@ -21,25 +12,63 @@ const { db } = require("../database");
  * @property {string} created_at
  * @property {string} updated_at
  */
+
+/**
+ * @typedef {object} Departement departement table schema
+ * @property {number} id
+ * @property {string} name
+ * @property {(number|null)} parent_department_id
+ * @property {string} created_at
+ * @property {string} updated_at
+ */
+
+/**
+ * @typedef {object} Group group table schema
+ * @property {number} id
+ * @property {string} name
+ * @property {number} departement_id
+ * @property {string} created_at
+ * @property {string} updated_at
+ */
+
+//conditions types
+
+/**
+ * @typedef {object} TableFeald
+ * @property {string} value - Description of the column property.
+ * @property {string} operateur - Description of the column property.
+ */
+
+/**
+ * @template T
+ * @typedef {object} Condition<T>
+ * @property {(Condition<T>|((Record<keyof T, TableFeald>) & Condition<T>))[]} and - Logical `AND` conditions
+ * @property {(Condition<T>|((Record<keyof T, TableFeald>) & Condition<T>))[]} or - Logical `OR` conditions
+ */
+
+//query statement result
+
 /**
  * @typedef {Object} insertResult
  * @property {number} insertId ID of the inserted row if it's an auto-increment field
  * @property {number} affectedRows Number of affected rows, usually 1 for INSERT
  * @property {number} warningStatus The number of warnings (if any)
  */
+
 /**
  * @typedef {Object} updateResult
  * @property {number} affectedRows Number of affected rows, usually 1 for UPDATE
  * @property {number} changedRows Number of rows actually changed (i.e., with modified values)
  * @property {number} warningStatus The number of warnings (if any)
  */
+
 /**
  * @typedef {Object} deleteResult
  * @property {number} affectedRows The number of rows that were deleted (typically 1 if the deletion was successful, 0 if no rows were found matching the condition).
  * @property {number} warningStatus The number of warnings generated during the query execution (usually 0 if there are no warnings).
  */
 
-const TablesNames = { users: "users" };
+const TablesNames = { users: "users", departement: "departement" };
 
 module.exports.Users = {
   /**
@@ -151,7 +180,7 @@ module.exports.Users = {
    * @param {number} [param0.departement_id]
    * @param {number} [param0.group_id]
    * @param {string} [param0.updated_at]
-   * @param {Condition} [param0.by]
+   * @param {Condition<User>} [param0.by]
    * @returns {Promise<[(import("mysql2").QueryError | string | null ),(updateResult | null )]>}
    */
   async update({ email, password, name, role, departement_id, group_id, updated_at, by }) {
@@ -228,49 +257,39 @@ module.exports.Users = {
 
   /**
    * Read users from the database with optional filtering conditions
-   * @param {Condition} [param0.by] - Conditions for filtering users (e.g., { name: { value: 'John', operateur: '=' } })
+   * @param {Condition<User>} by - Conditions for filtering users (e.g., { name: { value: 'John', operateur: '=' } })
    * @returns {Promise<[(import("mysql2").QueryError | string | null ),(Array<User> | null)]>}
    */
-  async read({ by } = {}) {
-    let query = `SELECT * FROM ${TablesNames.users}`;
-    const values = [];
-
-    if (by) {
-      query += ` WHERE ${parse_condition(by)}`;
-    }
-
+  async read(by = {}) {
+    let query = `SELECT * FROM ${TablesNames.users} WHERE ${parse_condition(by)}`;
     try {
-      const [rows] = await db.query(query, values);
+      const [rows] = await db.query(query);
       return [null, rows];
     } catch (e) {
       console.error(e);
       return [e.message, null];
     }
   },
-  // !  hadiiiii  ba9am9lbhach bader 🧐🧐🧐
+
   /**
    * Search for users based on search criteria
-   * @param {Object} searchCriteria - The search criteria to match users
-   * @returns {Promise<[(import("mysql2").QueryError | string | null ),Array<Object>]>}
+   * @param {Partial<User>} searchCriteria - The search criteria to match users
+   * @returns {Promise<[(import("mysql2").QueryError | string | null ),(Array<User> | null)]>}
    */
-
   async searchForUser(searchCriteria) {
     if (!searchCriteria || Object.keys(searchCriteria).length === 0) {
       return ["No search criteria provided", null];
     }
-
-    // Start building the SELECT query
-    let query = `SELECT * FROM ${TablesNames.users} WHERE `;
     const values = [];
-
-    // Build the conditions based on the provided search criteria
     const conditions = Object.entries(searchCriteria).map(([key, value]) => {
+      if (typeof value == "string") {
+        values.push("%" + value + "%");
+        return `${key} LIKE ?`;
+      }
       values.push(value);
       return `${key} = ?`;
     });
-
-    // Join the conditions with 'AND'
-    query += conditions.join(" AND ");
+    let query = `SELECT * FROM ${TablesNames.users} WHERE ${conditions.join(" AND ")}`;
 
     try {
       const [rows] = await db.query(query, values);
@@ -278,6 +297,100 @@ module.exports.Users = {
     } catch (e) {
       console.error(e);
       return [e.message, null]; // Return any error
+    }
+  },
+};
+module.exports.Departement = {
+  /**
+   * @param {Departement} departement
+   * @returns {Promise<[(import("mysql2").QueryError|string|null),(insertResult|null)]>}
+   */
+  async insert(departement) {
+    if (Object.keys(departement).length == 0) return ["all feald required", null];
+    const query = `
+      INSERT INTO ${TablesNames.departement} (${Object.keys(departement).join(", ")})
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+    const values = Object.values(departement);
+
+    try {
+      return [null, await db.query(query, values)[0]]; // No error, returning the result
+    } catch (e) {
+      console.error(e);
+      return [e.message, null]; // Returning the error message in case of failure
+    }
+  },
+  /**
+   * @param {Condition<Departement>} by
+   * @returns {Promise<[(import("mysql2").QueryError|string|null),(insertResult|null)]>}
+   */
+  async read(by) {
+    if (Object.keys(by).length == 0) return ["all feald required", null];
+    const query = `SELECT * FROM ${TablesNames.departement} WHERE ${parse_condition(by)}`;
+    try {
+      const [rows] = await db.query(query);
+      return [null, rows];
+    } catch (e) {
+      console.error(e);
+      return [e.message, null];
+    }
+  },
+  /**
+   * @param {number} id
+   * @param {Partial<Departement>} by
+   * @returns {Promise<[(import("mysql2").QueryError|string|null),(updateResult|null)]>}
+   */
+  async update(id, by) {
+    const data = Object.entries(by);
+    if (!id || data.length == 0) return ["data required", null];
+    const sql = [];
+    const values = [];
+    data.forEach((column) => {
+      sql.push(column[0] + " = ?");
+      values.push(column[1]);
+    });
+    values.push(id);
+
+    const query = `
+    UPDATE ${TablesNames.departement} 
+    SET ${sql.join(" ,")} 
+    WHERE id = ?
+  `;
+    try {
+      return [null, await db.query(query, values)[0]];
+    } catch (e) {
+      return [e.message, null];
+    }
+  },
+  /**
+   * @param {number} id - id of departement
+   * @returns {Promise<[(import("mysql2").QueryError|string | null) , (deleteResult | null)]>}
+   */
+  async deleteByID(id) {
+    if (!id) return ["id requierd", null];
+    const query = `
+      DELETE FROM ${TablesNames.departement}
+      WHERE id = ?
+    `;
+
+    try {
+      return [null, await db.query(query, [id])[0]];
+    } catch (e) {
+      console.error(e);
+      return [e.message, null];
+    }
+  },
+  /**
+   * @param {number} id
+   * @returns {Promise<[(import("mysql2").QueryError | null | string),(Array<Group> | null)]>}
+   */
+  async getGroups(id) {
+    if (!id) return ["id requierd", null];
+    const query = `SELECT * FROM ${TablesNames.groups} WHERE id = ? `;
+    try {
+      return [null, await db.query(query, [id])[0]];
+    } catch (e) {
+      return [e.message, null];
     }
   },
 };
@@ -289,6 +402,7 @@ module.exports.Users = {
  * @returns {string} SQL string
  */
 function parse_condition(condition) {
+  if (!condition || Object.keys(condition).length == 0) return "1=1";
   const sql = [];
   for (const [key, val] of Object.entries(condition)) {
     if (key === "and" || key === "or") {
@@ -325,9 +439,9 @@ function escapeChar(string) {
     "!": "\\!",
     "@": "\\@",
   };
-    let res='';
-    for(let i=0;i<string.length;i++){
-      res+=badChars[string[i]]|| string[i]
-    }
-    return res
+  let res = "";
+  for (let i = 0; i < string.length; i++) {
+    res += badChars[string[i]] || string[i];
+  }
+  return res;
 }

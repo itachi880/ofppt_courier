@@ -68,7 +68,7 @@ const { db } = require("../database");
  * @property {number} warningStatus The number of warnings generated during the query execution (usually 0 if there are no warnings).
  */
 
-const TablesNames = { users: "users", departement: "departement" };
+const TablesNames = { users: "users", departement: "departement" ,group:'group'};
 
 module.exports.Users = {
   /**
@@ -395,8 +395,6 @@ module.exports.Departement = {
   },
 };
 
-// ! li zdt db  
-
 module.exports.Group = {
   /**
    * Insert a new group into the database
@@ -406,7 +404,7 @@ module.exports.Group = {
   async insert(group) {
     if (Object.keys(group).length == 0) return ["All fields are required", null];
     const query = `
-      INSERT INTO ${TablesNames.groups} (${Object.keys(group).join(", ")})
+      INSERT INTO ${TablesNames.group} (${Object.keys(group).join(", ")})
       VALUES (${Object.keys(group).map(() => "?").join(", ")})
     `;
     const values = Object.values(group);
@@ -426,7 +424,7 @@ module.exports.Group = {
    */
   async read(by) {
     if (!by || Object.keys(by).length === 0) return ["Conditions are required", null];
-    const query = `SELECT * FROM ${TablesNames.groups} WHERE ${parse_condition(by)}`;
+    const query = `SELECT * FROM ${TablesNames.group} WHERE ${parse_condition(by)}`;
     try {
       const [rows] = await db.query(query);
       return [null, rows];
@@ -453,7 +451,7 @@ module.exports.Group = {
     values.push(id);
 
     const query = `
-      UPDATE ${TablesNames.groups}
+      UPDATE ${TablesNames.group}
       SET ${fields.join(", ")}
       WHERE id = ?
     `;
@@ -474,7 +472,7 @@ module.exports.Group = {
   async deleteByID(id) {
     if (!id) return ["Group ID is required", null];
     const query = `
-      DELETE FROM ${TablesNames.groups}
+      DELETE FROM ${TablesNames.group}
       WHERE id = ?
     `;
 

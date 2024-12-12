@@ -395,6 +395,99 @@ module.exports.Departement = {
   },
 };
 
+// ! li zdt db  
+
+module.exports.Group = {
+  /**
+   * Insert a new group into the database
+   * @param {Group} group
+   * @returns {Promise<[(import("mysql2").QueryError|string|null),(insertResult|null)]>}
+   */
+  async insert(group) {
+    if (Object.keys(group).length == 0) return ["All fields are required", null];
+    const query = `
+      INSERT INTO ${TablesNames.groups} (${Object.keys(group).join(", ")})
+      VALUES (${Object.keys(group).map(() => "?").join(", ")})
+    `;
+    const values = Object.values(group);
+
+    try {
+      return [null, await db.query(query, values)[0]];
+    } catch (e) {
+      console.error(e);
+      return [e.message, null];
+    }
+  },
+
+  /**
+   * Retrieve groups based on conditions
+   * @param {Condition<Group>} by
+   * @returns {Promise<[(import("mysql2").QueryError|string|null),(Array<Group>|null)]>}
+   */
+  async read(by) {
+    if (!by || Object.keys(by).length === 0) return ["Conditions are required", null];
+    const query = `SELECT * FROM ${TablesNames.groups} WHERE ${parse_condition(by)}`;
+    try {
+      const [rows] = await db.query(query);
+      return [null, rows];
+    } catch (e) {
+      console.error(e);
+      return [e.message, null];
+    }
+  },
+
+  /**
+   * Update a group's information
+   * @param {number} id - The ID of the group to update
+   * @param {Partial<Group>} updates - Fields to update
+   * @returns {Promise<[(import("mysql2").QueryError|string|null),(updateResult|null)]>}
+   */
+  async update(id, updates) {
+    if (!id || Object.keys(updates).length === 0) return ["ID and update fields are required", null];
+    const fields = [];
+    const values = [];
+    for (const [key, value] of Object.entries(updates)) {
+      fields.push(`${key} = ?`);
+      values.push(value);
+    }
+    values.push(id);
+
+    const query = `
+      UPDATE ${TablesNames.groups}
+      SET ${fields.join(", ")}
+      WHERE id = ?
+    `;
+
+    try {
+      return [null, await db.query(query, values)[0]];
+    } catch (e) {
+      console.error(e);
+      return [e.message, null];
+    }
+  },
+
+  /**
+   * Delete a group by ID
+   * @param {number} id - ID of the group to delete
+   * @returns {Promise<[(import("mysql2").QueryError|string|null),(deleteResult|null)]>}
+   */
+  async deleteByID(id) {
+    if (!id) return ["Group ID is required", null];
+    const query = `
+      DELETE FROM ${TablesNames.groups}
+      WHERE id = ?
+    `;
+
+    try {
+      return [null, await db.query(query, [id])[0]];
+    } catch (e) {
+      console.error(e);
+      return [e.message, null];
+    }
+  },
+};
+
+
 // ! b3d mn hna khdamin 3tihom ti9ar a iliass☠️☠️
 /**
  * Helper function to parse conditions into SQL format

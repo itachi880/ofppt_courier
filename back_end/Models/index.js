@@ -31,6 +31,31 @@ const { db } = require("../database");
  * @property {string} updated_at
  */
 
+/**
+ * @typedef {object} CourierAssignee courier_assignees table schema
+ * @property {number} id - Unique identifier for the assignee record.
+ * @property {number} courier_id - Identifier for the associated courier.
+ * @property {string} assignee_type - Type of the assignee (e.g., user, group).
+ * @property {number} user_id - Identifier for the user (if assignee_type is 'user').
+ * @property {number} group_id - Identifier for the group (if assignee_type is 'group').
+ * @property {number} department_id - Identifier for the department the assignee belongs to.
+ * @property {string} created_at - Timestamp of when the assignee record was created.
+ */
+
+//TODO : gad schema hna o flbase donne
+
+/**
+ * @typedef {object} Courier - table database COURIER
+ * @property {number} id - id de Courier
+ * @property {string} titel
+ * @property {string} description
+ * @property {string} deadline
+ * @property {"normal"|"urgent"|"tres urgent"} state
+ * @property {number} create_by - id de createur
+ * @property {string} created_at
+ * @property {string} updated_at
+ */
+
 //conditions types
 
 /**
@@ -68,34 +93,23 @@ const { db } = require("../database");
  * @property {number} warningStatus The number of warnings generated during the query execution (usually 0 if there are no warnings).
  */
 
-const TablesNames = { users: "users", departement: "departement" ,group:'group'};
+const TablesNames = { users: "users", departement: "departement", courier_assigne: "courier_assigne", group: "group", courier: "couriers" };
 
 module.exports.Users = {
   /**
    * Insert a new user into the database
-   * @param {Object} param0
-   * @param {string} param0.email
-   * @param {string} param0.password
-   * @param {string} param0.name
-   * @param {string} param0.role
-   * @param {number} param0.departement_id
-   * @param {number} param0.group_id
-   * @param {string} param0.created_at
-   * @param {string} param0.updated_at
+   * @param {User} user
    * @returns {Promise<[(import("mysql2").QueryError | string | null ),(insertResult | null )]>}
    */
-  async insert({ name, email, password, role, departement_id, group_id, created_at, updated_at }) {
-    if (!name || !email || !password || !role || !departement_id) {
-      return ["Fields are required", null];
-    }
-
-    const query = `
-      INSERT INTO ${TablesNames.users} (name, email, password, role, departement_id, group_id, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `;
-    const values = [name, email, password, role, departement_id, group_id, created_at, updated_at];
-
+  async insert(user) {
     try {
+      const user_columns = Object.keys(user);
+      if (user_columns.length == 0) return ["Fields are required", null];
+      const query = `
+      INSERT INTO ${TablesNames.users} (${user_columns.join(", ")})
+      VALUES (${user_columns.map(() => "?").join(", ")})
+    `;
+      const values = Object.values(user);
       return [null, await db.query(query, values)[0]]; // No error, returning the result
     } catch (e) {
       console.error(e);
@@ -105,52 +119,18 @@ module.exports.Users = {
 
   /**
    * Update user information in the database by ID
-   * @param {Object} param0
-   * @param {number} param0.id
-   * @param {string} [param0.email]
-   * @param {string} [param0.password]
-   * @param {string} [param0.name]
-   * @param {string} [param0.role]
-   * @param {number} [param0.departement_id]
-   * @param {number} [param0.group_id]
-   * @param {string} [param0.updated_at]
+   * @param {Partial<User>} data
+   * @param {number} id
    * @returns {Promise<[(import("mysql2").QueryError | string | null ),(updateResult | null )]>}
    */
-  async updateByID({ id, email, password, name, role, departement_id, group_id, updated_at }) {
+  async updateByID(id, data) {
     if (!id) return ["User ID is required", null];
-
-    let setFields = [];
-    let values = [];
-
-    if (email) {
-      setFields.push("email = ?");
-      values.push(email);
-    }
-    if (password) {
-      setFields.push("password = ?");
-      values.push(password);
-    }
-    if (name) {
-      setFields.push("name = ?");
-      values.push(name);
-    }
-    if (role) {
-      setFields.push("role = ?");
-      values.push(role);
-    }
-    if (departement_id) {
-      setFields.push("departement_id = ?");
-      values.push(departement_id);
-    }
-    if (group_id) {
-      setFields.push("group_id = ?");
-      values.push(group_id);
-    }
-    if (updated_at) {
-      setFields.push("updated_at = ?");
-      values.push(updated_at);
-    }
-
+    const setFields = [];
+    const values = [];
+    Object.entries(data).forEach((e) => {
+      setFields.push(e[0] + "= ? ");
+      values.push(e[1]);
+    });
     if (setFields.length === 0) {
       return ["No fields to update", null];
     }
@@ -172,62 +152,26 @@ module.exports.Users = {
 
   /**
    * Update user information with conditions
-   * @param {Object} param0
-   * @param {string} [param0.email]
-   * @param {string} [param0.password]
-   * @param {string} [param0.name]
-   * @param {string} [param0.role]
-   * @param {number} [param0.departement_id]
-   * @param {number} [param0.group_id]
-   * @param {string} [param0.updated_at]
-   * @param {Condition<User>} [param0.by]
+   * @param {Partial<User>} data
+   * @param {Condition<User>} by
    * @returns {Promise<[(import("mysql2").QueryError | string | null ),(updateResult | null )]>}
    */
-  async update({ email, password, name, role, departement_id, group_id, updated_at, by }) {
-    let setFields = [];
-    let values = [];
+  async update(data, by) {
+    try {
+      const setFields = [];
+      const values = [];
+      Object.entries(data).forEach((e) => {
+        setFields.push(e[0] + " = ? ");
+        values.push(e[1]);
+      });
+      if (setFields.length === 0) return ["No fields to update", null];
 
-    if (email) {
-      setFields.push("email = ?");
-      values.push(email);
-    }
-    if (password) {
-      setFields.push("password = ?");
-      values.push(password);
-    }
-    if (name) {
-      setFields.push("name = ?");
-      values.push(name);
-    }
-    if (role) {
-      setFields.push("role = ?");
-      values.push(role);
-    }
-    if (departement_id) {
-      setFields.push("departement_id = ?");
-      values.push(departement_id);
-    }
-    if (group_id) {
-      setFields.push("group_id = ?");
-      values.push(group_id);
-    }
-    if (updated_at) {
-      setFields.push("updated_at = ?");
-      values.push(updated_at);
-    }
-
-    if (setFields.length === 0) {
-      return ["No fields to update", null];
-    }
-
-    const query = `
+      const query = `
       UPDATE ${TablesNames.users}  
       SET ${setFields.join(", ")} 
-      ${parse_condition(by || {})}
+      WHERE ${parse_condition(by)}
     `;
-    values.push(id);
 
-    try {
       return [null, await db.query(query, values)[0]];
     } catch (e) {
       console.error(e);
@@ -260,9 +204,10 @@ module.exports.Users = {
    * @param {Condition<User>} by - Conditions for filtering users (e.g., { name: { value: 'John', operateur: '=' } })
    * @returns {Promise<[(import("mysql2").QueryError | string | null ),(Array<User> | null)]>}
    */
-  async read(by = {}) {
-    let query = `SELECT * FROM ${TablesNames.users} WHERE ${parse_condition(by)}`;
+  async read(by) {
     try {
+      const query = `SELECT * FROM ${TablesNames.users} WHERE ${parse_condition(by)}`;
+
       const [rows] = await db.query(query);
       return [null, rows];
     } catch (e) {
@@ -277,21 +222,21 @@ module.exports.Users = {
    * @returns {Promise<[(import("mysql2").QueryError | string | null ),(Array<User> | null)]>}
    */
   async searchForUser(searchCriteria) {
-    if (!searchCriteria || Object.keys(searchCriteria).length === 0) {
-      return ["No search criteria provided", null];
-    }
-    const values = [];
-    const conditions = Object.entries(searchCriteria).map(([key, value]) => {
-      if (typeof value == "string") {
-        values.push("%" + value + "%");
-        return `${key} LIKE ?`;
-      }
-      values.push(value);
-      return `${key} = ?`;
-    });
-    let query = `SELECT * FROM ${TablesNames.users} WHERE ${conditions.join(" AND ")}`;
-
     try {
+      if (!searchCriteria || Object.keys(searchCriteria).length === 0) {
+        return ["No search criteria provided", null];
+      }
+      const values = [];
+      const conditions = Object.entries(searchCriteria).map(([key, value]) => {
+        if (typeof value == "string") {
+          values.push("%" + value + "%");
+          return `${key} LIKE ?`;
+        }
+        values.push(value);
+        return `${key} = ?`;
+      });
+      const query = `SELECT * FROM ${TablesNames.users} WHERE ${conditions.join(" AND ")}`;
+
       const [rows] = await db.query(query, values);
       return [null, rows]; // Return users matching the criteria
     } catch (e) {
@@ -300,20 +245,22 @@ module.exports.Users = {
     }
   },
 };
+
 module.exports.Departement = {
   /**
    * @param {Departement} departement
    * @returns {Promise<[(import("mysql2").QueryError|string|null),(insertResult|null)]>}
    */
   async insert(departement) {
-    if (Object.keys(departement).length == 0) return ["all feald required", null];
-    const query = `
-      INSERT INTO ${TablesNames.departement} (${Object.keys(departement).join(", ")})
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `;
-    const values = Object.values(departement);
-
     try {
+      const departement_columns = Object.keys(departement);
+      if (departement_columns.length == 0) return ["all feald required", null];
+      const query = `
+      INSERT INTO ${TablesNames.departement} (${departement_columns.join(", ")})
+      VALUES (${departement_columns.map(() => "?").join(", ")})
+    `;
+      const values = Object.values(departement);
+
       return [null, await db.query(query, values)[0]]; // No error, returning the result
     } catch (e) {
       console.error(e);
@@ -325,9 +272,10 @@ module.exports.Departement = {
    * @returns {Promise<[(import("mysql2").QueryError|string|null),(insertResult|null)]>}
    */
   async read(by) {
-    if (Object.keys(by).length == 0) return ["all feald required", null];
-    const query = `SELECT * FROM ${TablesNames.departement} WHERE ${parse_condition(by)}`;
     try {
+      if (Object.keys(by).length == 0) return ["all feald required", null];
+      const query = `SELECT * FROM ${TablesNames.departement} WHERE ${parse_condition(by)}`;
+
       const [rows] = await db.query(query);
       return [null, rows];
     } catch (e) {
@@ -341,22 +289,22 @@ module.exports.Departement = {
    * @returns {Promise<[(import("mysql2").QueryError|string|null),(updateResult|null)]>}
    */
   async update(id, by) {
-    const data = Object.entries(by);
-    if (!id || data.length == 0) return ["data required", null];
-    const sql = [];
-    const values = [];
-    data.forEach((column) => {
-      sql.push(column[0] + " = ?");
-      values.push(column[1]);
-    });
-    values.push(id);
-
-    const query = `
-    UPDATE ${TablesNames.departement} 
-    SET ${sql.join(" ,")} 
-    WHERE id = ?
-  `;
     try {
+      const data = Object.entries(by);
+      if (!id || data.length == 0) return ["data required", null];
+      const sql = [];
+      const values = [];
+      data.forEach((column) => {
+        sql.push(column[0] + " = ?");
+        values.push(column[1]);
+      });
+      values.push(id);
+      const query = `
+        UPDATE ${TablesNames.departement} 
+        SET ${sql.join(" ,")} 
+        WHERE id = ?
+  `;
+
       return [null, await db.query(query, values)[0]];
     } catch (e) {
       return [e.message, null];
@@ -367,13 +315,13 @@ module.exports.Departement = {
    * @returns {Promise<[(import("mysql2").QueryError|string | null) , (deleteResult | null)]>}
    */
   async deleteByID(id) {
-    if (!id) return ["id requierd", null];
-    const query = `
+    try {
+      if (!id) return ["id requierd", null];
+      const query = `
       DELETE FROM ${TablesNames.departement}
       WHERE id = ?
     `;
 
-    try {
       return [null, await db.query(query, [id])[0]];
     } catch (e) {
       console.error(e);
@@ -385,9 +333,10 @@ module.exports.Departement = {
    * @returns {Promise<[(import("mysql2").QueryError | null | string),(Array<Group> | null)]>}
    */
   async getGroups(id) {
-    if (!id) return ["id requierd", null];
-    const query = `SELECT * FROM ${TablesNames.groups} WHERE id = ? `;
     try {
+      if (!id) return ["id requierd", null];
+      const query = `SELECT * FROM ${TablesNames.group} WHERE id = ? `;
+
       return [null, await db.query(query, [id])[0]];
     } catch (e) {
       return [e.message, null];
@@ -402,14 +351,15 @@ module.exports.Group = {
    * @returns {Promise<[(import("mysql2").QueryError|string|null),(insertResult|null)]>}
    */
   async insert(group) {
-    if (Object.keys(group).length == 0) return ["All fields are required", null];
-    const query = `
-      INSERT INTO ${TablesNames.group} (${Object.keys(group).join(", ")})
-      VALUES (${Object.keys(group).map(() => "?").join(", ")})
-    `;
-    const values = Object.values(group);
-
     try {
+      const group_columns = Object.keys(group);
+      if (group_columns.length == 0) return ["All fields are required", null];
+      const query = `
+      INSERT INTO ${TablesNames.group} (${group_columns.join(", ")})
+      VALUES (${group_columns.map(() => "?").join(", ")})
+    `;
+      const values = Object.values(group);
+
       return [null, await db.query(query, values)[0]];
     } catch (e) {
       console.error(e);
@@ -423,9 +373,10 @@ module.exports.Group = {
    * @returns {Promise<[(import("mysql2").QueryError|string|null),(Array<Group>|null)]>}
    */
   async read(by) {
-    if (!by || Object.keys(by).length === 0) return ["Conditions are required", null];
-    const query = `SELECT * FROM ${TablesNames.group} WHERE ${parse_condition(by)}`;
     try {
+      if (!by || Object.keys(by).length === 0) return ["Conditions are required", null];
+      const query = `SELECT * FROM ${TablesNames.group} WHERE ${parse_condition(by)}`;
+
       const [rows] = await db.query(query);
       return [null, rows];
     } catch (e) {
@@ -441,22 +392,22 @@ module.exports.Group = {
    * @returns {Promise<[(import("mysql2").QueryError|string|null),(updateResult|null)]>}
    */
   async update(id, updates) {
-    if (!id || Object.keys(updates).length === 0) return ["ID and update fields are required", null];
-    const fields = [];
-    const values = [];
-    for (const [key, value] of Object.entries(updates)) {
-      fields.push(`${key} = ?`);
-      values.push(value);
-    }
-    values.push(id);
+    try {
+      if (!id || Object.keys(updates).length === 0) return ["ID and update fields are required", null];
+      const fields = [];
+      const values = [];
+      for (const [key, value] of Object.entries(updates)) {
+        fields.push(`${key} = ?`);
+        values.push(value);
+      }
+      values.push(id);
 
-    const query = `
+      const query = `
       UPDATE ${TablesNames.group}
       SET ${fields.join(", ")}
       WHERE id = ?
     `;
 
-    try {
       return [null, await db.query(query, values)[0]];
     } catch (e) {
       console.error(e);
@@ -470,13 +421,13 @@ module.exports.Group = {
    * @returns {Promise<[(import("mysql2").QueryError|string|null),(deleteResult|null)]>}
    */
   async deleteByID(id) {
-    if (!id) return ["Group ID is required", null];
-    const query = `
+    try {
+      if (!id) return ["Group ID is required", null];
+      const query = `
       DELETE FROM ${TablesNames.group}
       WHERE id = ?
     `;
 
-    try {
       return [null, await db.query(query, [id])[0]];
     } catch (e) {
       console.error(e);
@@ -485,12 +436,267 @@ module.exports.Group = {
   },
 };
 
+module.exports.Courier = {
+  /**
+   * Insert a new courier into the database
+   * @param {Partial<Courier>} courier
+   * @returns {Promise<[(import("mysql2").QueryError | string | null ),(insertResult | null )]>}
+   */
 
+  async insert(courier) {
+    try {
+      const courier_columns = Object.keys(courier);
+      if (courier_columns.length == 0) return ["Fields are required", null];
+
+      const query = `
+        INSERT INTO ${TablesNames.courier} (${courier_columns.join(", ")})
+        VALUES (${courier_columns.map(() => "?").join(", ")})
+      `;
+      const values = Object.values(courier);
+
+      return [null, await db.query(query, values)[0]];
+    } catch (e) {
+      console.error(e);
+      return [e.message, null];
+    }
+  },
+
+  /**
+   * Update courier information in the database by ID
+   * @param {Courier} courier
+   * @param {number} id
+   * @returns {Promise<[(import("mysql2").QueryError | string | null ),(updateResult | null )]>}
+   */
+  async updateByID(id, courier) {
+    try {
+      if (!id) return ["Courier ID is required", null];
+
+      const setFields = [];
+      const values = [];
+      Object.entries(courier).forEach((column) => {
+        setFields.push(column[0] + " = ?");
+        values.push(column[1]);
+      });
+
+      if (setFields.length === 0) {
+        return ["No fields to update", null];
+      }
+
+      const query = `
+        UPDATE ${TablesNames.courier}
+        SET ${setFields.join(", ")}
+        WHERE id = ?
+      `;
+      values.push(id);
+
+      return [null, await db.query(query, values)[0]];
+    } catch (e) {
+      console.error(e);
+      return [e.message, null];
+    }
+  },
+
+  /**
+   * Read couriers from the database with optional filtering conditions
+   * @param {Condition<Courier>} by - Conditions for filtering couriers
+   * @returns {Promise<[(import("mysql2").QueryError | string | null ),(Array<Courier> | null)]>}
+   */
+  async read(by = {}) {
+    try {
+      const query = `SELECT * FROM ${TablesNames.courier} WHERE ${parse_condition(by)}`;
+
+      const [rows] = await db.query(query);
+      return [null, rows];
+    } catch (e) {
+      console.error(e);
+      return [e.message, null];
+    }
+  },
+
+  /**
+   * Delete a courier by ID
+   * @param {number} id - ID of the courier to delete
+   * @returns {Promise<[(import("mysql2").QueryError | string | null ),(deleteResult | null)]>}
+   */
+  async deleteByID(id) {
+    try {
+      if (!id) return ["Courier ID is required", null];
+
+      const query = `
+        DELETE FROM ${TablesNames.courier}
+        WHERE id = ?
+      `;
+
+      return [null, await db.query(query, [id])[0]];
+    } catch (e) {
+      console.error(e);
+      return [e.message, null];
+    }
+  },
+};
+
+module.exports.CourierAssigne = {
+  /**
+   * Insert a new courier assignment into the database
+   * @param {CourierAssignee} courierAssigne - The courier assignment object
+   * @returns {Promise<[(import("mysql2").QueryError | string | null ),(insertResult | null )]>}
+   */
+  async insert(courierAssigne) {
+    try {
+      const courier_assigne_columns = Object.keys(courierAssigne);
+      if (courier_assigne_columns.length == 0) return ["Fields are required", null];
+
+      const query = `
+        INSERT INTO ${TablesNames.courier_assigne} (${courier_assigne_columns.join(", ")})
+        VALUES (${courier_assigne_columns.map(() => "?").join(", ")})
+      `;
+      const values = Object.values(courierAssigne);
+
+      return [null, await db.query(query, values)[0]]; // No error, returning the result
+    } catch (e) {
+      console.error(e);
+      return [e.message, null]; // Returning the error message in case of failure
+    }
+  },
+
+  /**
+   * Update courier assignment information by ID
+   * @param {number} id - The ID of the assignment to update
+   * @param {Partial<CourierAssignee>} data - The data to update
+   * @returns {Promise<[(import("mysql2").QueryError | string | null ),(updateResult | null )]>}
+   */
+  async updateByID(id, data) {
+    try {
+      if (!id) return ["ID is required", null];
+
+      const setFields = [];
+      const values = [];
+      Object.entries(data).forEach((e) => {
+        setFields.push(e[0] + " = ? ");
+        values.push(e[1]);
+      });
+
+      if (setFields.length === 0) return ["No fields to update", null];
+
+      const query = `
+      UPDATE ${TablesNames.courier_assigne} 
+      SET ${setFields.join(", ")} 
+      WHERE id = ?
+    `;
+      values.push(id);
+
+      return [null, await db.query(query, values)[0]];
+    } catch (e) {
+      console.error(e);
+      return [e.message, null];
+    }
+  },
+
+  /**
+   * Update courier assignments based on conditions
+   * @param {Partial<CourierAssignee>} data - The data to update
+   * @param {Condition<CourierAssignee>} by - The condition to match
+   * @returns {Promise<[(import("mysql2").QueryError | string | null ),(updateResult | null )]>}
+   */
+  async update(data, by) {
+    try {
+      const setFields = [];
+      const values = [];
+      Object.entries(data).forEach((e) => {
+        setFields.push(e[0] + " = ? ");
+        values.push(e[1]);
+      });
+
+      if (setFields.length === 0) return ["No fields to update", null];
+
+      const query = `
+        UPDATE ${TablesNames.courier_assigne}  
+        SET ${setFields.join(", ")} 
+        WHERE ${parse_condition(by)}
+      `;
+
+      return [null, await db.query(query, values)[0]];
+    } catch (e) {
+      console.error(e);
+      return [e.message, null];
+    }
+  },
+
+  /**
+   * Delete courier assignment by ID
+   * @param {number} id - The ID of the courier assignment to delete
+   * @returns {Promise<[(import("mysql2").QueryError | string | null ),(deleteResult | null )]>}
+   */
+  async deleteByID(id) {
+    try {
+      if (!id) return ["ID is required", null];
+
+      const query = `
+      DELETE FROM ${TablesNames.courier_assigne}
+      WHERE id = ?
+    `;
+
+      return [null, await db.query(query, [id])[0]];
+    } catch (e) {
+      console.error(e);
+      return [e.message, null];
+    }
+  },
+
+  /**
+   * Read courier assignments from the database with optional filtering conditions
+   * @param {Condition<CourierAssignee>} by - Conditions for filtering assignments (e.g., { courier_id: { value: 1, operateur: '=' } })
+   * @returns {Promise<[(import("mysql2").QueryError | string | null ),(Array<CourierAssignee> | null)]>}
+   */
+  async read(by) {
+    try {
+      const query = `
+        SELECT * FROM ${TablesNames.courier_assigne} WHERE ${parse_condition(by)}
+      `;
+      const [rows] = await db.query(query);
+      return [null, rows];
+    } catch (e) {
+      console.error(e);
+      return [e.message, null];
+    }
+  },
+
+  /**
+   * Search for courier assignments based on search criteria
+   * @param {Partial<CourierAssignee>} searchCriteria - The search criteria to match assignments
+   * @returns {Promise<[(import("mysql2").QueryError | string | null ),(Array<CourierAssignee> | null)]>}
+   */
+  async searchForAssignment(searchCriteria) {
+    try {
+      if (!searchCriteria || Object.keys(searchCriteria).length === 0) {
+        return ["No search criteria provided", null];
+      }
+      const values = [];
+      const conditions = Object.entries(searchCriteria).map(([key, value]) => {
+        if (typeof value === "string") {
+          values.push("%" + value + "%");
+          return `${key} LIKE ?`;
+        }
+        values.push(value);
+        return `${key} = ?`;
+      });
+      const query = `
+        SELECT * FROM ${TablesNames.courier_assigne} WHERE ${conditions.join(" AND ")}
+      `;
+
+      const [rows] = await db.query(query, values);
+      return [null, rows];
+    } catch (e) {
+      console.error(e);
+      return [e.message, null];
+    }
+  },
+};
 
 /**
  * Helper function to parse conditions into SQL format
  * @param {Condition} condition
- * @returns {string} SQL string
+ * @returns {string}
  */
 function parse_condition(condition) {
   if (!condition || Object.keys(condition).length == 0) return "1=1";
@@ -535,134 +741,4 @@ function escapeChar(string) {
     res += badChars[string[i]] || string[i];
   }
   return res;
-}
-module.exports.Couriers={
-    /**
-   * Insert a new courier into the database
-   * @param {Object} param0
-   * @param {string} param0.title
-   * @param {string} param0.description
-   * @param {string} param0.deadline
-   * @param {boolean} param0.critical
-   * @param {number} param0.create_by
-   * @param {string} param0.created_at
-   * @param {string} param0.updated_at
-   * @returns {Promise<[(import("mysql2").QueryError | string | null ),(insertResult | null )]>}
-   */
-
-      async insert({ title, description, deadline, critical, create_by, created_at, updated_at }) {
-        if (!title || !description || !deadline || create_by === undefined) {
-          return ["Fields are required", null];
-        }
-        const query = `
-          INSERT INTO ${TablesNames.courier} (title, description, deadline, critical, create_by, created_at, updated_at)
-          VALUES (?, ?, ?, ?, ?, ?, ?)
-        `;
-        const values = [title, description, deadline, critical, create_by, created_at, updated_at];
-    
-        try {
-          return [null, await db.query(query, values)[0]];
-        } catch (e) {
-          console.error(e);
-          return [e.message, null];
-        }
-      },
-    
-      /**
-       * Update courier information in the database by ID
-       * @param {Object} param0
-       * @param {number} param0.id
-       * @param {string} [param0.title]
-       * @param {string} [param0.description]
-       * @param {string} [param0.deadline]
-       * @param {boolean} [param0.critical]
-       * @param {number} [param0.create_by]
-       * @param {string} [param0.updated_at]
-       * @returns {Promise<[(import("mysql2").QueryError | string | null ),(updateResult | null )]>}
-       */
-      async updateByID({ id, title, description, deadline, critical, create_by, updated_at }) {
-        if (!id) return ["Courier ID is required", null];
-    
-        const setFields = [];
-        const values = [];
-    
-        if (title) {
-          setFields.push("title = ?");
-          values.push(title);
-        }
-        if (description) {
-          setFields.push("description = ?");
-          values.push(description);
-        }
-        if (deadline) {
-          setFields.push("deadline = ?");
-          values.push(deadline);
-        }
-        if (critical !== undefined) {
-          setFields.push("critical = ?");
-          values.push(critical);
-        }
-        if (create_by !== undefined) {
-          setFields.push("create_by = ?");
-          values.push(create_by);
-        }
-        if (updated_at) {
-          setFields.push("updated_at = ?");
-          values.push(updated_at);
-        }
-    
-        if (setFields.length === 0) {
-          return ["No fields to update", null];
-        }
-    
-        const query = `
-          UPDATE ${TablesNames.courier}
-          SET ${setFields.join(", ")}
-          WHERE id = ?
-        `;
-        values.push(id);
-    
-        try {
-          return [null, await db.query(query, values)[0]];
-        } catch (e) {
-          console.error(e);
-          return [e.message, null];
-        }
-      },
-    
-      /**
-       * Read couriers from the database with optional filtering conditions
-       * @param {Condition<Courier>} by - Conditions for filtering couriers
-       * @returns {Promise<[(import("mysql2").QueryError | string | null ),(Array<Courier> | null)]>}
-       */
-      async read(by = {}) {
-        let query = `SELECT * FROM ${TablesNames.courier} WHERE ${parse_condition(by)}`;
-        try {
-          const [rows] = await db.query(query);
-          return [null, rows];
-        } catch (e) {
-          console.error(e);
-          return [e.message, null];
-        }
-      },
-    
-      /**
-       * Delete a courier by ID
-       * @param {number} id - ID of the courier to delete
-       * @returns {Promise<[(import("mysql2").QueryError | string | null ),(deleteResult | null)]>}
-       */
-      async deleteByID(id) {
-        if (!id) return ["Courier ID is required", null];
-    
-        const query = `
-          DELETE FROM ${TablesNames.courier}
-          WHERE id = ?
-        `;
-        try {
-          return [null, await db.query(query, [id])[0]];
-        } catch (e) {
-          console.error(e);
-          return [e.message, null];
-        }
-      },
 }

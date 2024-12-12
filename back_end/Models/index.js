@@ -486,7 +486,7 @@ module.exports.Group = {
 };
 
 
-// ! b3d mn hna khdamin 3tihom ti9ar a iliass☠️☠️
+
 /**
  * Helper function to parse conditions into SQL format
  * @param {Condition} condition
@@ -535,4 +535,134 @@ function escapeChar(string) {
     res += badChars[string[i]] || string[i];
   }
   return res;
+}
+module.exports.Couriers={
+    /**
+   * Insert a new courier into the database
+   * @param {Object} param0
+   * @param {string} param0.title
+   * @param {string} param0.description
+   * @param {string} param0.deadline
+   * @param {boolean} param0.critical
+   * @param {number} param0.create_by
+   * @param {string} param0.created_at
+   * @param {string} param0.updated_at
+   * @returns {Promise<[(import("mysql2").QueryError | string | null ),(insertResult | null )]>}
+   */
+
+      async insert({ title, description, deadline, critical, create_by, created_at, updated_at }) {
+        if (!title || !description || !deadline || create_by === undefined) {
+          return ["Fields are required", null];
+        }
+        const query = `
+          INSERT INTO ${TablesNames.courier} (title, description, deadline, critical, create_by, created_at, updated_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?)
+        `;
+        const values = [title, description, deadline, critical, create_by, created_at, updated_at];
+    
+        try {
+          return [null, await db.query(query, values)[0]];
+        } catch (e) {
+          console.error(e);
+          return [e.message, null];
+        }
+      },
+    
+      /**
+       * Update courier information in the database by ID
+       * @param {Object} param0
+       * @param {number} param0.id
+       * @param {string} [param0.title]
+       * @param {string} [param0.description]
+       * @param {string} [param0.deadline]
+       * @param {boolean} [param0.critical]
+       * @param {number} [param0.create_by]
+       * @param {string} [param0.updated_at]
+       * @returns {Promise<[(import("mysql2").QueryError | string | null ),(updateResult | null )]>}
+       */
+      async updateByID({ id, title, description, deadline, critical, create_by, updated_at }) {
+        if (!id) return ["Courier ID is required", null];
+    
+        const setFields = [];
+        const values = [];
+    
+        if (title) {
+          setFields.push("title = ?");
+          values.push(title);
+        }
+        if (description) {
+          setFields.push("description = ?");
+          values.push(description);
+        }
+        if (deadline) {
+          setFields.push("deadline = ?");
+          values.push(deadline);
+        }
+        if (critical !== undefined) {
+          setFields.push("critical = ?");
+          values.push(critical);
+        }
+        if (create_by !== undefined) {
+          setFields.push("create_by = ?");
+          values.push(create_by);
+        }
+        if (updated_at) {
+          setFields.push("updated_at = ?");
+          values.push(updated_at);
+        }
+    
+        if (setFields.length === 0) {
+          return ["No fields to update", null];
+        }
+    
+        const query = `
+          UPDATE ${TablesNames.courier}
+          SET ${setFields.join(", ")}
+          WHERE id = ?
+        `;
+        values.push(id);
+    
+        try {
+          return [null, await db.query(query, values)[0]];
+        } catch (e) {
+          console.error(e);
+          return [e.message, null];
+        }
+      },
+    
+      /**
+       * Read couriers from the database with optional filtering conditions
+       * @param {Condition<Courier>} by - Conditions for filtering couriers
+       * @returns {Promise<[(import("mysql2").QueryError | string | null ),(Array<Courier> | null)]>}
+       */
+      async read(by = {}) {
+        let query = `SELECT * FROM ${TablesNames.courier} WHERE ${parse_condition(by)}`;
+        try {
+          const [rows] = await db.query(query);
+          return [null, rows];
+        } catch (e) {
+          console.error(e);
+          return [e.message, null];
+        }
+      },
+    
+      /**
+       * Delete a courier by ID
+       * @param {number} id - ID of the courier to delete
+       * @returns {Promise<[(import("mysql2").QueryError | string | null ),(deleteResult | null)]>}
+       */
+      async deleteByID(id) {
+        if (!id) return ["Courier ID is required", null];
+    
+        const query = `
+          DELETE FROM ${TablesNames.courier}
+          WHERE id = ?
+        `;
+        try {
+          return [null, await db.query(query, [id])[0]];
+        } catch (e) {
+          console.error(e);
+          return [e.message, null];
+        }
+      },
 }

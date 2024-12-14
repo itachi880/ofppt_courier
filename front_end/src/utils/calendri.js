@@ -60,16 +60,17 @@ function MyCalendar() {
 
   return (
     <>
-      <div>
-        <h1>Mon Calendrier</h1>
+       <h1>Mon Calendrier</h1>
+      <div  style={{ display:"flex",justifyContent:"center",gap:'90px'}}>
         <Calendar
           onChange={handleDateChange}
           value={date}
           tileContent={tileContent} // Ajoute la personnalisation des cases
         />
-        <div style={{ marginTop: '20px', padding: '10px', border: '1px solid #ccc' }}>
+        <div style={{ marginTop: '20px', padding: '10px', border: '1px solid #ccc',fontWeight:"bold" }}>
           {notification}
-        </div>
+</div>
+
       </div>
     </>
   );

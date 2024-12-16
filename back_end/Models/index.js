@@ -597,12 +597,10 @@ module.exports.Notifications = {
       /* Your DB Config */
     });
     // Fetch all non-notified notifications from the database
+    //! JIB DYAL LYOM O GHDA
     const [notifications] = await db.query("SELECT * FROM notifications WHERE notified = false");
 
     // Add notifications to memory only if they are for the next day
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowDate = tomorrow.toISOString().split("T")[0];
 
     for (const notif of notifications) {
       if (notif.date === tomorrowDate) {

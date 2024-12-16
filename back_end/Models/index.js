@@ -1,5 +1,8 @@
 const { db } = require("../database");
+const cron = require("node-cron");
+
 //tables schema types
+const TablesNames = { users: "users", departement: "departement", courier_assigne: "courier_assigne", group: "group", courier: "couriers" };
 
 /**
  * @typedef {object} User user table schema
@@ -42,8 +45,6 @@ const { db } = require("../database");
  * @property {string} created_at - Timestamp of when the assignee record was created.
  */
 
-//TODO : gad schema hna o flbase donne
-
 /**
  * @typedef {object} Courier - table database COURIER
  * @property {number} id - id de Courier
@@ -56,6 +57,15 @@ const { db } = require("../database");
  * @property {string} updated_at
  */
 
+/**
+ * @typedef {object} Notification - notification table schema
+ * @property {number} id
+ * @property {string} description
+ * @property {number} dep_id
+ * @property {number | null} grp_id
+ * @property {string} date - ex: "YYYY-MM-DD"
+ * @property {boolean} notified
+ */
 //conditions types
 
 /**
@@ -92,8 +102,6 @@ const { db } = require("../database");
  * @property {number} affectedRows The number of rows that were deleted (typically 1 if the deletion was successful, 0 if no rows were found matching the condition).
  * @property {number} warningStatus The number of warnings generated during the query execution (usually 0 if there are no warnings).
  */
-
-const TablesNames = { users: "users", departement: "departement", courier_assigne: "courier_assigne", group: "group", courier: "couriers" };
 
 module.exports.Users = {
   /**
@@ -535,4 +543,74 @@ module.exports.Courier = {
   },
 };
 
- 
+// ? sholde run as cron job each day & one time at app start up
+
+module.exports.Notifications = {
+  /**
+   * @type {Record<string, Notification[]>}
+   */
+  NotificationsQueue: {},
+  tomorrow: new Date(Date.now() + 86400000).toISOString().split("T")[0],
+  today: new Date().toISOString().split("T")[0],
+  /**
+   *
+   * @param {Notification} notification
+   * @returns
+   */
+  async AddNotif(notification) {
+    // Insert the notification into the database
+
+    const [res] = await db.query("INSERT INTO notifications (description, dep_id, grp_id, date, notified) VALUES (?, ?, ?, ?, ?)", [
+      notification.description,
+      notification.dep_id,
+      notification.grp_id,
+      notification.date,
+      false, // Default notified to false
+    ]);
+    notification.id = res.insertId;
+    if (notification.date == this.tomorrow) this.NotificationsQueue[this.tomorrow] = [notification];
+  },
+
+  async Notify() {
+    const notifications = this.NotificationsQueue[this.today] || [];
+
+    for (const notif of notifications) {
+      try {
+        // Send email or notification logic here
+        console.log(`Sending notification for: ${notif.description}`);
+
+        await db.query("DELETE FROM notifications WHERE id = ?", [notif.id]);
+      } catch (err) {
+        console.error(`Failed to notify for: ${notif.description}`, err);
+      }
+    }
+
+    // Remove today's notifications from memory if all are processed
+    delete this.NotificationsQueue[this.today];
+  },
+
+  async Sync() {
+    // Clear current memory store
+    this.NotificationsQueue = {};
+
+    const db = await mysql.createConnection({
+      /* Your DB Config */
+    });
+    // Fetch all non-notified notifications from the database
+    const [notifications] = await db.query("SELECT * FROM notifications WHERE notified = false");
+
+    // Add notifications to memory only if they are for the next day
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowDate = tomorrow.toISOString().split("T")[0];
+
+    for (const notif of notifications) {
+      if (notif.date === tomorrowDate) {
+        if (!this.NotificationsQueue[tomorrowDate]) {
+          this.NotificationsQueue[tomorrowDate] = [];
+        }
+        this.NotificationsQueue[tomorrowDate].push(notif);
+      }
+    }
+  },
+};

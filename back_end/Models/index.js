@@ -593,9 +593,6 @@ module.exports.Notifications = {
     // Clear current memory store
     this.NotificationsQueue = {};
 
-    const db = await mysql.createConnection({
-      /* Your DB Config */
-    });
     // Fetch all non-notified notifications from the database
     //! JIB DYAL LYOM O GHDA
     const [notifications] = await db.query("SELECT * FROM notifications WHERE notified = false");
@@ -603,11 +600,11 @@ module.exports.Notifications = {
     // Add notifications to memory only if they are for the next day
 
     for (const notif of notifications) {
-      if (notif.date === tomorrowDate) {
-        if (!this.NotificationsQueue[tomorrowDate]) {
-          this.NotificationsQueue[tomorrowDate] = [];
+      if (notif.date === this.tomorrow) {
+        if (!this.NotificationsQueue[this.tomorrow]) {
+          this.NotificationsQueue[this.tomorrow] = [];
         }
-        this.NotificationsQueue[tomorrowDate].push(notif);
+        this.NotificationsQueue[this.tomorrow].push(notif);
       }
     }
   },

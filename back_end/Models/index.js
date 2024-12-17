@@ -1,5 +1,5 @@
 const { db } = require("../database");
-const cron = require("node-cron");
+const { mailer } = require("../utils");
 
 //tables schema types
 const TablesNames = { users: "users", departement: "departement", courier_assigne: "courier_assigne", group: "group", courier: "couriers" };
@@ -550,8 +550,8 @@ module.exports.Notifications = {
    * @type {Record<string, Notification[]>}
    */
   NotificationsQueue: {},
-  tomorrow: new Date(Date.now() + 86400000).toISOString().split("T")[0],
-  today: new Date().toISOString().split("T")[0],
+  tomorrow: new Date(Date.now() + 86400000),
+  today: new Date(),
   /**
    *
    * @param {Notification} notification
@@ -559,53 +559,48 @@ module.exports.Notifications = {
    */
   async AddNotif(notification) {
     // Insert the notification into the database
-
-    const [res] = await db.query("INSERT INTO notifications (description, dep_id, grp_id, date, notified) VALUES (?, ?, ?, ?, ?)", [
-      notification.description,
-      notification.dep_id,
-      notification.grp_id,
-      notification.date,
-      false, // Default notified to false
-    ]);
-    notification.id = res.insertId;
-    if (notification.date == this.tomorrow) this.NotificationsQueue[this.tomorrow] = [notification];
+    try {
+      await db.query("INSERT INTO notifications (description, dep_id, grp_id, date, notified) VALUES (?, ?, ?, ?, ?)", [
+        notification.description,
+        notification.dep_id,
+        notification.grp_id,
+        notification.date,
+        false, // Default notified to false
+      ]);
+    } catch (e) {
+      console.error("error in notif preparation ", e);
+    }
   },
 
-  async Notify() {
-    const notifications = this.NotificationsQueue[this.today] || [];
+  async NotifyAll() {
+    const today = this.today.toISOString().split("T")[0];
+    const notifications = this.NotificationsQueue[today] || [];
 
     for (const notif of notifications) {
       try {
-        // Send email or notification logic here
-        console.log(`Sending notification for: ${notif.description}`);
+        let query = "SELECT email from users WHERE ";
+        if (notif.dep_id && !notif.grp_id) query += ` departement_id=${notif.dep_id} AND group_id IS NULL`;
+        else if (notif.dep_id && notif.grp_id) query += ` group_id=${notif.grp_id} OR ( departement_id=${notif.dep_id} AND group_id IS NULL)`;
+
+        const [mailed_to] = await db.query(query);
+        mailed_to.forEach((person) => {
+          mailer.sendEmail({ subject: "notife OFPPT_COURIER", text: notif.description, to: person.email });
+        });
 
         await db.query("DELETE FROM notifications WHERE id = ?", [notif.id]);
       } catch (err) {
-        console.error(`Failed to notify for: ${notif.description}`, err);
+        console.error(`Failed to notify for: ${notif.id}`, err);
       }
     }
 
-    // Remove today's notifications from memory if all are processed
-    delete this.NotificationsQueue[this.today];
+    delete this.NotificationsQueue[today];
   },
 
   async Sync() {
-    // Clear current memory store
-    this.NotificationsQueue = {};
-
     // Fetch all non-notified notifications from the database
-    //! JIB DYAL LYOM O GHDA
-    const [notifications] = await db.query("SELECT * FROM notifications WHERE notified = false");
-
-    // Add notifications to memory only if they are for the next day
-
-    for (const notif of notifications) {
-      if (notif.date === this.tomorrow) {
-        if (!this.NotificationsQueue[this.tomorrow]) {
-          this.NotificationsQueue[this.tomorrow] = [];
-        }
-        this.NotificationsQueue[this.tomorrow].push(notif);
-      }
-    }
+    const today = this.today.toISOString().split("T")[0];
+    const [notifications] = await db.query("SELECT * FROM notifications WHERE notified = false AND date = ?", [today]);
+    if (!this.NotificationsQueue[today]) return (this.NotificationsQueue[today] = notifications);
+    this.NotificationsQueue[today].push(...notifications);
   },
 };

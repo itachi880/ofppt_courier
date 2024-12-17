@@ -1,8 +1,9 @@
+require("./events").startTasks();
 require("dotenv").config();
 const express = require("express");
 const app = express();
-const mailer =require('./utils/mailer')
 const cors = require("cors");
+startTasks();
 app.use(
   cors({
     origin: "*",

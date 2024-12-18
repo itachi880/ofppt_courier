@@ -1,7 +1,7 @@
 const { db } = require("../database");
 const { mailer, parse_condition } = require("../utils");
 
-//tables schema types
+//!tables schema types
 const TablesNames = { users: "users", departement: "departement", courier_assigne: "courier_assigne", group: "group", courier: "couriers" };
 
 /**
@@ -20,7 +20,7 @@ const TablesNames = { users: "users", departement: "departement", courier_assign
  * @typedef {object} Departement departement table schema
  * @property {number} id
  * @property {string} name
- * @property {(number|null)} parent_department_id
+ * @property {(number | null)} parent_department_id
  * @property {string} created_at
  * @property {string} updated_at
  */
@@ -38,8 +38,6 @@ const TablesNames = { users: "users", departement: "departement", courier_assign
  * @typedef {object} CourierAssignee courier_assignees table schema
  * @property {number} id - Unique identifier for the assignee record.
  * @property {number} courier_id - Identifier for the associated courier.
- * @property {string} assignee_type - Type of the assignee (e.g., user, group).
- * @property {number} user_id - Identifier for the user (if assignee_type is 'user').
  * @property {number} group_id - Identifier for the group (if assignee_type is 'group').
  * @property {number} department_id - Identifier for the department the assignee belongs to.
  * @property {string} created_at - Timestamp of when the assignee record was created.
@@ -56,7 +54,18 @@ const TablesNames = { users: "users", departement: "departement", courier_assign
  * @property {string} created_at
  * @property {string} updated_at
  */
-
+//! CourierAssignee
+/**
+ * @typedef {object} CourierAssignee
+ * @property {number} id
+ * @property {number} courier_id
+ * @property {string} assignee_type
+ * @property {number} user_id
+ * @property {number} group_id
+ * @property {number} department_id
+ * @property {string} created_at
+ */
+//!
 /**
  * @typedef {object} Notification - notification table schema
  * @property {number} id
@@ -104,10 +113,10 @@ module.exports.Users = {
       VALUES (${user_columns.map(() => "?").join(", ")})
     `;
       const values = Object.values(user);
-      return [null, await db.query(query, values)[0]]; // No error, returning the result
+      return [null, (await db.query(query, values))[0]]; // No error, returning the result
     } catch (e) {
       console.error(e);
-      return [e.message, null]; // Returning the error message in case of failure
+      return [e, null]; // Returning the error message in case of failure
     }
   },
 
@@ -137,10 +146,10 @@ module.exports.Users = {
     values.push(id);
 
     try {
-      return [null, await db.query(query, values)[0]];
+      return [null, (await db.query(query, values))[0]];
     } catch (e) {
       console.error(e);
-      return [e.message, null];
+      return [e, null];
     }
   },
 
@@ -166,10 +175,10 @@ module.exports.Users = {
       WHERE ${parse_condition(by)}
     `;
 
-      return [null, await db.query(query, values)[0]];
+      return [null, (await db.query(query, values))[0]];
     } catch (e) {
       console.error(e);
-      return [e.message, null];
+      return [e, null];
     }
   },
 
@@ -186,10 +195,10 @@ module.exports.Users = {
     `;
 
     try {
-      return [null, await db.query(query, [id])[0]];
+      return [null, (await db.query(query, [id]))[0]];
     } catch (e) {
       console.error(e);
-      return [e.message, null];
+      return [e, null];
     }
   },
 
@@ -206,7 +215,7 @@ module.exports.Users = {
       return [null, rows];
     } catch (e) {
       console.error(e);
-      return [e.message, null];
+      return [e, null];
     }
   },
 
@@ -235,7 +244,7 @@ module.exports.Users = {
       return [null, rows]; // Return users matching the criteria
     } catch (e) {
       console.error(e);
-      return [e.message, null]; // Return any error
+      return [e, null]; // Return any error
     }
   },
 };
@@ -255,10 +264,10 @@ module.exports.Departement = {
     `;
       const values = Object.values(departement);
 
-      return [null, await db.query(query, values)[0]]; // No error, returning the result
+      return [null, (await db.query(query, values))[0]]; // No error, returning the result
     } catch (e) {
       console.error(e);
-      return [e.message, null]; // Returning the error message in case of failure
+      return [e, null]; // Returning the error message in case of failure
     }
   },
   /**
@@ -273,7 +282,7 @@ module.exports.Departement = {
       return [null, rows];
     } catch (e) {
       console.error(e);
-      return [e.message, null];
+      return [e, null];
     }
   },
   /**
@@ -298,9 +307,9 @@ module.exports.Departement = {
         WHERE id = ?
   `;
 
-      return [null, await db.query(query, values)[0]];
+      return [null, (await db.query(query, values))[0]];
     } catch (e) {
-      return [e.message, null];
+      return [e, null];
     }
   },
   /**
@@ -315,10 +324,10 @@ module.exports.Departement = {
       WHERE id = ?
     `;
 
-      return [null, await db.query(query, [id])[0]];
+      return [null, (await db.query(query, [id]))[0]];
     } catch (e) {
       console.error(e);
-      return [e.message, null];
+      return [e, null];
     }
   },
   /**
@@ -328,11 +337,11 @@ module.exports.Departement = {
   async getGroups(id) {
     try {
       if (!id) return ["id requierd", null];
-      const query = `SELECT * FROM ${TablesNames.group} WHERE id = ? `;
+      const query = `SELECT * FROM \`${TablesNames.group}\` WHERE id = ? `;
 
-      return [null, await db.query(query, [id])[0]];
+      return [null, (await db.query(query, [id]))[0]];
     } catch (e) {
-      return [e.message, null];
+      return [e, null];
     }
   },
 };
@@ -348,15 +357,15 @@ module.exports.Group = {
       const group_columns = Object.keys(group);
       if (group_columns.length == 0) return ["All fields are required", null];
       const query = `
-      INSERT INTO ${TablesNames.group} (${group_columns.join(", ")})
+      INSERT INTO \`${TablesNames.group}\` (${group_columns.join(", ")})
       VALUES (${group_columns.map(() => "?").join(", ")})
     `;
       const values = Object.values(group);
 
-      return [null, await db.query(query, values)[0]];
+      return [null, (await db.query(query, values))[0]];
     } catch (e) {
       console.error(e);
-      return [e.message, null];
+      return [e, null];
     }
   },
 
@@ -367,14 +376,13 @@ module.exports.Group = {
    */
   async read(by) {
     try {
-      if (!by || Object.keys(by).length === 0) return ["Conditions are required", null];
-      const query = `SELECT * FROM ${TablesNames.group} WHERE ${parse_condition(by)}`;
+      const query = `SELECT * FROM \`${TablesNames.group}\` WHERE ${parse_condition(by)}`;
 
       const [rows] = await db.query(query);
       return [null, rows];
     } catch (e) {
       console.error(e);
-      return [e.message, null];
+      return [e, null];
     }
   },
 
@@ -396,15 +404,15 @@ module.exports.Group = {
       values.push(id);
 
       const query = `
-      UPDATE ${TablesNames.group}
+      UPDATE \`${TablesNames.group}\`
       SET ${fields.join(", ")}
       WHERE id = ?
     `;
 
-      return [null, await db.query(query, values)[0]];
+      return [null, (await db.query(query, values))[0]];
     } catch (e) {
       console.error(e);
-      return [e.message, null];
+      return [e, null];
     }
   },
 
@@ -417,14 +425,14 @@ module.exports.Group = {
     try {
       if (!id) return ["Group ID is required", null];
       const query = `
-      DELETE FROM ${TablesNames.group}
+      DELETE FROM \`${TablesNames.group}\`
       WHERE id = ?
     `;
 
-      return [null, await db.query(query, [id])[0]];
+      return [null, (await db.query(query, [id]))[0]];
     } catch (e) {
       console.error(e);
-      return [e.message, null];
+      return [e, null];
     }
   },
 };
@@ -446,11 +454,10 @@ module.exports.Courier = {
         VALUES (${courier_columns.map(() => "?").join(", ")})
       `;
       const values = Object.values(courier);
-
-      return [null, await db.query(query, values)[0]];
+      return [null, (await db.query(query, values))[0]];
     } catch (e) {
       console.error(e);
-      return [e.message, null];
+      return [e, null];
     }
   },
 
@@ -482,10 +489,10 @@ module.exports.Courier = {
       `;
       values.push(id);
 
-      return [null, await db.query(query, values)[0]];
+      return [null, (await db.query(query, values))[0]];
     } catch (e) {
       console.error(e);
-      return [e.message, null];
+      return [e, null];
     }
   },
 
@@ -502,7 +509,7 @@ module.exports.Courier = {
       return [null, rows];
     } catch (e) {
       console.error(e);
-      return [e.message, null];
+      return [e, null];
     }
   },
 
@@ -520,10 +527,10 @@ module.exports.Courier = {
         WHERE id = ?
       `;
 
-      return [null, await db.query(query, [id])[0]];
+      return [null, (await db.query(query, [id]))[0]];
     } catch (e) {
       console.error(e);
-      return [e.message, null];
+      return [e, null];
     }
   },
 };
@@ -587,5 +594,57 @@ module.exports.Notifications = {
     const [notifications] = await db.query("SELECT * FROM notifications WHERE notified = false AND date = ?", [today]);
     if (!this.NotificationsQueue[today]) return (this.NotificationsQueue[today] = notifications);
     this.NotificationsQueue[today].push(...notifications);
+  },
+};
+
+// !   L jadiid
+
+module.exports.CourierAssignee = {
+  /**
+   *
+   * @param {CourierAssignee} courier_assignee
+   * @returns {Promise<[(import("mysql2").QueryError | string | null ),( insertResult | null)]>}
+   */
+  async insert(courier_assignee) {
+    try {
+      const columns = Object.keys(courier_assignee);
+      if (columns.length == 0) return ["Fields required", null];
+      const query = `INSERT INTO ${TablesNames.courier_assigne} (${columns.join(", ")}) VALUES (${columns.map(() => "?").join(", ")})`;
+      const values = Object.values(courier_assignee);
+      return [null, (await db.query(query, values))[0]];
+    } catch (e) {
+      console.error(e);
+      return [e, null];
+    }
+  },
+  /**
+   *
+   * @param {import("../utils").Condition} by
+   * @returns {Promise<[(import("mysql2").QueryError | string | null ),( CourierAssignee[] | null)]>}
+   */
+  async read(by) {
+    try {
+      const query = `SELECT * FROM ${TablesNames.courier_assigne} WHERE ${parse_condition(by)}`;
+      const [rows] = await db.query(query);
+      return [null, rows];
+    } catch (e) {
+      console.error(e);
+      return [e, null];
+    }
+  },
+  /**
+   *
+   * @param {number} id
+   * @returns {Promise<[(import("mysql2").QueryError | string | null ),( deleteResult | null)]>}
+   */
+  async deleteByID(id) {
+    try {
+      if (!id) return ["ID required", null];
+      const query = `DELETE FROM ${TablesNames.courier_assigne} WHERE id = ?`;
+      return [null, (await db.query(query, [id]))[0]];
+    } catch (e) {
+      console.error(e);
+      return [e, null];
+    }
   },
 };

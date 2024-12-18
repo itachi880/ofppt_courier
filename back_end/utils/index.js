@@ -107,3 +107,8 @@ module.exports.escapeChar = (string) => {
   }
   return str;
 };
+module.exports.courierStates = {
+  normal: "normal",
+  urgent: "urgent",
+  "tres urgent": "tres urgent",
+};

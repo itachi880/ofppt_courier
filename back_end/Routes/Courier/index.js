@@ -76,6 +76,7 @@ router.post("/update/assigne", async (req, res) => {
 });
 
 // Route to get an assignment by courierId
+//? momkin t7ayd o tb9a ghi get courrier by id li lfo9
 router.get("/assigne/:courierId", async (req, res) => {
   // Get the courierId from the request parameters
   const courierId = req.params.courierId;

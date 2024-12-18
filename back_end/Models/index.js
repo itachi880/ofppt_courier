@@ -1,5 +1,5 @@
 const { db } = require("../database");
-const { mailer } = require("../utils");
+const { mailer, parse_condition } = require("../utils");
 
 //tables schema types
 const TablesNames = { users: "users", departement: "departement", courier_assigne: "courier_assigne", group: "group", courier: "couriers" };
@@ -65,20 +65,6 @@ const TablesNames = { users: "users", departement: "departement", courier_assign
  * @property {number | null} grp_id
  * @property {string} date - ex: "YYYY-MM-DD"
  * @property {boolean} notified
- */
-//conditions types
-
-/**
- * @typedef {object} TableFeald
- * @property {string} value - Description of the column property.
- * @property {string} operateur - Description of the column property.
- */
-
-/**
- * @template T
- * @typedef {object} Condition<T>
- * @property {(Condition<T>|((Record<keyof T, TableFeald>) & Condition<T>))[]} and - Logical `AND` conditions
- * @property {(Condition<T>|((Record<keyof T, TableFeald>) & Condition<T>))[]} or - Logical `OR` conditions
  */
 
 //query statement result
@@ -161,7 +147,7 @@ module.exports.Users = {
   /**
    * Update user information with conditions
    * @param {Partial<User>} data
-   * @param {Condition<User>} by
+   * @param {import("../utils").Condition<User>} by
    * @returns {Promise<[(import("mysql2").QueryError | string | null ),(updateResult | null )]>}
    */
   async update(data, by) {
@@ -209,13 +195,13 @@ module.exports.Users = {
 
   /**
    * Read users from the database with optional filtering conditions
-   * @param {Condition<User>} by - Conditions for filtering users (e.g., { name: { value: 'John', operateur: '=' } })
+   * @param {import("../utils").Condition<User>} by - Conditions for filtering users (e.g., { name: { value: 'John', operateur: '=' } })
    * @returns {Promise<[(import("mysql2").QueryError | string | null ),(Array<User> | null)]>}
    */
   async read(by) {
     try {
       const query = `SELECT * FROM ${TablesNames.users} WHERE ${parse_condition(by)}`;
-
+      console.log(query);
       const [rows] = await db.query(query);
       return [null, rows];
     } catch (e) {
@@ -276,12 +262,11 @@ module.exports.Departement = {
     }
   },
   /**
-   * @param {Condition<Departement>} by
+   * @param {import("../utils").Condition<Departement>} by
    * @returns {Promise<[(import("mysql2").QueryError|string|null),(insertResult|null)]>}
    */
   async read(by) {
     try {
-      if (Object.keys(by).length == 0) return ["all feald required", null];
       const query = `SELECT * FROM ${TablesNames.departement} WHERE ${parse_condition(by)}`;
 
       const [rows] = await db.query(query);
@@ -377,7 +362,7 @@ module.exports.Group = {
 
   /**
    * Retrieve groups based on conditions
-   * @param {Condition<Group>} by
+   * @param {import("../utils").Condition<Group>} by
    * @returns {Promise<[(import("mysql2").QueryError|string|null),(Array<Group>|null)]>}
    */
   async read(by) {
@@ -506,7 +491,7 @@ module.exports.Courier = {
 
   /**
    * Read couriers from the database with optional filtering conditions
-   * @param {Condition<Courier>} by - Conditions for filtering couriers
+   * @param {import("../utils").Condition<Courier>} by - Conditions for filtering couriers
    * @returns {Promise<[(import("mysql2").QueryError | string | null ),(Array<Courier> | null)]>}
    */
   async read(by = {}) {

@@ -18,7 +18,7 @@ module.exports.jwt_signe = (data) => jwt.sign(data, process.env.HASH_SALT, { exp
 /**
  *
  * @param {string} token
- * @returns {[jwt.JsonWebTokenError | null , {id:number,role:string}]}
+ * @returns {[jwt.JsonWebTokenError | null , {id:number,role:string,dep_id:number,parent_dep_id:number} | null]}
  */
 module.exports.jwt_verify = (token) => {
   try {

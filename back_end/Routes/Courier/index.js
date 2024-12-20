@@ -37,12 +37,9 @@ router.post("/add/assigne", async (req, res) => {
     user_id: userId,
   });
 
-  if (err) {
-    console.error(err);
-    return res.status(500).end("Backend error");
-  }
+  if (err) return console.error(err) && res.status(500).end("Backend error");
 
-  return res.json({ success: true, message: "Assignment created successfully", result: response });
+  return res.end(response.insertId + "");
 });
 
 // Route to update an existing assignment
@@ -58,23 +55,22 @@ router.post("/update/assigne", async (req, res) => {
   }
 
   // Update the assignment in the database
-  const [err, response] = await CourierAssignee.updateAssignment({
+  const [err] = await CourierAssignee.updateAssignment({
     courier_id: courierId,
     department_id: depId,
     group_id: grpId,
     user_id: userId,
   });
 
-  if (err) {
-    console.error(err);
-    return res.status(500).end("Backend error");
-  }
+  if (err) return console.error(err) && res.status(500).end("Backend error");
 
-  return res.json({ success: true, message: "Assignment updated successfully", result: response });
+  return res.end("Done");
 });
 
 // Route to get an assignment by courierId
+
 //? momkin t7ayd o tb9a ghi get courrier by id li lfo9
+
 router.get("/assigne/:courierId", async (req, res) => {
   // Get the courierId from the request parameters
   const courierId = req.params.courierId;
@@ -85,15 +81,9 @@ router.get("/assigne/:courierId", async (req, res) => {
 
   // Retrieve the assignment from the database
   const [err, response] = await CourierAssignee.getAssignmentByCourierId(courierId);
+  if (err) return console.error(err) && res.status(500).end("Backend error");
 
-  if (err) {
-    console.error(err);
-    return res.status(500).end("Backend error");
-  }
-
-  if (!response || response.length === 0) {
-    return res.status(404).end("Assignment not found");
-  }
+  if (!response || response.length === 0) return res.status(404).end("Assignment not found");
 
   return res.json(response);
 });

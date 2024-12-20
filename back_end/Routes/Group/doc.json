@@ -63,6 +63,7 @@
       },
       "responses": {
         "200": "Group details",
+        "401": "Unauthorized access",
         "500": "Server error"
       }
     },

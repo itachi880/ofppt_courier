@@ -32,6 +32,7 @@
       },
       "responses": {
         "200": "Courier details",
+        "401": "Unauthorized access",
         "500": "Server error"
       }
     },

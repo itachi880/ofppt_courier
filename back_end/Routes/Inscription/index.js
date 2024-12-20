@@ -6,17 +6,16 @@ router.post("/", async (req, res) => {
   try {
     const { email, role, departement_id, group_id } = req.body;
 
-    const hashedPassword = hashPass(email);
+    if (!email || !role || !departement_id || !group_id) return res.status(400).end("all data are required");
 
-    const newUser = {
+    if (req.user.role != Roles.admin) return res.status(401).end("you don't have access");
+    const [errCreate, data] = await Users.insert({
       email,
-      password: hashedPassword,
+      password: hashPass(email),
       role,
       departement_id,
       group_id,
-    };
-    if (req.user.role != Roles.admin) return res.status(401).end("you don't have access");
-    const [errCreate, data] = await Users.insert(newUser);
+    });
     console.log(errCreate);
     if (errCreate) return res.status(500).end("server error") && console.log(errCreate);
 

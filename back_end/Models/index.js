@@ -544,13 +544,13 @@ module.exports.Notifications = {
   NotificationsQueue: {},
   tomorrow: new Date(Date.now() + 86400000),
   today: new Date(),
+
   /**
-   *
+   * Add a notification to the database
    * @param {Notification} notification
-   * @returns
+   * @returns {Promise<void>}
    */
   async AddNotif(notification) {
-    // Insert the notification into the database
     try {
       await db.query("INSERT INTO notifications (description, dep_id, grp_id, date, notified) VALUES (?, ?, ?, ?, ?)", [
         notification.description,
@@ -560,23 +560,27 @@ module.exports.Notifications = {
         false, // Default notified to false
       ]);
     } catch (e) {
-      console.error("error in notif preparation ", e);
+      console.error("Error in notification preparation", e);
     }
   },
 
+  /**
+   * Notify all users for today's notifications
+   * @returns {Promise<void>}
+   */
   async NotifyAll() {
     const today = this.today.toISOString().split("T")[0];
     const notifications = this.NotificationsQueue[today] || [];
 
     for (const notif of notifications) {
       try {
-        let query = "SELECT email from users WHERE ";
-        if (notif.dep_id && !notif.grp_id) query += ` departement_id=${notif.dep_id} AND group_id IS NULL`;
-        else if (notif.dep_id && notif.grp_id) query += ` group_id=${notif.grp_id} OR ( departement_id=${notif.dep_id} AND group_id IS NULL)`;
+        let query = "SELECT email FROM users WHERE ";
+        if (notif.dep_id && !notif.grp_id) query += `departement_id=${notif.dep_id} AND group_id IS NULL`;
+        else if (notif.dep_id && notif.grp_id) query += `group_id=${notif.grp_id} OR (departement_id=${notif.dep_id} AND group_id IS NULL)`;
 
         const [mailed_to] = await db.query(query);
         mailed_to.forEach((person) => {
-          mailer.sendEmail({ subject: "notife OFPPT_COURIER", text: notif.description, to: person.email });
+          mailer.sendEmail({ subject: "Notification OFPPT_COURIER", text: notif.description, to: person.email });
         });
 
         await db.query("DELETE FROM notifications WHERE id = ?", [notif.id]);
@@ -588,12 +592,15 @@ module.exports.Notifications = {
     delete this.NotificationsQueue[today];
   },
 
+  /**
+   * Sync notifications from the database to the queue
+   * @returns {Promise<void>}
+   */
   async Sync() {
-    // Fetch all non-notified notifications from the database
     const today = this.today.toISOString().split("T")[0];
     const [notifications] = await db.query("SELECT * FROM notifications WHERE notified = false AND date = ?", [today]);
-    if (!this.NotificationsQueue[today]) return (this.NotificationsQueue[today] = notifications);
-    this.NotificationsQueue[today].push(...notifications);
+    if (!this.NotificationsQueue[today]) this.NotificationsQueue[today] = notifications;
+    else this.NotificationsQueue[today].push(...notifications);
   },
 };
 

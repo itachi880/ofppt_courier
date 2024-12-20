@@ -9,7 +9,7 @@
       "parameters": {
         "body": {
           "name": "string",
-          "dep_parent": "number|undifined"
+          "dep_parent": "number|undefined"
         }
       },
       "responses": {
@@ -44,8 +44,10 @@
       "path": "/all",
       "description": "Get all departments",
       "authentication": true,
+      "role": "admin",
       "responses": {
         "200": "List of departments",
+        "401": "Unauthorized access",
         "500": "Server error"
       }
     },
@@ -54,6 +56,7 @@
       "path": "/:id",
       "description": "Get a single department by ID",
       "authentication": true,
+      "role": "admin",
       "parameters": {
         "path": {
           "id": "number"
@@ -61,6 +64,7 @@
       },
       "responses": {
         "200": "Department details",
+        "401": "Unauthorized access",
         "500": "Server error"
       }
     },

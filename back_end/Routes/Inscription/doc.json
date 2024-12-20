@@ -1,0 +1,24 @@
+{
+  "routes": [
+    {
+      "method": "POST",
+      "path": "/",
+      "description": "Register a new user",
+      "authentication": true,
+      "role": "admin",
+      "parameters": {
+        "body": {
+          "email": "string",
+          "role": "string",
+          "departement_id": "number",
+          "group_id": "number"
+        }
+      },
+      "responses": {
+        "200": "User registered successfully",
+        "401": "Unauthorized access",
+        "500": "Server error"
+      }
+    }
+  ]
+}

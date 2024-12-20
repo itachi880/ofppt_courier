@@ -1,0 +1,87 @@
+{
+  "routes": [
+    {
+      "method": "POST",
+      "path": "/add",
+      "description": "Add a new group",
+      "authentication": true,
+      "role": "admin",
+      "parameters": {
+        "body": {
+          "name": "string",
+          "departement_id": "number"
+        }
+      },
+      "responses": {
+        "200": "Group added successfully",
+        "401": "Unauthorized access",
+        "500": "Server error"
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/update",
+      "description": "Update an existing group",
+      "authentication": true,
+      "role": "admin",
+      "parameters": {
+        "body": {
+          "id": "number",
+          "updateBy": {
+            "name": "string",
+            "departement_id": "number"
+          }
+        }
+      },
+      "responses": {
+        "200": "Group updated successfully",
+        "401": "Unauthorized access",
+        "500": "Server error"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/all",
+      "description": "Get all groups",
+      "authentication": true,
+      "role": "admin",
+      "responses": {
+        "200": "List of groups",
+        "401": "Unauthorized access",
+        "500": "Server error"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/:id",
+      "description": "Get a single group by ID",
+      "authentication": true,
+      "parameters": {
+        "path": {
+          "id": "number"
+        }
+      },
+      "responses": {
+        "200": "Group details",
+        "500": "Server error"
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/:id",
+      "description": "Delete a group by ID",
+      "authentication": true,
+      "role": "admin",
+      "parameters": {
+        "path": {
+          "id": "number"
+        }
+      },
+      "responses": {
+        "200": "Group deleted successfully",
+        "401": "Unauthorized access",
+        "500": "Server error"
+      }
+    }
+  ]
+}

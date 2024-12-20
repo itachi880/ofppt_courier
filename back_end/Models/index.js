@@ -647,4 +647,21 @@ module.exports.CourierAssignee = {
       return [e, null];
     }
   },
+  /**
+   * Update an existing assignment
+   * @param {Partial<CourierAssignee>} assignment
+   * @returns {Promise<[(import("mysql2").QueryError | string | null ),(updateResult | null)]>}
+   */
+  async updateAssignment(assignment) {
+    try {
+      const columns = Object.keys(assignment);
+      if (columns.length == 0) return ["Fields required", null];
+      const query = `UPDATE ${TablesNames.courier_assigne} SET ${columns.map((col) => `${col} = ?`).join(", ")} WHERE courier_id = ?`;
+      const values = [...Object.values(assignment), assignment.courier_id];
+      return [null, (await db.query(query, values))[0]];
+    } catch (e) {
+      console.error(e);
+      return [e, null];
+    }
+  },
 };

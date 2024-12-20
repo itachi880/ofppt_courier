@@ -1,0 +1,85 @@
+{
+  "routes": [
+    {
+      "method": "POST",
+      "path": "/add",
+      "description": "Add a new department",
+      "authentication": true,
+      "role": "admin",
+      "parameters": {
+        "body": {
+          "name": "string",
+          "dep_parent": "number|undifined"
+        }
+      },
+      "responses": {
+        "200": "Department added successfully",
+        "401": "Unauthorized access",
+        "500": "Server error"
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/update",
+      "description": "Update an existing department",
+      "authentication": true,
+      "role": "admin",
+      "parameters": {
+        "body": {
+          "id": "number",
+          "updateBy": {
+            "name": "string|null",
+            "parent_department_id": "number|null"
+          }
+        }
+      },
+      "responses": {
+        "200": "Department updated successfully",
+        "401": "Unauthorized access",
+        "500": "Server error"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/all",
+      "description": "Get all departments",
+      "authentication": true,
+      "responses": {
+        "200": "List of departments",
+        "500": "Server error"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/:id",
+      "description": "Get a single department by ID",
+      "authentication": true,
+      "parameters": {
+        "path": {
+          "id": "number"
+        }
+      },
+      "responses": {
+        "200": "Department details",
+        "500": "Server error"
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/:id",
+      "description": "Delete a department by ID",
+      "authentication": true,
+      "role": "admin",
+      "parameters": {
+        "path": {
+          "id": "number"
+        }
+      },
+      "responses": {
+        "200": "Department deleted successfully",
+        "401": "Unauthorized access",
+        "500": "Server error"
+      }
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "routes": [
+    {
+      "method": "POST",
+      "path": "/add",
+      "description": "Add a new courier",
+      "authentication": true,
+      "role": "admin",
+      "parameters": {
+        "body": {
+          "titel": "string",
+          "deadline": "string",
+          "state": "string",
+          "description": "string"
+        }
+      },
+      "responses": {
+        "200": "Courier added successfully",
+        "401": "Unauthorized access",
+        "500": "Server error"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/:id",
+      "description": "Get a courier by ID",
+      "authentication": true,
+      "parameters": {
+        "path": {
+          "id": "number"
+        }
+      },
+      "responses": {
+        "200": "Courier details",
+        "500": "Server error"
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/add/assigne",
+      "description": "Assign a courier to a department/group",
+      "authentication": true,
+      "role": "admin",
+      "parameters": {
+        "body": {
+          "courierId": "number",
+          "depId": "number",
+          "grpId": "number",
+          "userId": "number"
+        }
+      },
+      "responses": {
+        "200": "Assignment created successfully",
+        "401": "Unauthorized access",
+        "500": "Server error"
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/update/assigne",
+      "description": "Update an existing assignment",
+      "authentication": true,
+      "role": "admin",
+      "parameters": {
+        "body": {
+          "courierId": "number",
+          "depId": "number",
+          "grpId": "number",
+          "userId": "number"
+        }
+      },
+      "responses": {
+        "200": "Assignment updated successfully",
+        "401": "Unauthorized access",
+        "500": "Server error"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/assigne/:courierId",
+      "description": "Get an assignment by courierId",
+      "authentication": true,
+      "parameters": {
+        "path": {
+          "courierId": "number"
+        }
+      },
+      "responses": {
+        "200": "Assignment details",
+        "400": "Courier ID is required",
+        "404": "Assignment not found",
+        "500": "Server error"
+      }
+    }
+  ]
+}

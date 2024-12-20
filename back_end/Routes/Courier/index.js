@@ -22,7 +22,7 @@ router.post("/add/assigne", async (req, res) => {
   // Check if the user is an admin
   if (req.user.role !== Roles.admin) return res.status(401).end("Don't have access");
 
-  const { courierId, depId, grpId, assigneeType, userId } = req.body;
+  const { courierId, depId, grpId, userId } = req.body;
 
   // Check for required fields
   if (!courierId || !depId || !assigneeType || !userId) {
@@ -34,7 +34,6 @@ router.post("/add/assigne", async (req, res) => {
     courier_id: courierId,
     department_id: depId,
     group_id: grpId,
-    assignee_type: assigneeType,
     user_id: userId,
   });
 
@@ -51,10 +50,10 @@ router.post("/update/assigne", async (req, res) => {
   // Check if the user is an admin
   if (req.user.role !== Roles.admin) return res.status(401).end("Don't have access");
 
-  const { courierId, depId, grpId, assigneeType, userId } = req.body;
+  const { courierId, depId, grpId, userId } = req.body;
 
   // Check for required fields
-  if (!courierId || !depId || !assigneeType || !userId) {
+  if (!courierId || !depId || !userId) {
     return res.status(400).end("Courier ID, Department ID, Assignee Type, and User ID are required");
   }
 
@@ -63,7 +62,6 @@ router.post("/update/assigne", async (req, res) => {
     courier_id: courierId,
     department_id: depId,
     group_id: grpId,
-    assignee_type: assigneeType,
     user_id: userId,
   });
 

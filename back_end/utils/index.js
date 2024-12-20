@@ -9,21 +9,12 @@ module.exports.mailer = new EasyMailer({
   host_service: EasyMailer.HOSTS_DEFAULT_LIST.GMAIL,
 });
 module.exports.hashPass = (pass) => {
-  console.log(
-    pass + process.env.HASH_SALT,
-    crypto
-      .createHash("sha256")
-      .update(pass + process.env.HASH_SALT)
-      .digest("hex")
-  );
   return crypto
     .createHash("sha256")
     .update(pass + process.env.HASH_SALT)
     .digest("hex");
 };
-module.exports.jwt_signe = (data) => {
-  return jwt.sign(data, process.env.HASH_SALT, { expiresIn: "1d" });
-};
+module.exports.jwt_signe = (data) => jwt.sign(data, process.env.HASH_SALT, { expiresIn: "1d" });
 /**
  *
  * @param {string} token

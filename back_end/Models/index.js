@@ -626,12 +626,13 @@ module.exports.CourierAssignee = {
   },
   /**
    *
-   * @param {import("../utils").Condition} by
+   * @param {import("../utils").Condition<CourierAssignee>} by
    * @returns {Promise<[(import("mysql2").QueryError | string | null ),( CourierAssignee[] | null)]>}
    */
   async read(by) {
     try {
       const query = `SELECT * FROM ${TablesNames.courier_assigne} WHERE ${parse_condition(by)}`;
+      console.log(query);
       const [rows] = await db.query(query);
       return [null, rows];
     } catch (e) {

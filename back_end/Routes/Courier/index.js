@@ -10,6 +10,18 @@ router.post("/add", async (req, res) => {
   return res.end(response.insertId + "");
 });
 
+router.get("/all", async (req, res) => {
+  let [err, response] = [null, null];
+  //get the couriel for the user;
+  if (req.user.role == Roles.admin) {
+    [err, response] = await CourierAssignee.read();
+  } else {
+    [err, response] = await CourierAssignee.read({ or: [{ department_id: { value: req.user.dep_id, operateur: "=" } }, { group_id: { value: req.user.group_id, operateur: "=" } }] });
+  }
+  if (err) return res.status(500).end("back end err") && console.log(err);
+  return res.json(response);
+});
+
 router.get("/:id", async (req, res) => {
   const [err, response] = await Courier.read({ and: [{ id: { value: req.params.id, operateur: "=" } }] });
   if (err) return res.status(500).end("back end err") && console.log(err);

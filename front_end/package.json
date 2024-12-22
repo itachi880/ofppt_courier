@@ -5,10 +5,12 @@
   "dependencies": {
     "axios": "^1.7.9",
     "cra-template": "1.2.0",
-    "react": "^19.0.0",
+    "date-fns": "^4.1.0",
+    "react": "^18.0.0",
+    "react-big-calendar": "^1.17.1",
     "react-calendar": "^5.1.0",
     "react-data-stores": "^1.2.2",
-    "react-dom": "^19.0.0",
+    "react-dom": "^18.0.0",
     "react-scripts": "5.0.1"
   },
   "scripts": {

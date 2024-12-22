@@ -1,16 +1,28 @@
-import { useState } from "react";
-import { LoginApi } from "../../api/index";
+import { useEffect, useState } from "react";
+import { LoginApi, tokenAuthApi } from "../../api/index";
+import { User } from "../../data";
+import { Store } from "react-data-stores";
 export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-
+  const [userData, setUserData] = User.useStore();
+  useEffect(() => {
+    if (userData.token)
+      tokenAuthApi(userData.token).then(([err, data]) => {
+        if (err) {
+          console.log("Token invalid or expired");
+          setUserData({});
+        } else {
+          console.log("User data:", data);
+          setUserData(data);
+        }
+      });
+  }, []); // Cette fonction est exécutée une seule fois après le premier rendu.
   const handleLogin = async (e) => {
     e.preventDefault(); // Empêche le rechargement de la page.
-
     const [err, data] = await LoginApi(email, password);
-
     if (err) {
       setError(err?.response?.data?.message || "An error occurred during login");
       setSuccess(null);
@@ -18,6 +30,9 @@ export function LoginForm() {
       setSuccess("Login successful!");
       setError(null);
       console.log("User data:", data); // Traitez les données de l'utilisateur ici.
+      localStorage.setItem("token", data.token);
+      setUserData(data);
+      Store.navigateTo("/");
     }
   };
 

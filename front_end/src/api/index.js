@@ -10,6 +10,15 @@ export const LoginApi = async (email, password) => {
     return [error, null];
   }
 };
+export const tokenAuthApi = async (Token = "") => {
+  if (!Token) return ["token is empty", null];
+  try {
+    const response = await axios.post(`${BASE_URL}/login/token`, {}, { headers: { Authorization: Token } });
+    return [null, response.data];
+  } catch (error) {
+    return [error, null];
+  }
+};
 export const GetEvents = async (Token = "") => {
   if (!Token) return ["token is empty", null];
   const result = [null, null];

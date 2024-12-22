@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import "./App.css";
-import MyCalendar from "./utils";
+import { Calendar } from "./utils";
 import { events, User } from "./data";
 import { LoginForm } from "./Routes/login";
 import { Store } from "react-data-stores";
@@ -12,7 +12,6 @@ function App() {
   const [userData, setUserData] = User.useStore();
   const [CalendarEvents, setCalendarEvents] = events.useStore();
   useEffect(() => {
-    console.log("Checking token", userData.token);
     if (!userData.token) return Store.navigateTo("/login");
     tokenAuthApi(userData.token).then((response) => {
       if (response[0]) return Store.navigateTo("/login");
@@ -23,7 +22,6 @@ function App() {
   }, []);
   useEffect(() => {
     if (!userData.token) return console.log("No token");
-    console.log("Getting events");
     GetEvents(userData.token).then((response) => {
       if (response[0]) return console.log("Error getting events", response[0]);
       const events = [];
@@ -39,24 +37,18 @@ function App() {
           if (event.department_id && !events[index].departements.includes(event.department_id)) events[index].departements.push(event.department_id);
         }
       });
-      console.log("Events:", response[1].data);
-      console.log("Events:", events);
+
       setCalendarEvents({ data: events });
     });
   }, [userData]);
-  useEffect(() => {
-    console.log(
-      "CalendarEvents:",
-      CalendarEvents.data.map((e) => ({ start: new Date(e.deadline.split("T")[0]), end: new Date(e.deadline.split("T")[0]), title: e.description }))
-    );
-  }, [CalendarEvents]);
+
   return (
     <Routes>
       <Route
         index
         element={
           <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-            <MyCalendar events={CalendarEvents.data.map((e) => ({ start: new Date(e.deadline.split("T")[0]), end: new Date(e.deadline.split("T")[0]), title: e.description }))} />
+            <Calendar events={CalendarEvents.data.map((e) => ({ start: new Date(e.deadline.split("T")[0]), end: new Date(e.deadline.split("T")[0]), title: e.description, style: { backgroundColor: "red" } }))} />
           </div>
         }
       />

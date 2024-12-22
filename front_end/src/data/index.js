@@ -10,7 +10,7 @@ export const events = createStore({
     { date: "2024-12-15", note: "Présentation projet à 15h" },
  */
 export const User = createStore({
-  token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzM0NzA5NDQzLCJleHAiOjE3MzQ3OTU4NDN9.4pnOXzRfmyjvP7woKVwS1Mty8giDbVqiMRPUKpLEQ4E",
+  token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzM0ODY5NzkwLCJleHAiOjE3MzQ5NTYxOTB9.hS0h-yxWlOw-d2Rr3_Gc0Rt2Zc2YsTgjNJtGxREL7Ik",
   data: {
     id: 1,
     email: "admin1@example.com",

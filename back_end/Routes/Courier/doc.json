@@ -11,11 +11,30 @@
           "titel": "string",
           "deadline": "string",
           "state": "string",
-          "description": "string"
+          "description": "string",
+          "assigne_to": [
+            {
+              "group_id": "number",
+              "department_id": "number"
+            }
+          ]
         }
       },
       "responses": {
         "200": "Courier added successfully",
+        "205": "Courier added successfully but not assigned to any group or department",
+        "401": "Unauthorized access",
+        "500": "Server error"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/all",
+      "description": "Get all couriers",
+      "authentication": true,
+      "parameters": {},
+      "responses": {
+        "200": "List of couriers",
         "401": "Unauthorized access",
         "500": "Server error"
       }
@@ -38,26 +57,6 @@
     },
     {
       "method": "POST",
-      "path": "/add/assigne",
-      "description": "Assign a courier to a department/group",
-      "authentication": true,
-      "role": "admin",
-      "parameters": {
-        "body": {
-          "courierId": "number",
-          "depId": "number",
-          "grpId": "number",
-          "userId": "number"
-        }
-      },
-      "responses": {
-        "200": "Assignment created successfully",
-        "401": "Unauthorized access",
-        "500": "Server error"
-      }
-    },
-    {
-      "method": "POST",
       "path": "/update/assigne",
       "description": "Update an existing assignment",
       "authentication": true,
@@ -72,6 +71,7 @@
       },
       "responses": {
         "200": "Assignment updated successfully",
+        "400": "Courier ID, Department ID, Assignee Type, and User ID are required",
         "401": "Unauthorized access",
         "500": "Server error"
       }

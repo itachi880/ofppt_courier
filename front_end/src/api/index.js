@@ -1,15 +1,14 @@
 import axios from "axios";
 const BASE_URL = "http://localhost:4000";
-const LoginApi = async (email, password) => {
+export const LoginApi = async (email, password) => {
   if (!email || !password) return ["email or password is empty", null];
-  axios
-    .post(`${BASE_URL}/login`, { email, password })
-    .then((res) => {
-      return [null, res.data];
-    })
-    .catch((err) => {
-      return [err, null];
-    });
+
+  try {
+    const response = await axios.post(`${BASE_URL}/login`, { email, password });
+    return [null, response.data];
+  } catch (error) {
+    return [error, null];
+  }
 };
 export const GetEvents = async (Token = "") => {
   if (!Token) return ["token is empty", null];

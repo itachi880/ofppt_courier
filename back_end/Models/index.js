@@ -626,6 +626,30 @@ module.exports.CourierAssignee = {
   },
   /**
    *
+   * @param {CourierAssignee[]} courier_assignee
+   * @returns {Promise<[(import("mysql2").QueryError | string | null ),( insertResult | null)]>}
+   */
+  async insertMany(courier_assignee) {
+    if (courier_assignee.length == 0) return ["no assinges", null];
+    try {
+      const columns = Object.keys(courier_assignee[0]);
+      if (columns.length == 0) return ["Fields required", null];
+      const query = `
+      INSERT INTO 
+      ${TablesNames.courier_assigne}
+      (${columns.join(", ")})
+      VALUES
+      ${courier_assignee.map(() => `(${columns.map(() => "?").join(", ")})`).join(", ")}`;
+
+      const values = courier_assignee.flatMap((assigne) => Object.values(assigne)); //flate map to return 1 arry of all nested arrays like if [1,[2,3]].flatMap((num)=>num) => [1,2,3]
+      return [null, (await db.query(query, values))[0]];
+    } catch (e) {
+      console.error(e);
+      return [e, null];
+    }
+  },
+  /**
+   *
    * @param {import("../utils").Condition<CourierAssignee>} by
    * @returns {Promise<[(import("mysql2").QueryError | string | null ),( CourierAssignee[] | null)]>}
    */
@@ -667,6 +691,45 @@ module.exports.CourierAssignee = {
       const query = `UPDATE ${TablesNames.courier_assigne} SET ${columns.map((col) => `${col} = ?`).join(", ")} WHERE courier_id = ?`;
       const values = [...Object.values(assignment), assignment.courier_id];
       return [null, (await db.query(query, values))[0]];
+    } catch (e) {
+      console.error(e);
+      return [e, null];
+    }
+  },
+  /**
+   * Get couriers by department ID or group ID
+   * @param {number} dep_id - Department ID
+   * @param {number} grp_id - Group ID
+   * @returns {Promise<[(import("mysql2").QueryError | string | null ),(Array<Courier> | null)]>}
+   */
+  async getCouriers(dep_id, grp_id) {
+    try {
+      let query = `SELECT ${TablesNames.courier}.id, 
+      ${TablesNames.courier}.titel, 
+      ${TablesNames.courier}.description, 
+      ${TablesNames.courier}.deadline, 
+      ${TablesNames.courier}.state,  
+      ${TablesNames.courier_assigne}.group_id,  
+      ${TablesNames.courier_assigne}.department_id,  
+      ${TablesNames.courier}.created_at, 
+      ${TablesNames.courier}.updated_at
+      FROM ${TablesNames.courier_assigne}
+      JOIN ${TablesNames.courier} ON ${TablesNames.courier_assigne}.courier_id = ${TablesNames.courier}.id
+      `;
+      const values = [];
+      if (dep_id && grp_id) {
+        query += ` WHERE ${TablesNames.courier_assigne}.department_id = ? AND ${TablesNames.courier_assigne}.group_id = ?`;
+        values.push(dep_id, grp_id);
+      } else if (dep_id) {
+        query += ` WHERE ${TablesNames.courier_assigne}.department_id = ?`;
+        values.push(dep_id);
+      } else if (grp_id) {
+        query += ` WHERE ${TablesNames.courier_assigne}.group_id = ?`;
+        values.push(grp_id);
+      }
+
+      const [rows] = await db.query(query, values);
+      return [null, rows];
     } catch (e) {
       console.error(e);
       return [e, null];

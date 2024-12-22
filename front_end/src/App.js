@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./App.css";
 import { MyCalendar } from "./utils";
@@ -19,17 +20,15 @@ function App() {
   }, []);
   return (
     <div className="App">
-      <MyCalendar />
-      {/* <LoginForm /> */}
-      {/* <BrowserRouter>
+      {/* <MyCalendar />
+      <LoginForm /> */}
+      <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<LoginForm />} />
-            <Route path="blogs" element={<MyCalendar data={data} />} />
-            <Route path="*" element={<NoPage />} />
+          <Route path="/" element={<LoginForm />}>
+            {/* <Route path="/calendrie" element={<MyCalendar />} /> */}
           </Route>
         </Routes>
-      </BrowserRouter> */}
+      </BrowserRouter>
     </div>
   );
 }

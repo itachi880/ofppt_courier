@@ -12,7 +12,27 @@ export function MyCalendar() {
   const hasEvent = (date) => {
     return CalendarEvents.data.some((e) => e.date === date.toISOString().split("T")[0]);
   };
-
+  const tileContent = ({ date, view }) => {
+    if (view === "month" && hasEvent(date)) {
+      return (
+        <div style={{ position: "relative" }}>
+          <span
+            style={{
+              position: "absolute",
+              bottom: "-4px",
+              left: "50%",
+              transform: "translateX(-50%)",
+              width: "6px",
+              height: "6px",
+              backgroundColor: "red",
+              borderRadius: "50%",
+            }}
+          ></span>
+        </div>
+      );
+    }
+    return null;
+  };
   // Génération des lignes du tableau en fonction des événements
   const RenderTableRows = () => {
     if (!selectedDate) return null; // Pas de date sélectionnée
@@ -46,18 +66,8 @@ export function MyCalendar() {
             setNotification(CalendarEvents.data.find((e) => e.date === selectedDate)?.note || "Aucun événement pour cette date");
           }}
           value={selectedDate}
-          tileContent={({ date, view }) => {
-            if (view === "month" && hasEvent(date)) {
-              return (
-                <div className="event-indicator">
-                  <span className="event-indicator-dot" style={{ color: "red" }}>
-                    •
-                  </span>
-                </div>
-              );
-            }
-            return null;
-          }} // Ajoute la personnalisation des cases
+          tileContent={tileContent} 
+   // Ajoute la personnalisation des cases
         />
         <div>
           <table className="event-table">

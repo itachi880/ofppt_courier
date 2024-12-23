@@ -9,7 +9,7 @@ export function LoginForm() {
   const [success, setSuccess] = useState(null);
   const [userData, setUserData] = User.useStore();
   useEffect(() => {
-    if (userData.token)
+    if (!userData.token) return 
       tokenAuthApi(userData.token).then(([err, data]) => {
         if (err) {
           console.log("Token invalid or expired");

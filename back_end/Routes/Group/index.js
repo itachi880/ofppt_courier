@@ -23,7 +23,6 @@ router.post("/update", async (req, res) => {
 
 // Route to get all groups
 router.get("/all", async (req, res) => {
-  if (req.user.role != Roles.admin) return res.status(401).end("don't have access");
   const [err, result] = await Group.read();
   if (err) return res.status(500).end("Server error") && console.log(err);
   res.json(result);

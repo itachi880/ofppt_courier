@@ -13,3 +13,23 @@ export const User = createStore({
   token: localStorage.getItem("token"),
   data: {},
 });
+export const departements_group_store = createStore({
+  departements: [
+    {
+      id: 1,
+      name: "departement 1",
+      groups: [
+        {
+          id: 1,
+          name: "group 1",
+        },
+      ],
+    },
+  ],
+  groups: [
+    {
+      id: 1,
+      name: "group 1",
+    },
+  ],
+});

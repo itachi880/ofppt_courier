@@ -78,6 +78,34 @@ router.get("/assigne/:courierId", async (req, res) => {
 
   return res.json(response);
 });
+router.post("/update/:courierId", async (req, res) => {
+  const courierId = req.params.courierId;
+
+  if (!courierId) {
+    return res.status(400).send("Courier ID is required");
+  }
+
+  const { title, description, deadline, critical } = req.body;
+  // Validation des données
+  if (!title || !description || !deadline) {
+    return res.status(400).send("Missing required fields: title, description, or deadline");
+  }
+
+  try {
+    // Rechercher le courrier dans la base de données
+    const courier = await Courier.updateByID(courierId, { title, description, deadline, critical });
+    if (!courier) {
+      return res.status(404).send("Courier not found");
+    }
+    res.status(200).json({
+      message: "Courier updated successfully",
+      courier,
+    });
+  } catch (error) {
+    console.error("Error updating courier:", error);
+    res.status(500).send("Server error");
+  }
+});
 
 //!
 module.exports = router;

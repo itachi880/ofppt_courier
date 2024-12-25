@@ -1,12 +1,22 @@
 import { Store } from "react-data-stores";
 import { Route, Routes } from "react-router-dom";
 import AddCourier from "./AddCourier";
+import UpdateCourrier from "./UpdateCourrier";
 
 export default function () {
   return (
     <Routes>
-      <Route index element={<button onClick={() => Store.navigateTo("/courrier/add")}>hello /</button>} />
+      <Route
+        index
+        element={
+          <>
+            <button onClick={() => Store.navigateTo("/courrier/add")}>hello /</button>
+            <button onClick={() => Store.navigateTo("/courrier/update")}>hello 2</button>
+          </>
+        }
+      />
       <Route path="add" element={<AddCourier />} />
+      <Route path="update" element={<UpdateCourrier />} />
     </Routes>
   );
 }

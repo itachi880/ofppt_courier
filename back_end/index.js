@@ -18,7 +18,7 @@ app.use(
 );
 app.use("/users", UsersRoute);
 app.use("/courier", CourierRoute);
-app.use("/Departement", DepartementRoute);
+app.use("/departement", DepartementRoute);
 app.use("/login", LoginRoute);
 app.use("/groups", GroupRoute);
 app.use("/register", inscription);

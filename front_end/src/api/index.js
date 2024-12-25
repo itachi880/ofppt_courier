@@ -36,3 +36,52 @@ export const GetEvents = async (Token = "") => {
     });
   return result;
 };
+export const getDepartements = async (token) => {
+  if (!token) return ["token is empty", null];
+  const result = [null, null];
+  await axios
+    .get(`${BASE_URL}/departement/all`, { headers: { Authorization: token } })
+    .then((res) => {
+      result[1] = res.data;
+    })
+    .catch((err) => {
+      result[0] = err;
+    });
+  return result;
+};
+export const getGroups = async (token) => {
+  if (!token) return ["token is empty", null];
+  const result = [null, null];
+  await axios
+    .get(`${BASE_URL}/groups/all`, { headers: { Authorization: token } })
+    .then((res) => {
+      result[1] = res.data;
+    })
+    .catch((err) => {
+      result[0] = err;
+    });
+  return result;
+};
+export const UpdateCourier = async (id, token, title, description, state, critical) => {
+  if (!id || !token || !title || !description || !state) {
+    return ["All parameters (id, token, title, description, state) are required", null];
+  }
+
+  const result = [null, null];
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/courier/${id}`,
+      { title, description, state, critical },
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+    result[1] = response;
+  } catch (err) {
+    result[0] = err;
+  }
+
+  return result;
+};

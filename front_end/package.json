@@ -8,7 +8,6 @@
     "date-fns": "^4.1.0",
     "react": "^18.0.0",
     "react-big-calendar": "^1.17.1",
-    "react-calendar": "^5.1.0",
     "react-data-stores": "^1.2.2",
     "react-dom": "^18.0.0",
     "react-scripts": "5.0.1"

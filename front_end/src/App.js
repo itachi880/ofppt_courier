@@ -1,11 +1,12 @@
 import { useEffect } from "react";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate, Link } from "react-router-dom";
 import "./App.css";
 import { Calendar } from "./utils";
 import { events, User } from "./data";
 import { LoginForm } from "./Routes/login";
 import { Store } from "react-data-stores";
 import { GetEvents, tokenAuthApi } from "./api";
+import Courier from "./Routes/Courier";
 
 function App() {
   Store.navigateTo = useNavigate();
@@ -49,10 +50,12 @@ function App() {
         element={
           <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
             <Calendar events={CalendarEvents.data.map((e) => ({ start: new Date(e.deadline.split("T")[0]), end: new Date(e.deadline.split("T")[0]), title: e.description, style: { backgroundColor: "red" } }))} />
+            <button onClick={() => Store.navigateTo("/courrier")}>hello</button>
           </div>
         }
       />
       <Route path="/login" element={<LoginForm />} />
+      <Route path="/courrier/*" element={<Courier />} />
     </Routes>
   );
 }

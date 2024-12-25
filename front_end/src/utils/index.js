@@ -1,8 +1,6 @@
-import "react-calendar/dist/Calendar.css";
 import { Calendar as BigCalendar, momentLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import moment from "moment";
-// import "./calender.css";
 const localizer = momentLocalizer(moment);
 
 export function Calendar({
@@ -25,7 +23,8 @@ export function Calendar({
       startAccessor="start"
       endAccessor="end"
       style={{ height: "500px" }}
-      // views={{ day: false }}
+      views={{ day: false, agenda: true, month: true, week: true }}
+      doShowMoreDrillDown={true}
     />
   );
 }

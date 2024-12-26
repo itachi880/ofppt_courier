@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { use, useEffect } from "react";
 import { Routes, Route, useNavigate, Link } from "react-router-dom";
 import "./App.css";
 import { Calendar } from "./utils";
@@ -18,48 +18,48 @@ function App() {
     tokenAuthApi(userData.token).then((response) => {
       if (response[0]) return Store.navigateTo("/login");
       setUserData(response.data);
-      GetEvents(userData.token).then((response) => {
-        if (response[0]) return console.log("Error getting events", response[0]);
-        const events = [];
-        response[1].data.forEach((event) => {
-          const index = events.findIndex((e) => e.id == event.id);
-          if (index < 0) {
-            const obj = { deadline: event.deadline, description: event.description, id: event.id };
-            if (event.department_id) obj.departements = [event.department_id];
-            if (event.group_id) obj.groups = [event.group_id];
-            events.push(obj);
-          } else {
-            if (event.group_id && !events[index].groups.includes(event.group_id)) events[index].groups.push(event.group_id);
-            if (event.department_id && !events[index].departements.includes(event.department_id)) events[index].departements.push(event.department_id);
-          }
-        });
-
-        setCalendarEvents({ data: events });
-      });
       Store.navigateTo("/");
-      getDepartements(userData.token).then(async (departements_res) => {
-        if (departements_res[0]) return console.log("Error getting departements", departements_res[0]);
-        await getGroups(userData.token).then((groups_res) => {
-          if (groups_res[0]) return console.log("Error getting groups", groups_res[0]);
-
-          setDepartementsGroup({
-            departements: departements_res[1].map((dep) => ({
-              ...dep,
-              groups: groups_res[1].filter((group) => group.departement_id == dep.id),
-            })),
-            groups: groups_res[1],
-          });
-        });
-      });
     });
   }, []);
-  useEffect(() => {
-    if (!userData.token) return console.log("No token");
-    // Get events / courriers
-  }, [userData]);
+
   useEffect(() => {
     console.log(departements_group);
   }, [departements_group]);
+  useEffect(() => {
+    if (!userData.token) return;
+    getDepartements(userData.token).then(async (departements_res) => {
+      if (departements_res[0]) return console.log("Error getting departements", departements_res[0]);
+      await getGroups(userData.token).then((groups_res) => {
+        if (groups_res[0]) return console.log("Error getting groups", groups_res[0]);
+
+        setDepartementsGroup({
+          departements: departements_res[1].map((dep) => ({
+            ...dep,
+            groups: groups_res[1].filter((group) => group.departement_id == dep.id),
+          })),
+          groups: groups_res[1],
+        });
+      });
+    });
+    GetEvents(userData.token).then((response) => {
+      if (response[0]) return console.log("Error getting events", response[0]);
+      const events = [];
+      response[1].data.forEach((event) => {
+        const index = events.findIndex((e) => e.id == event.id);
+        if (index < 0) {
+          const obj = { deadline: event.deadline, description: event.description, id: event.id };
+          if (event.department_id) obj.departements = [event.department_id];
+          if (event.group_id) obj.groups = [event.group_id];
+          events.push(obj);
+        } else {
+          if (event.group_id && !events[index].groups.includes(event.group_id)) events[index].groups.push(event.group_id);
+          if (event.department_id && !events[index].departements.includes(event.department_id)) events[index].departements.push(event.department_id);
+        }
+      });
+
+      setCalendarEvents({ data: events });
+    });
+  }, [userData.token]);
   return (
     <Routes>
       <Route

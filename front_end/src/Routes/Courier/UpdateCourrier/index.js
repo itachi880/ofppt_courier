@@ -1,7 +1,8 @@
-import { useState } from "react";
-import { UpdateCourier } from "../../../api";
+import { useEffect, useState } from "react";
+import { departements_group_store } from "../../../data";
+import {UpdateCourier} from '../../../api'
 
-export default function ({ id, token, onSuccess }) {
+export default function () {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -9,9 +10,8 @@ export default function ({ id, token, onSuccess }) {
     critical: false,
     departements: [],
     groups: [],
-    created_at: "",
   });
-
+  const [departementsGroup, setDepartementsGroup] = departements_group_store.useStore();
   const styles = {
     container: {
       maxWidth: "600px",
@@ -50,70 +50,126 @@ export default function ({ id, token, onSuccess }) {
       cursor: "pointer",
       fontSize: "16px",
     },
+    hr: {
+      border: "none",
+      borderBottom: "1px solid #ddd",
+      margin: "20px 0",
+    },
     label: {
       fontWeight: "bold",
       marginBottom: "5px",
       display: "block",
     },
   };
-  function updateCourrier() {
-    UpdateCourier(formData);
+  useEffect(() => {
+    console.log(formData);
+  }, [formData]);
+  function update(){
+    UpdateCourier(formData)
   }
   return (
     <div style={styles.container}>
       <label style={styles.label}>Object Title</label>
-      <input style={styles.input} placeholder="Object" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} />
+      <input
+        style={styles.input}
+        placeholder="Object"
+        onChange={(e) => {
+          setFormData({ ...formData, title: e.target.value });
+        }}
+      />
 
       <label style={styles.label}>Departements</label>
       <select
         style={styles.select}
-        value=""
         onChange={(e) => {
-          if (!formData.departements.includes(e.target.value) && e.target.value) {
-            setFormData({
-              ...formData,
-              departements: [...formData.departements, e.target.value],
-            });
-          }
+          if (formData.departements.includes(e.target.value)) return;
+          formData.departements.push(e.target.value);
+          setFormData({ ...formData });
         }}
       >
-        <option value="">Select Departement</option>
-        <option value="HR">HR</option>
-        <option value="Finance">Finance</option>
-        <option value="IT">IT</option>
+        <option value="" hidden>
+          Select Departement
+        </option>
+        {departementsGroup.departements.map((dep) => (
+          <option key={dep.id} value={dep.id}>
+            {dep.name}
+          </option>
+        ))}
       </select>
 
       <label style={styles.label}>Groups</label>
       <select
         style={styles.select}
-        value=""
         onChange={(e) => {
-          if (!formData.groups.includes(e.target.value) && e.target.value) {
-            setFormData({
-              ...formData,
-              groups: [...formData.groups, e.target.value],
-            });
-          }
+          if (formData.groups.includes(e.target.value)) return;
+          formData.groups.push(e.target.value);
+          setFormData({ ...formData });
         }}
       >
-        <option value="">Select Group</option>
-        <option value="id1">Group A</option>
-        <option value="id2">Group B</option>
-        <option value="id3">Group C</option>
+        <option value="" hidden>
+          Select Group
+        </option>
+        {departementsGroup.departements
+          .filter((dep) => formData.departements.includes(dep.id + ""))
+          .map((departements) =>
+            departements.groups.map((g) => (
+              <option key={g.id} value={g.id}>
+                {g.name}
+              </option>
+            ))
+          )}
         <option value="all">toutes</option>
         <option value="none">aucun</option>
       </select>
 
       <label style={styles.label}>Description</label>
-      <input style={styles.input} placeholder="Description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
+      <input
+        style={styles.input}
+        onChange={(e) => {
+          setFormData({ ...formData, description: e.target.value });
+        }}
+        value={formData.description}
+        placeholder="Description"
+      />
+
+      <label style={styles.label}>Upload Images</label>
+      <input
+        type="file"
+        style={styles.fileInput}
+        onChange={(e) => {
+          setFormData({ ...formData, images: e.target.files });
+        }}
+      />
 
       <label style={styles.label}>Deadline</label>
-      <input style={styles.input} type="date" value={formData.deadline} onChange={(e) => setFormData({ ...formData, deadline: e.target.value })} />
+      <input
+        style={styles.input}
+        type="date"
+        onChange={(e) => {
+          setFormData({ ...formData, deadline: e.target.value });
+        }}
+        value={formData.deadline}
+      />
 
-      <label style={styles.label}>Created At</label>
-      <input style={styles.input} type="date" value={formData.created_at} onChange={(e) => setFormData({ ...formData, created_at: e.target.value })} />
+      {/* <label style={styles.label}>Created At</label>
+      <input
+        style={styles.input}
+        type="date"
+        onChange={(e) => {
+          setFormData({ ...formData, created_at: e.target.value });
+        }}
+        value={formData.created_at}
+      /> */}
 
-      <input type="submit" value="Update" style={styles.submitButton} onClick={updateCourrier} />
+      <input
+        type="submit"
+        value="Update"
+        style={styles.submitButton}
+        onClick={() => {
+          update()
+          console.log(formData);
+        }}
+      />
     </div>
   );
 }

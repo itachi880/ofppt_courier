@@ -12,6 +12,8 @@ export default function () {
           <>
             <button onClick={() => Store.navigateTo("/courrier/add")}>hello /</button>
             <button onClick={() => Store.navigateTo("/courrier/update")}>hello 2</button>
+            <button onClick={()=>{}}>Delete</button>
+            
           </>
         }
       />

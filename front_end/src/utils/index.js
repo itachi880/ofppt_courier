@@ -14,6 +14,18 @@ export function Calendar({
 }) {
   return (
     <BigCalendar
+      components={{
+        agenda: {
+          event: ({ event }) => (
+            <div style={{ backgroundColor: "lightblue", padding: "10px", borderRadius: "5px" }}>
+              <strong>{event.title}</strong>
+              <p>{event.start.toLocaleString()}</p>
+            </div>
+          ),
+          time: () => null,
+        },
+      }}
+      messages={{ time: "" }}
       defaultView="month"
       eventPropGetter={(event) => {
         return { style: event.style || {} };

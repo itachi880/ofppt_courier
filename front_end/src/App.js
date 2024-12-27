@@ -47,11 +47,13 @@ function App() {
       response[1].data.forEach((event) => {
         const index = events.findIndex((e) => e.id == event.id);
         if (index < 0) {
-          const obj = { deadline: event.deadline, description: event.description, id: event.id };
-          if (event.department_id) obj.departements = [event.department_id];
-          if (event.group_id) obj.groups = [event.group_id];
+          const obj = { deadline: event.deadline, description: event.description, id: event.id, departements: [], groups: [] };
+
+          if (event.department_id) obj.departements.push(event.department_id);
+          if (event.group_id) obj.groups.push(event.group_id);
           events.push(obj);
         } else {
+          console.log(events[index]);
           if (event.group_id && !events[index].groups.includes(event.group_id)) events[index].groups.push(event.group_id);
           if (event.department_id && !events[index].departements.includes(event.department_id)) events[index].departements.push(event.department_id);
         }
@@ -67,7 +69,7 @@ function App() {
         element={
           <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
             <Calendar events={CalendarEvents.data.map((e) => ({ start: new Date(e.deadline.split("T")[0]), end: new Date(e.deadline.split("T")[0]), title: e.description, style: { backgroundColor: "red" } }))} />
-            <button onClick={() => Store.navigateTo("/courrier")}>hello</button>
+            <button onClick={() => Store.navigateTo("/courrier")}>courier</button>
           </div>
         }
       />

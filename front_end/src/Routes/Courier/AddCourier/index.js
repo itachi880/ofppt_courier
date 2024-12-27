@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { departements_group_store } from "../../../data";
+import { departements_group_store, User } from "../../../data";
+import { AddCourier } from "../../../api";
 
 export default function () {
   const [formData, setFormData] = useState({
@@ -13,6 +14,7 @@ export default function () {
     ],
     created_at: "",
   });
+  const [userData, setUserData] = User.useStore();
   const [departementsGroup, setDepartementsGroup] = departements_group_store.useStore();
   const styles = {
     container: {
@@ -192,22 +194,21 @@ export default function () {
             formData.departements[depIndex].groups = [];
           } else {
             const grp = departementsGroup.groups.find((group) => group.id == e.target.value);
-            if (
-              formData.departements[depIndex].groups?.push({
+            if (formData.departements[depIndex].groups.push) {
+              formData.departements[depIndex].groups.push({
                 id: grp.id,
                 name: grp.name,
-              })
-            )
-              return;
-            formData.departements[depIndex].groups = [
-              {
-                id: grp.id,
-                name: grp.name,
-              },
-            ];
+              });
+            } else {
+              formData.departements[depIndex].groups = [
+                {
+                  id: grp.id,
+                  name: grp.name,
+                },
+              ];
+            }
           }
           setFormData({ ...formData });
-
           console.log(formData);
         }}
       >
@@ -264,7 +265,9 @@ export default function () {
         value="Send"
         style={styles.submitButton}
         onClick={() => {
-          console.log(formData);
+          AddCourier(userData.token, formData.title, formData.description, "normal", formData.deadline, formData.critical, formData.departements).then((res) => {
+            console.log(res);
+          });
         }}
       />
     </div>

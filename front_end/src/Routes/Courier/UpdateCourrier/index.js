@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { departements_group_store } from "../../../data";
-import {UpdateCourier} from '../../../api'
+import { departements_group_store, User } from "../../../data";
+import { AddCourier } from "../../../api";
 
 export default function () {
   const [formData, setFormData] = useState({
@@ -8,9 +8,13 @@ export default function () {
     description: "",
     deadline: "",
     critical: false,
-    departements: [],
-    groups: [],
+    departements: [
+      // { id: 1, name: "departement 1", groups: [{ id: 1, name: "group 1" }] },
+      // { id: 2, name: "departement 2", groups: [{ id: 2, name: "group 2" }] },
+    ],
+    created_at: "",
   });
+  const [userData, setUserData] = User.useStore();
   const [departementsGroup, setDepartementsGroup] = departements_group_store.useStore();
   const styles = {
     container: {
@@ -64,9 +68,6 @@ export default function () {
   useEffect(() => {
     console.log(formData);
   }, [formData]);
-  function update(){
-    UpdateCourier(formData)
-  }
   return (
     <div style={styles.container}>
       <label style={styles.label}>Object Title</label>
@@ -77,23 +78,106 @@ export default function () {
           setFormData({ ...formData, title: e.target.value });
         }}
       />
-
+      <div style={{ margin: "10px 0" }}>
+        <span
+          style={{
+            padding: "5px 10px",
+            background: "rgba(255, 156, 156, 0.48)",
+            color: "red",
+            borderRadius: "5px",
+            margin: "0 5px",
+          }}
+        >
+          departements
+        </span>
+        <span
+          style={{
+            padding: "5px 10px",
+            background: "rgba(130, 255, 213, 0.48)",
+            color: "rgb(0, 255, 170)",
+            borderRadius: "5px",
+            margin: "0 5px",
+          }}
+        >
+          groups
+        </span>
+        <hr />
+        {formData.departements?.map((dep) => (
+          <div style={{ display: "flex", alignItems: "center", margin: "10px 0" }}>
+            <span
+              style={{
+                padding: "5px 10px",
+                background: "rgba(255, 156, 156, 0.48)",
+                color: "red",
+                borderRadius: "5px",
+                margin: "0 5px",
+              }}
+            >
+              {dep?.name}
+            </span>
+            {dep.groups == "all" ? (
+              <span
+                style={{
+                  padding: "5px 10px",
+                  background: "rgba(130, 255, 213, 0.48)",
+                  color: "rgb(0, 255, 170)",
+                  borderRadius: "5px",
+                  margin: "0 5px",
+                }}
+              >
+                all
+              </span>
+            ) : dep.groups == "none" ? (
+              <span
+                style={{
+                  padding: "5px 10px",
+                  background: "rgba(130, 255, 213, 0.48)",
+                  color: "rgb(0, 255, 170)",
+                  borderRadius: "5px",
+                  margin: "0 5px",
+                }}
+              >
+                none
+              </span>
+            ) : (
+              dep.groups?.map((grp) => (
+                <span
+                  style={{
+                    padding: "5px 10px",
+                    background: "rgba(130, 255, 213, 0.48)",
+                    color: "rgb(0, 255, 170)",
+                    borderRadius: "5px",
+                    margin: "0 5px",
+                  }}
+                >
+                  {grp.name}
+                </span>
+              ))
+            )}
+          </div>
+        ))}
+      </div>
       <label style={styles.label}>Departements</label>
       <select
         style={styles.select}
         onChange={(e) => {
-          if (formData.departements.includes(e.target.value)) return;
-          formData.departements.push(e.target.value);
+          console.log("selected dep", e.target.value);
+          if (formData.departements.find((dep) => dep.id == e.target.value)) return;
+
+          formData.departements.push({
+            id: e.target.value,
+            name: departementsGroup.departements.find((dep) => dep.id == e.target.value).name,
+            groups: [],
+          });
           setFormData({ ...formData });
         }}
       >
         <option value="" hidden>
           Select Departement
         </option>
+
         {departementsGroup.departements.map((dep) => (
-          <option key={dep.id} value={dep.id}>
-            {dep.name}
-          </option>
+          <option value={dep.id}>{dep.name}</option>
         ))}
       </select>
 
@@ -101,23 +185,37 @@ export default function () {
       <select
         style={styles.select}
         onChange={(e) => {
-          if (formData.groups.includes(e.target.value)) return;
-          formData.groups.push(e.target.value);
+          const depId = e.target.previousSibling.previousSibling.value;
+          const depIndex = formData.departements.findIndex((dep) => dep.id == depId);
+
+          if (e.target.value == "all") {
+            formData.departements[depIndex].groups = "all";
+          } else if (e.target.value == "none") {
+            formData.departements[depIndex].groups = [];
+          } else {
+            const grp = departementsGroup.groups.find((group) => group.id == e.target.value);
+            if (formData.departements[depIndex].groups.push) {
+              formData.departements[depIndex].groups.push({
+                id: grp.id,
+                name: grp.name,
+              });
+            } else {
+              formData.departements[depIndex].groups = [
+                {
+                  id: grp.id,
+                  name: grp.name,
+                },
+              ];
+            }
+          }
           setFormData({ ...formData });
+          console.log(formData);
         }}
       >
         <option value="" hidden>
           Select Group
         </option>
-        {departementsGroup.departements
-          .filter((dep) => formData.departements.includes(dep.id + ""))
-          .map((departements) =>
-            departements.groups.map((g) => (
-              <option key={g.id} value={g.id}>
-                {g.name}
-              </option>
-            ))
-          )}
+        {departementsGroup.departements.filter((dep) => formData.departements.find((e) => e.id == dep.id)).map((deps) => deps.groups.map((group) => <option value={group.id}>{group.name}</option>))}
         <option value="all">toutes</option>
         <option value="none">aucun</option>
       </select>
@@ -136,6 +234,7 @@ export default function () {
       <input
         type="file"
         style={styles.fileInput}
+        multiple={true}
         onChange={(e) => {
           setFormData({ ...formData, images: e.target.files });
         }}
@@ -151,7 +250,7 @@ export default function () {
         value={formData.deadline}
       />
 
-      {/* <label style={styles.label}>Created At</label>
+      <label style={styles.label}>Created At</label>
       <input
         style={styles.input}
         type="date"
@@ -159,15 +258,16 @@ export default function () {
           setFormData({ ...formData, created_at: e.target.value });
         }}
         value={formData.created_at}
-      /> */}
+      />
 
       <input
         type="submit"
-        value="Update"
+        value="Send"
         style={styles.submitButton}
         onClick={() => {
-          update()
-          console.log(formData);
+          AddCourier(userData.token, formData.title, formData.description, "normal", formData.deadline, formData.critical, formData.departements).then((res) => {
+            console.log(res);
+          });
         }}
       />
     </div>

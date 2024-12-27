@@ -10,10 +10,9 @@ export default function () {
         index
         element={
           <>
-            <button onClick={() => Store.navigateTo("/courrier/add")}>hello /</button>
-            <button onClick={() => Store.navigateTo("/courrier/update")}>hello 2</button>
-            <button onClick={()=>{}}>Delete</button>
-            
+            <button onClick={() => Store.navigateTo("/courrier/add")}>AddCourier </button>
+            <button onClick={() => Store.navigateTo("/courrier/update")}>UpdateCourier</button>
+            <button onClick={() => {}}>DeleteCourier</button>
           </>
         }
       />

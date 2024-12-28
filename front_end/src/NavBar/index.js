@@ -23,9 +23,9 @@ export default () => {
           </span>
         </div>
         <div className="options">
-          <button onClick={() => Store.navigateTo("/courrier")}>show Courrier</button>
-          <button onClick={() => Store.navigateTo("/courrier/add")}>AddCourier </button>
-          <button onClick={() => Store.navigateTo("/courrier/update")}>UpdateCourier</button>
+          <button onClick={() => Store.navigateTo("/courrier")}>show events</button>
+          <button onClick={() => Store.navigateTo("/courrier/add")}>AddCourier</button>
+          <button onClick={() => Store.navigateTo("/forume/add")}>AddForum</button>
         </div>
       </nav>
     </div>

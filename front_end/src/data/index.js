@@ -10,7 +10,7 @@ export const events = createStore({
     { date: "2024-12-15", note: "Présentation projet à 15h" },
  */
 export const User = createStore({
-  token: localStorage.getItem("token"),
+  token: localStorage.getItem("token") || undefined,
   data: {},
 });
 export const departements_group_store = createStore({

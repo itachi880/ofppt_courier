@@ -11,15 +11,15 @@ router.post("/add", fileSaver.array("files", 3), async (req, res) => {
   if (err) return res.status(500).end("back end err") && console.log(err);
   if (req.files) {
     const files = req.files.map((e, i) => {
-      const fileName = i + Date.now() + "." + e.originalname.split(".")[1];
-      fs.writeFileSync(path.join(__dirname, "..", "data", fileName), e.buffer);
+      const fileName = i + "" + Date.now() + "." + e.originalname.split(".")[1];
+      fs.writeFile(path.join(__dirname, "..", "..", "data", fileName), e.buffer);
       e.path = fileName;
       return { path: e.path, courier_id: response.insertId };
     });
     const [err1] = await Courier.insertFiles(files);
     if (err1) return res.status(500).end("back end err") && console.log(err1);
   }
-  const assigneed_to = req.body.assigneed_to;
+  const assigneed_to = JSON.parse(req.body.assigneed_to);
   if (!assigneed_to) return res.status(205).end(response.insertId + "");
   const [err2] = await CourierAssignee.insertMany(assigneed_to.map((e) => ({ courier_id: response.insertId, department_id: e.department_id, group_id: e.group_id })));
   if (err2) return res.status(500).end("back end err") && console.log(err2);
@@ -45,7 +45,6 @@ router.get("/:id", async (req, res) => {
 });
 
 //!  L jadiiiid
-// Route to assign a courier to a department/group
 
 // Route to update an existing assignment
 router.post("/update/assigne", async (req, res) => {

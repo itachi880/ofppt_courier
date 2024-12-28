@@ -15,7 +15,7 @@ export default () => {
       response[1].data.forEach((event) => {
         const index = events.findIndex((e) => e.id == event.id);
         if (index < 0) {
-          const obj = { deadline: event.deadline, description: event.description, id: event.id, departements: [], groups: [] };
+          const obj = { id: event.id, deadline: event.deadline, title: event.titel, description: event.description, id: event.id, departements: [], groups: [] };
 
           if (event.department_id) obj.departements.push(event.department_id);
           if (event.group_id) obj.groups.push(event.group_id);
@@ -33,7 +33,7 @@ export default () => {
 
   return (
     <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-      <Calendar events={CalendarEvents.data.map((e) => ({ start: new Date(e.deadline.split("T")[0]), end: new Date(e.deadline.split("T")[0]), title: e.description, backgroundColor: "red" }))} />
+      <Calendar events={CalendarEvents.data.map((e) => ({ id: e.id, start: new Date(e.deadline.split("T")[0]), end: new Date(e.deadline.split("T")[0]), title: e.title, backgroundColor: "red", description: e.description }))} />
     </div>
   );
 };

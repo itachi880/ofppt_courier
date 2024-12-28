@@ -8,7 +8,7 @@ export default function () {
     <Routes>
       <Route index element={<ShowCourier />} />
       <Route path="add" element={<AddCourier />} />
-      <Route path="update" element={<UpdateCourrier />} />
+      <Route path="update/:id" element={<UpdateCourrier />} />
     </Routes>
   );
 }

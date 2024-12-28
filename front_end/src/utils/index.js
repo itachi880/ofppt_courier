@@ -1,11 +1,13 @@
 import { Calendar as BigCalendar, momentLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import moment from "moment";
+import { Store } from "react-data-stores";
 const localizer = momentLocalizer(moment);
 
 export function Calendar({
   events = [
     {
+      id: 0,
       title: "Sample Event",
       start: new Date(2024, 11, 22, 10, 0), // Début le 22 décembre à 10h00
       end: new Date(2024, 11, 29, 12, 0), // Fin le 29 décembre à 12h00
@@ -18,13 +20,14 @@ export function Calendar({
       components={{
         agenda: {
           event: ({ event }) => (
-            <div style={{ backgroundColor: "lightblue", padding: "10px", borderRadius: "5px" }}>
-              <strong>{event.title}</strong>
-              <p>{event.start.toLocaleString()}</p>
+            <div onClick={() => Store.navigateTo(`/courrier/update/${event.id}`)}>
+              <h4 style={{ margin: "0" }}>{event.title}</h4>
+              <p style={{ margin: "0" }}>{event.description}</p>
             </div>
           ),
           time: () => null,
         },
+
         month: {
           event: ({ event }) => (
             <div style={{ backgroundColor: event.backgroundColor, borderRadius: "5px", margin: "5px 0" }}>
@@ -42,9 +45,35 @@ export function Calendar({
       events={events}
       startAccessor="start"
       endAccessor="end"
-      style={{ height: "500px" }}
+      style={{ height: "500px", aspectRatio: 1 }}
       views={{ day: false, agenda: true, month: true, week: false }}
       doShowMoreDrillDown={true}
     />
   );
 }
+export const GreenBox = ({ children }) => (
+  <span
+    style={{
+      padding: "5px 10px",
+      background: "rgba(130, 255, 213, 0.48)",
+      color: "rgb(0, 255, 170)",
+      borderRadius: "5px",
+      margin: "0 5px",
+    }}
+  >
+    {children}
+  </span>
+);
+export const RedBox = ({ children }) => (
+  <span
+    style={{
+      padding: "5px 10px",
+      background: "rgba(255, 156, 156, 0.48)",
+      color: "red",
+      borderRadius: "5px",
+      margin: "0 5px",
+    }}
+  >
+    {children}
+  </span>
+);

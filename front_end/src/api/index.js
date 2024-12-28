@@ -62,8 +62,8 @@ export const getGroups = async (token) => {
     });
   return result;
 };
-export const AddCourier = async (token, title, description, state, deadline, critical = true, departements) => {
-  if (!token || !title || !description || !deadline || !departements) {
+export const AddCourier = async (formData, departements) => {
+  if (!formData) {
     return ["All parameters (token, title, description, deadline, critical, departements) are required", null];
   }
   const result = [null, null];
@@ -75,22 +75,14 @@ export const AddCourier = async (token, title, description, state, deadline, cri
         dep_grps.push({ group_id: departements[i].groups[j].id });
       }
     }
-    const response = await axios.post(
-      `${BASE_URL}/courier/add`,
-      {
-        titel: title,
-        deadline,
-        state,
-        description,
-        assigneed_to: dep_grps,
-        critical,
+
+    formData.append("assigneed_to", JSON.stringify(dep_grps));
+    const response = await axios.post(`${BASE_URL}/courier/add`, formData, {
+      headers: {
+        Authorization: formData.get("token"),
+        "Content-Type": "multipart/form-data",
       },
-      {
-        headers: {
-          Authorization: token,
-        },
-      }
-    );
+    });
     result[1] = response;
   } catch (err) {
     result[0] = err;

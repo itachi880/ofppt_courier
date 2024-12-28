@@ -13,9 +13,9 @@ function App() {
   const [userData, setUserData] = User.useStore();
   const [departements_group, setDepartementsGroup] = departements_group_store.useStore();
   useEffect(() => {
-    if (!userData.token) return Store.navigateTo("/login");
+    if (!userData.token) return Store.navigateTo("/login" + "?redirect=" + window.location.pathname);
     tokenAuthApi(userData.token).then((response) => {
-      if (response[0]) return Store.navigateTo("/login");
+      if (response[0]) return Store.navigateTo("/login" + "?redirect=" + window.location.pathname);
       setUserData(response.data);
       Store.navigateTo("/");
     });

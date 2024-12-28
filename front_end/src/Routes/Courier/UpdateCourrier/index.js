@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { departements_group_store, User } from "../../../data";
 import { UpdateCourier } from "../../../api";
+import { useParams } from "react-router-dom";
+import { GreenBox, RedBox } from "../../../utils";
 const styles = {
   container: {
     maxWidth: "600px",
@@ -52,6 +54,7 @@ const styles = {
 };
 export default function () {
   const [formData, setFormData] = useState({
+    id: useParams().id,
     title: "",
     description: "",
     deadline: "",
@@ -80,81 +83,13 @@ export default function () {
         }}
       />
       <div style={{ margin: "10px 0" }}>
-        <span
-          style={{
-            padding: "5px 10px",
-            background: "rgba(255, 156, 156, 0.48)",
-            color: "red",
-            borderRadius: "5px",
-            margin: "0 5px",
-          }}
-        >
-          departements
-        </span>
-        <span
-          style={{
-            padding: "5px 10px",
-            background: "rgba(130, 255, 213, 0.48)",
-            color: "rgb(0, 255, 170)",
-            borderRadius: "5px",
-            margin: "0 5px",
-          }}
-        >
-          groups
-        </span>
+        <RedBox>departements</RedBox>
+        <GreenBox>groups</GreenBox>
         <hr />
         {formData.departements?.map((dep) => (
           <div style={{ display: "flex", alignItems: "center", margin: "10px 0" }}>
-            <span
-              style={{
-                padding: "5px 10px",
-                background: "rgba(255, 156, 156, 0.48)",
-                color: "red",
-                borderRadius: "5px",
-                margin: "0 5px",
-              }}
-            >
-              {dep?.name}
-            </span>
-            {dep.groups == "all" ? (
-              <span
-                style={{
-                  padding: "5px 10px",
-                  background: "rgba(130, 255, 213, 0.48)",
-                  color: "rgb(0, 255, 170)",
-                  borderRadius: "5px",
-                  margin: "0 5px",
-                }}
-              >
-                all
-              </span>
-            ) : dep.groups == "none" ? (
-              <span
-                style={{
-                  padding: "5px 10px",
-                  background: "rgba(130, 255, 213, 0.48)",
-                  color: "rgb(0, 255, 170)",
-                  borderRadius: "5px",
-                  margin: "0 5px",
-                }}
-              >
-                none
-              </span>
-            ) : (
-              dep.groups?.map((grp) => (
-                <span
-                  style={{
-                    padding: "5px 10px",
-                    background: "rgba(130, 255, 213, 0.48)",
-                    color: "rgb(0, 255, 170)",
-                    borderRadius: "5px",
-                    margin: "0 5px",
-                  }}
-                >
-                  {grp.name}
-                </span>
-              ))
-            )}
+            <RedBox>{dep?.name}</RedBox>
+            {dep.groups == "all" ? <GreenBox>all</GreenBox> : dep.groups == "none" ? <GreenBox>none</GreenBox> : dep.groups?.map((grp) => <GreenBox>{grp.name}</GreenBox>)}
           </div>
         ))}
       </div>

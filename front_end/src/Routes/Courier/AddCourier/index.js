@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { departements_group_store, User } from "../../../data";
 import { AddCourier } from "../../../api";
+import { GreenBox, RedBox } from "../../../utils";
 const styles = {
   container: {
     maxWidth: "600px",
@@ -80,81 +81,13 @@ export default function () {
         }}
       />
       <div style={{ margin: "10px 0" }}>
-        <span
-          style={{
-            padding: "5px 10px",
-            background: "rgba(255, 156, 156, 0.48)",
-            color: "red",
-            borderRadius: "5px",
-            margin: "0 5px",
-          }}
-        >
-          departements
-        </span>
-        <span
-          style={{
-            padding: "5px 10px",
-            background: "rgba(130, 255, 213, 0.48)",
-            color: "rgb(0, 255, 170)",
-            borderRadius: "5px",
-            margin: "0 5px",
-          }}
-        >
-          groups
-        </span>
+        <RedBox>departements</RedBox>
+        <GreenBox>groups</GreenBox>
         <hr />
         {formData.departements?.map((dep) => (
           <div style={{ display: "flex", alignItems: "center", margin: "10px 0" }}>
-            <span
-              style={{
-                padding: "5px 10px",
-                background: "rgba(255, 156, 156, 0.48)",
-                color: "red",
-                borderRadius: "5px",
-                margin: "0 5px",
-              }}
-            >
-              {dep?.name}
-            </span>
-            {dep.groups == "all" ? (
-              <span
-                style={{
-                  padding: "5px 10px",
-                  background: "rgba(130, 255, 213, 0.48)",
-                  color: "rgb(0, 255, 170)",
-                  borderRadius: "5px",
-                  margin: "0 5px",
-                }}
-              >
-                all
-              </span>
-            ) : dep.groups == "none" ? (
-              <span
-                style={{
-                  padding: "5px 10px",
-                  background: "rgba(130, 255, 213, 0.48)",
-                  color: "rgb(0, 255, 170)",
-                  borderRadius: "5px",
-                  margin: "0 5px",
-                }}
-              >
-                none
-              </span>
-            ) : (
-              dep.groups?.map((grp) => (
-                <span
-                  style={{
-                    padding: "5px 10px",
-                    background: "rgba(130, 255, 213, 0.48)",
-                    color: "rgb(0, 255, 170)",
-                    borderRadius: "5px",
-                    margin: "0 5px",
-                  }}
-                >
-                  {grp.name}
-                </span>
-              ))
-            )}
+            <RedBox>{dep?.name}</RedBox>
+            {dep.groups == "all" ? <GreenBox>all</GreenBox> : dep.groups == "none" ? <GreenBox>none</GreenBox> : dep.groups?.map((grp) => <GreenBox>{grp.name}</GreenBox>)}
           </div>
         ))}
       </div>
@@ -287,9 +220,27 @@ export default function () {
         value="Send"
         style={styles.submitButton}
         onClick={() => {
-          AddCourier(userData.token, formData.title, formData.description, formData.state, formData.deadline, formData.critical, formData.departements).then((res) => {
-            console.log(res);
-          });
+          const formDataToSend = new FormData();
+          formDataToSend.append("token", userData.token);
+          formDataToSend.append("titel", formData.title);
+          formDataToSend.append("description", formData.description);
+          formDataToSend.append("state", formData.state);
+          formDataToSend.append("deadline", formData.deadline);
+          formDataToSend.append("critical", formData.critical);
+          formDataToSend.append("created_at", formData.created_at);
+          if (formData.images) {
+            Array.from(formData.images).forEach((image, index) => {
+              formDataToSend.append("files", image);
+            });
+          }
+          console.log(formDataToSend);
+          AddCourier(formDataToSend, formData.departements)
+            .then((res) => {
+              console.log(res);
+            })
+            .catch((err) => {
+              console.error("Upload failed:", err);
+            });
         }}
       />
     </div>

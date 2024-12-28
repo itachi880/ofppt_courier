@@ -223,7 +223,7 @@ export default function () {
         value="update"
         style={styles.submitButton}
         onClick={() => {
-          UpdateCourier(userData.token, formData.title, formData.description, formData.state, formData.deadline, formData.critical, formData.departements).then((res) => {
+          UpdateCourier(formData.id,userData.token, formData.title, formData.description, formData.state, formData.deadline, formData.critical, formData.departements).then((res) => {
             console.log(res);
           });
         }}

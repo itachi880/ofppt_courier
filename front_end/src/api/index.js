@@ -62,7 +62,7 @@ export const getGroups = async (token) => {
     });
   return result;
 };
-export const AddCourier = async (token, title, description, state = "normal", deadline, critical = true, departements) => {
+export const AddCourier = async (token, title, description, state, deadline, critical = true, departements) => {
   if (!token || !title || !description || !deadline || !departements) {
     return ["All parameters (token, title, description, deadline, critical, departements) are required", null];
   }
@@ -98,8 +98,8 @@ export const AddCourier = async (token, title, description, state = "normal", de
   return result;
 };
 
-export const UpdateCourier = async (id, token, title, description, state, critical) => {
-  if (!id || !token || !title || !description || !state) {
+export const UpdateCourier = async (id, token, title, description, state, deadline, critical, departement) => {
+  if (!id || !token || !title || !description || !deadline || !state) {
     return ["All parameters (id, token, title, description, state) are required", null];
   }
 
@@ -107,7 +107,7 @@ export const UpdateCourier = async (id, token, title, description, state, critic
   try {
     const response = await axios.post(
       `${BASE_URL}/courier/${id}`,
-      { title, description, state, critical },
+      { title, description, state, deadline, critical, departement },
       {
         headers: {
           Authorization: token,

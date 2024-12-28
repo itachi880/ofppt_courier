@@ -533,6 +533,16 @@ module.exports.Courier = {
       return [e, null];
     }
   },
+  async insertFiles(files) {
+    try {
+      const query = `INSERT INTO courier_files (path, courier_id) VALUES ${files.map(() => "(?, ?)").join(", ")}`;
+      const values = files.flatMap((file) => [file.path, file.courier_id]);
+      return [null, (await db.query(query, values))[0]];
+    } catch (e) {
+      console.error(e);
+      return [e, null];
+    }
+  },
 };
 
 // ? sholde run as cron job each day & one time at app start up

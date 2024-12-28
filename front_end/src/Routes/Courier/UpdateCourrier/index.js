@@ -1,12 +1,61 @@
 import { useEffect, useState } from "react";
 import { departements_group_store, User } from "../../../data";
-import { AddCourier } from "../../../api";
-
+import { UpdateCourier } from "../../../api";
+const styles = {
+  container: {
+    maxWidth: "600px",
+    margin: "20px auto",
+    padding: "20px",
+    border: "1px solid #ccc",
+    borderRadius: "10px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    fontFamily: "Arial, sans-serif",
+  },
+  input: {
+    width: "100%",
+    padding: "10px",
+    margin: "10px 0",
+    borderRadius: "5px",
+    border: "1px solid #ccc",
+    fontSize: "16px",
+  },
+  select: {
+    width: "100%",
+    padding: "10px",
+    margin: "10px 0",
+    borderRadius: "5px",
+    border: "1px solid #ccc",
+    fontSize: "16px",
+  },
+  fileInput: {
+    margin: "10px 0",
+  },
+  submitButton: {
+    backgroundColor: "#007BFF",
+    color: "white",
+    padding: "10px 20px",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+    fontSize: "16px",
+  },
+  hr: {
+    border: "none",
+    borderBottom: "1px solid #ddd",
+    margin: "20px 0",
+  },
+  label: {
+    fontWeight: "bold",
+    marginBottom: "5px",
+    display: "block",
+  },
+};
 export default function () {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     deadline: "",
+    state: "",
     critical: false,
     departements: [
       // { id: 1, name: "departement 1", groups: [{ id: 1, name: "group 1" }] },
@@ -16,55 +65,7 @@ export default function () {
   });
   const [userData, setUserData] = User.useStore();
   const [departementsGroup, setDepartementsGroup] = departements_group_store.useStore();
-  const styles = {
-    container: {
-      maxWidth: "600px",
-      margin: "20px auto",
-      padding: "20px",
-      border: "1px solid #ccc",
-      borderRadius: "10px",
-      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-      fontFamily: "Arial, sans-serif",
-    },
-    input: {
-      width: "100%",
-      padding: "10px",
-      margin: "10px 0",
-      borderRadius: "5px",
-      border: "1px solid #ccc",
-      fontSize: "16px",
-    },
-    select: {
-      width: "100%",
-      padding: "10px",
-      margin: "10px 0",
-      borderRadius: "5px",
-      border: "1px solid #ccc",
-      fontSize: "16px",
-    },
-    fileInput: {
-      margin: "10px 0",
-    },
-    submitButton: {
-      backgroundColor: "#007BFF",
-      color: "white",
-      padding: "10px 20px",
-      border: "none",
-      borderRadius: "5px",
-      cursor: "pointer",
-      fontSize: "16px",
-    },
-    hr: {
-      border: "none",
-      borderBottom: "1px solid #ddd",
-      margin: "20px 0",
-    },
-    label: {
-      fontWeight: "bold",
-      marginBottom: "5px",
-      display: "block",
-    },
-  };
+
   useEffect(() => {
     console.log(formData);
   }, [formData]);
@@ -249,6 +250,28 @@ export default function () {
         }}
         value={formData.deadline}
       />
+      <label style={styles.label}>State</label>
+      <div>
+        {["normal", "urgent", "tres urgent"].map((state) => (
+          <div key={state} style={{ marginBottom: "10px" }}>
+            <input
+              type="checkbox"
+              value={state}
+              checked={formData.state === state}
+              onChange={(e) => {
+                if (e.target.checked) {
+                  setFormData({ ...formData, state: e.target.value });
+                } else {
+                  setFormData({ ...formData, state: "" }); // Décocher réinitialise à vide
+                }
+              }}
+            />
+            <label htmlFor={state} style={{ marginLeft: "10px" }}>
+              {state.charAt(0).toUpperCase() + state.slice(1)} {/* Capitalisation */}
+            </label>
+          </div>
+        ))}
+      </div>
 
       <label style={styles.label}>Created At</label>
       <input
@@ -262,10 +285,10 @@ export default function () {
 
       <input
         type="submit"
-        value="Send"
+        value="update"
         style={styles.submitButton}
         onClick={() => {
-          AddCourier(userData.token, formData.title, formData.description, "normal", formData.deadline, formData.critical, formData.departements).then((res) => {
+          UpdateCourier(userData.token, formData.title, formData.description, formData.state, formData.deadline, formData.critical, formData.departements).then((res) => {
             console.log(res);
           });
         }}

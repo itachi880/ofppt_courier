@@ -9,6 +9,7 @@ export function Calendar({
       title: "Sample Event",
       start: new Date(2024, 11, 22, 10, 0), // Début le 22 décembre à 10h00
       end: new Date(2024, 11, 29, 12, 0), // Fin le 29 décembre à 12h00
+      backgroundColor: "lightgreen",
     },
   ],
 }) {
@@ -24,6 +25,13 @@ export function Calendar({
           ),
           time: () => null,
         },
+        month: {
+          event: ({ event }) => (
+            <div style={{ backgroundColor: event.backgroundColor, borderRadius: "5px", margin: "5px 0" }}>
+              <strong>{event.title}</strong>
+            </div>
+          ),
+        },
       }}
       messages={{ time: "" }}
       defaultView="month"
@@ -35,7 +43,7 @@ export function Calendar({
       startAccessor="start"
       endAccessor="end"
       style={{ height: "500px" }}
-      views={{ day: false, agenda: true, month: true, week: true }}
+      views={{ day: false, agenda: true, month: true, week: false }}
       doShowMoreDrillDown={true}
     />
   );

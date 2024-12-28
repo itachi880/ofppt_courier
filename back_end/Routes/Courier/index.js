@@ -1,12 +1,24 @@
+const path = require("path");
 const { Courier, CourierAssignee } = require("../../Models");
-const { auth_middleware, Roles } = require("../../utils");
+const { auth_middleware, Roles, fileSaver } = require("../../utils");
 const router = require("express").Router();
+const fs = require("fs");
 router.use(auth_middleware);
 
-router.post("/add", async (req, res) => {
+router.post("/add", fileSaver.array("files", 3), async (req, res) => {
   if (req.user.role != Roles.admin) return res.status(401).end("don't have access");
   const [err, response] = await Courier.insert({ titel: req.body.titel, deadline: req.body.deadline, state: req.body.state, description: req.body.description, create_by: req.user.id });
   if (err) return res.status(500).end("back end err") && console.log(err);
+  if (req.files) {
+    const files = req.files.map((e, i) => {
+      const fileName = i + Date.now() + "." + e.originalname.split(".")[1];
+      fs.writeFileSync(path.join(__dirname, "..", "data", fileName), e.buffer);
+      e.path = fileName;
+      return { path: e.path, courier_id: response.insertId };
+    });
+    const [err1] = await Courier.insertFiles(files);
+    if (err1) return res.status(500).end("back end err") && console.log(err1);
+  }
   const assigneed_to = req.body.assigneed_to;
   if (!assigneed_to) return res.status(205).end(response.insertId + "");
   const [err2] = await CourierAssignee.insertMany(assigneed_to.map((e) => ({ courier_id: response.insertId, department_id: e.department_id, group_id: e.group_id })));

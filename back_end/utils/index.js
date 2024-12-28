@@ -2,6 +2,8 @@ const EasyMailer = require("esay_mailer");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const path = require("path");
+const multer = require("multer");
+module.exports.fileSaver = multer({ storage: multer.memoryStorage() });
 require("dotenv").config(path.join(__dirname, "..", ".env"));
 module.exports.mailer = new EasyMailer({
   user: process.env.MAILER_EMAIL, // Votre email ou nom d'utilisateur SMTP

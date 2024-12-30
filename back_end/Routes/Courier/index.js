@@ -28,7 +28,6 @@ router.post("/add", fileSaver.array("files", 3), async (req, res) => {
 
 router.get("/all", async (req, res) => {
   let [err, response] = [null, null];
-  //get the couriel for the user;
   if (req.user.role == Roles.admin) {
     [err, response] = await CourierAssignee.getCouriers();
   } else {

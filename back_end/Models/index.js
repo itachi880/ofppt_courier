@@ -2,7 +2,7 @@ const { db } = require("../database");
 const { mailer, parse_condition } = require("../utils");
 
 //!tables schema types
-const TablesNames = { users: "users", departement: "departement", courier_assigne: "courier_assigne", group: "group", courier: "couriers" };
+const TablesNames = { users: "users", departement: "departement", courier_assigne: "courier_assigne", group: "group", courier: "couriers", courier_files: "courier_files" };
 
 /**
  * @typedef {object} User user table schema
@@ -503,9 +503,23 @@ module.exports.Courier = {
    */
   async read(by = {}) {
     try {
-      const query = `SELECT * FROM ${TablesNames.courier} WHERE ${parse_condition(by)}`;
+      const query = `SELECT ${TablesNames.courier}.id ,
+      description,
+      deadline,
+      state,
+      create_by,
+      created_at,
+      updated_at,
+      ${TablesNames.courier_files}.id as img_id,
+      path FROM ${TablesNames.courier} JOIN ${TablesNames.courier_files} on ${TablesNames.courier}.id=${TablesNames.courier_files}.courier_id WHERE 1;`;
 
-      const [rows] = await db.query(query);
+      const rows = [];
+      await db.query(query)[0].forEach((courier) => {
+        const index = rows.findIndex((row) => row.id == courier.id);
+        if (index >= 0) return rows[index].path.push(courier.path);
+        courier.path = [courier.path];
+        rows.push(courier);
+      });
       return [null, rows];
     } catch (e) {
       console.error(e);

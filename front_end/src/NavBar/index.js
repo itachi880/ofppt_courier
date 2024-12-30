@@ -1,9 +1,13 @@
 import { Store } from "react-data-stores";
 import "./index.css";
 import { User } from "../data";
+import { useEffect } from "react";
 
 export default () => {
   const [userData, setUserData] = User.useStore();
+  useEffect(() => {
+    console.log(userData);
+  }, [userData]);
   if (!userData.token) return null;
   return (
     <div className="navbar-holder">

@@ -13,7 +13,7 @@ export function LoginForm() {
     tokenAuthApi(userData.token).then(([err, data]) => {
       if (err) {
         console.log("Token invalid or expired");
-        setUserData({});
+        setUserData({}, true);
       } else {
         console.log("User data:", data);
         setUserData(data);

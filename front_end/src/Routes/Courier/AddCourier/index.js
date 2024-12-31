@@ -79,6 +79,7 @@ export default function () {
         onChange={(e) => {
           setFormData({ ...formData, title: e.target.value });
         }}
+        value={formData.title}
       />
       <div style={{ margin: "10px 0" }}>
         <RedBox>departements</RedBox>
@@ -229,7 +230,7 @@ export default function () {
           formDataToSend.append("critical", formData.critical);
           formDataToSend.append("created_at", formData.created_at);
           if (formData.images) {
-            Array.from(formData.images).forEach((image, index) => {
+            Array.from(formData.images).forEach((image) => {
               formDataToSend.append("files", image);
             });
           }

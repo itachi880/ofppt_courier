@@ -1,8 +1,9 @@
-import { use, useEffect, useState } from "react";
-import { departements_group_store, User } from "../../../data";
+import { useEffect, useState } from "react";
+import { departements_group_store, events, User } from "../../../data";
 import { UpdateCourier } from "../../../api";
 import { useParams } from "react-router-dom";
 import { GreenBox, RedBox } from "../../../utils";
+import { Store } from "react-data-stores";
 const styles = {
   container: {
     maxWidth: "600px",
@@ -53,6 +54,8 @@ const styles = {
   },
 };
 export default function () {
+  const [eventsStore, setEventsStore] = events.useStore();
+
   const [formData, setFormData] = useState({
     id: useParams().id,
     title: "",
@@ -66,12 +69,31 @@ export default function () {
     ],
     created_at: "",
   });
+
   const [userData, setUserData] = User.useStore();
   const [departementsGroup, setDepartementsGroup] = departements_group_store.useStore();
-
   useEffect(() => {
     console.log(formData);
   }, [formData]);
+  useEffect(() => {
+    console.log(eventsStore.data);
+    const event = eventsStore.data.find((event) => event.id == formData.id);
+    console.log(event);
+    if (!event) return Store.navigateTo("/");
+    console.log(event);
+    setFormData({
+      title: event.title,
+      description: event.description,
+      deadline: event.deadline,
+      state: event.state,
+      critical: event.critical,
+      created_at: event.created_at,
+      departements: departementsGroup.departements.filter((dep) => {
+        if (event.departements.includes(dep.id)) return true;
+        return false;
+      }),
+    });
+  }, []);
   return (
     <div style={styles.container}>
       <label style={styles.label}>Object Title</label>
@@ -81,6 +103,7 @@ export default function () {
         onChange={(e) => {
           setFormData({ ...formData, title: e.target.value });
         }}
+        value={formData.title}
       />
       <div style={{ margin: "10px 0" }}>
         <RedBox>departements</RedBox>
@@ -223,7 +246,7 @@ export default function () {
         value="update"
         style={styles.submitButton}
         onClick={() => {
-          UpdateCourier(userData.token, formData.title, formData.description, formData.state, formData.deadline, formData.critical, formData.departements).then((res) => {
+          UpdateCourier(formData.id, userData.token, formData.title, formData.description, formData.state, formData.deadline, formData.critical, formData.departements).then((res) => {
             console.log(res);
           });
         }}

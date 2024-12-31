@@ -9,7 +9,7 @@ router.post("/add", fileSaver.array("files", 3), async (req, res) => {
   if (req.user.role != Roles.admin) return res.status(401).end("don't have access");
   const [err, response] = await Courier.insert({ titel: req.body.titel, deadline: req.body.deadline, state: req.body.state, description: req.body.description, create_by: req.user.id });
   if (err) return res.status(500).end("back end err") && console.log(err);
-  if (req.files) {
+  if (req.files.length > 0) {
     const files = req.files.map((e, i) => {
       const fileName = i + "" + Date.now() + "." + e.originalname.split(".")[1];
       fs.writeFile(path.join(__dirname, "..", "..", "data", fileName), e.buffer);

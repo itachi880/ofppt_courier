@@ -71,7 +71,8 @@ export default function () {
   });
 
   const [userData, setUserData] = User.useStore();
-  const [departementsGroup, setDepartementsGroup] = departements_group_store.useStore();
+  const [departementsGroup, setDepartementsGroup] =
+    departements_group_store.useStore();
   useEffect(() => {
     console.log(formData);
   }, [formData]);
@@ -88,10 +89,12 @@ export default function () {
       state: event.state,
       critical: event.critical,
       created_at: event.created_at,
-      departements: departementsGroup.departements.filter((dep) => {
-        if (event.departements.includes(dep.id)) return true;
-        return false;
-      }),
+      departements: departementsGroup.departements
+        .filter((dep) => {
+          if (event.departements.includes(dep.id)) return true;
+          return false;
+        })
+        .map((dep) => {}),
     });
   }, []);
   return (
@@ -110,9 +113,17 @@ export default function () {
         <GreenBox>groups</GreenBox>
         <hr />
         {formData.departements?.map((dep) => (
-          <div style={{ display: "flex", alignItems: "center", margin: "10px 0" }}>
+          <div
+            style={{ display: "flex", alignItems: "center", margin: "10px 0" }}
+          >
             <RedBox>{dep?.name}</RedBox>
-            {dep.groups == "all" ? <GreenBox>all</GreenBox> : dep.groups == "none" ? <GreenBox>none</GreenBox> : dep.groups?.map((grp) => <GreenBox>{grp.name}</GreenBox>)}
+            {dep.groups == "all" ? (
+              <GreenBox>all</GreenBox>
+            ) : dep.groups == "none" ? (
+              <GreenBox>none</GreenBox>
+            ) : (
+              dep.groups?.map((grp) => <GreenBox>{grp.name}</GreenBox>)
+            )}
           </div>
         ))}
       </div>
@@ -121,11 +132,14 @@ export default function () {
         style={styles.select}
         onChange={(e) => {
           console.log("selected dep", e.target.value);
-          if (formData.departements.find((dep) => dep.id == e.target.value)) return;
+          if (formData.departements.find((dep) => dep.id == e.target.value))
+            return;
 
           formData.departements.push({
             id: e.target.value,
-            name: departementsGroup.departements.find((dep) => dep.id == e.target.value).name,
+            name: departementsGroup.departements.find(
+              (dep) => dep.id == e.target.value
+            ).name,
             groups: [],
           });
           setFormData({ ...formData });
@@ -145,14 +159,18 @@ export default function () {
         style={styles.select}
         onChange={(e) => {
           const depId = e.target.previousSibling.previousSibling.value;
-          const depIndex = formData.departements.findIndex((dep) => dep.id == depId);
+          const depIndex = formData.departements.findIndex(
+            (dep) => dep.id == depId
+          );
 
           if (e.target.value == "all") {
             formData.departements[depIndex].groups = "all";
           } else if (e.target.value == "none") {
             formData.departements[depIndex].groups = [];
           } else {
-            const grp = departementsGroup.groups.find((group) => group.id == e.target.value);
+            const grp = departementsGroup.groups.find(
+              (group) => group.id == e.target.value
+            );
             if (formData.departements[depIndex].groups.push) {
               formData.departements[depIndex].groups.push({
                 id: grp.id,
@@ -174,7 +192,13 @@ export default function () {
         <option value="" hidden>
           Select Group
         </option>
-        {departementsGroup.departements.filter((dep) => formData.departements.find((e) => e.id == dep.id)).map((deps) => deps.groups.map((group) => <option value={group.id}>{group.name}</option>))}
+        {departementsGroup.departements
+          .filter((dep) => formData.departements.find((e) => e.id == dep.id))
+          .map((deps) =>
+            deps.groups.map((group) => (
+              <option value={group.id}>{group.name}</option>
+            ))
+          )}
         <option value="all">toutes</option>
         <option value="none">aucun</option>
       </select>
@@ -225,7 +249,8 @@ export default function () {
               }}
             />
             <label htmlFor={state} style={{ marginLeft: "10px" }}>
-              {state.charAt(0).toUpperCase() + state.slice(1)} {/* Capitalisation */}
+              {state.charAt(0).toUpperCase() + state.slice(1)}{" "}
+              {/* Capitalisation */}
             </label>
           </div>
         ))}
@@ -246,7 +271,16 @@ export default function () {
         value="update"
         style={styles.submitButton}
         onClick={() => {
-          UpdateCourier(formData.id, userData.token, formData.title, formData.description, formData.state, formData.deadline, formData.critical, formData.departements).then((res) => {
+          UpdateCourier(
+            formData.id,
+            userData.token,
+            formData.title,
+            formData.description,
+            formData.state,
+            formData.deadline,
+            formData.critical,
+            formData.departements
+          ).then((res) => {
             console.log(res);
           });
         }}

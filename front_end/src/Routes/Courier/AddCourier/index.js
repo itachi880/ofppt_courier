@@ -65,7 +65,8 @@ export default function () {
     created_at: "",
   });
   const [userData, setUserData] = User.useStore();
-  const [departementsGroup, setDepartementsGroup] = departements_group_store.useStore();
+  const [departementsGroup, setDepartementsGroup] =
+    departements_group_store.useStore();
 
   useEffect(() => {
     console.log(formData);
@@ -86,9 +87,17 @@ export default function () {
         <GreenBox>groups</GreenBox>
         <hr />
         {formData.departements?.map((dep) => (
-          <div style={{ display: "flex", alignItems: "center", margin: "10px 0" }}>
+          <div
+            style={{ display: "flex", alignItems: "center", margin: "10px 0" }}
+          >
             <RedBox>{dep?.name}</RedBox>
-            {dep.groups == "all" ? <GreenBox>all</GreenBox> : dep.groups == "none" ? <GreenBox>none</GreenBox> : dep.groups?.map((grp) => <GreenBox>{grp.name}</GreenBox>)}
+            {dep.groups == "all" ? (
+              <GreenBox>all</GreenBox>
+            ) : dep.groups == "none" ? (
+              <GreenBox>none</GreenBox>
+            ) : (
+              dep.groups?.map((grp) => <GreenBox>{grp.name}</GreenBox>)
+            )}
           </div>
         ))}
       </div>
@@ -96,14 +105,18 @@ export default function () {
       <select
         style={styles.select}
         onChange={(e) => {
-          if (formData.departements.find((dep) => dep.id == e.target.value)) return;
+          if (formData.departements.find((dep) => dep.id == e.target.value))
+            return;
 
           formData.departements.push({
             id: e.target.value,
-            name: departementsGroup.departements.find((dep) => dep.id == e.target.value).name,
+            name: departementsGroup.departements.find(
+              (dep) => dep.id == e.target.value
+            ).name,
             groups: [],
           });
           setFormData({ ...formData });
+          e.target.nextSibling.nextSibling.value = "";
         }}
       >
         <option value="" hidden>
@@ -119,28 +132,34 @@ export default function () {
       <select
         style={styles.select}
         onChange={(e) => {
-          const depId = e.target.previousSibling.previousSibling.value;
-          const depIndex = formData.departements.findIndex((dep) => dep.id == depId);
-
+          const grpId = e.target.value;
+          const dep =
+            departementsGroup.departements.find((dep) =>
+              dep.groups.find((grp) => grp.id == grpId)
+            ) ??
+            departementsGroup.departements.find(
+              (dep) => dep.id == e.target.previousSibling.previousSibling.value
+            );
+          const depIndex = formData.departements.findIndex(
+            (e) => e.id == dep.id
+          );
+          if (depIndex == -1) return;
           if (e.target.value == "all") {
             formData.departements[depIndex].groups = "all";
           } else if (e.target.value == "none") {
             formData.departements[depIndex].groups = [];
           } else {
-            const grp = departementsGroup.groups.find((group) => group.id == e.target.value);
-            if (formData.departements[depIndex].groups.push) {
-              formData.departements[depIndex].groups.push({
-                id: grp.id,
-                name: grp.name,
-              });
-            } else {
-              formData.departements[depIndex].groups = [
-                {
-                  id: grp.id,
-                  name: grp.name,
-                },
-              ];
-            }
+            if (!formData.departements[depIndex].groups.push)
+              formData.departements[depIndex].groups = [];
+            if (
+              formData.departements[depIndex].groups.find(
+                (grp) => grp.id == grpId
+              )
+            )
+              return;
+            formData.departements[depIndex].groups.push(
+              dep.groups.find((grp) => grp.id == grpId)
+            );
           }
           setFormData({ ...formData });
           console.log(formData);
@@ -149,7 +168,13 @@ export default function () {
         <option value="" hidden>
           Select Group
         </option>
-        {departementsGroup.departements.filter((dep) => formData.departements.find((e) => e.id == dep.id)).map((deps) => deps.groups.map((group) => <option value={group.id}>{group.name}</option>))}
+        {departementsGroup.departements
+          .filter((dep) => formData.departements.find((e) => e.id == dep.id))
+          .map((deps) =>
+            deps.groups.map((group) => (
+              <option value={group.id}>{group.name}</option>
+            ))
+          )}
         <option value="all">toutes</option>
         <option value="none">aucun</option>
       </select>
@@ -200,7 +225,8 @@ export default function () {
               }}
             />
             <label htmlFor={state} style={{ marginLeft: "10px" }}>
-              {state.charAt(0).toUpperCase() + state.slice(1)} {/* Capitalisation */}
+              {state.charAt(0).toUpperCase() + state.slice(1)}{" "}
+              {/* Capitalisation */}
             </label>
           </div>
         ))}

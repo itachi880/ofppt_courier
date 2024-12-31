@@ -70,7 +70,7 @@
   background-color: #1e293b; /* Bleu foncé moderne */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   position: fixed;
-  top: 5px;
+  top: 0px;
 }
 
 /* Navigation principale */
@@ -79,8 +79,6 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
 }
 
 /* Profil utilisateur */

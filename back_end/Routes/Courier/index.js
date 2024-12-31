@@ -6,23 +6,61 @@ const fs = require("fs");
 router.use(auth_middleware);
 
 router.post("/add", fileSaver.array("files", 3), async (req, res) => {
-  if (req.user.role != Roles.admin) return res.status(401).end("don't have access");
-  const [err, response] = await Courier.insert({ titel: req.body.titel, deadline: req.body.deadline, state: req.body.state, description: req.body.description, create_by: req.user.id });
-  if (err) return res.status(500).end("back end err") && console.log(err);
+  if (req.user.role != Roles.admin) return res.status(401).end("Don't have access");
+
+  const [err, response] = await Courier.insert({
+    titel: req.body.titel,
+    deadline: req.body.deadline,
+    state: req.body.state,
+    description: req.body.description,
+    create_by: req.user.id,
+  });
+
+  if (err) {
+    console.error(err);
+    return res.status(500).end("Backend error");
+  }
+
   if (req.files.length > 0) {
     const files = req.files.map((e, i) => {
-      const fileName = i + "" + Date.now() + "." + e.originalname.split(".")[1];
-      fs.writeFile(path.join(__dirname, "..", "..", "data", fileName), e.buffer);
+      const fileName = `${i}_${Date.now()}.${e.originalname.split(".")[1]}`;
+      fs.writeFile(path.join(__dirname, "..", "..", "data", fileName), e.buffer, (writeErr) => {
+        if (writeErr) console.error(writeErr);
+      });
       e.path = fileName;
       return { path: e.path, courier_id: response.insertId };
     });
+
     const [err1] = await Courier.insertFiles(files);
-    if (err1) return res.status(500).end("back end err") && console.log(err1);
+    if (err1) {
+      console.error(err1);
+      return res.status(500).end("Backend error");
+    }
   }
-  const assigneed_to = JSON.parse(req.body.assigneed_to);
+
+  let assigneed_to;
+  try {
+    assigneed_to = JSON.parse(req.body.assigneed_to);
+  } catch (parseErr) {
+    console.error(parseErr);
+    return res.status(400).end("Invalid assigneed_to format");
+  }
+
   if (!assigneed_to) return res.status(205).end(response.insertId + "");
-  const [err2] = await CourierAssignee.insertMany(assigneed_to.map((e) => ({ courier_id: response.insertId, department_id: e.department_id, group_id: e.group_id })));
-  if (err2) return res.status(500).end("back end err") && console.log(err2);
+
+  const [err2] = await CourierAssignee.insertMany(
+    assigneed_to.map((e) => ({
+      courier_id: response.insertId,
+      department_id: e.department_id,
+      group_id: e.group_id,
+    }))
+  );
+
+  if (err2) {
+    console.error(err2);
+    return res.status(500).end("Backend error");
+  }
+
   return res.end(response.insertId + "");
 });
 

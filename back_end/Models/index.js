@@ -2,7 +2,14 @@ const { db } = require("../database");
 const { mailer, parse_condition } = require("../utils");
 
 //!tables schema types
-const TablesNames = { users: "users", departement: "departement", courier_assigne: "courier_assigne", group: "group", courier: "couriers", courier_files: "courier_files" };
+const TablesNames = {
+  users: "users",
+  departement: "departement",
+  courier_assigne: "courier_assigne",
+  group: "group",
+  courier: "couriers",
+  courier_files: "courier_files",
+};
 
 /**
  * @typedef {object} User user table schema
@@ -32,6 +39,14 @@ const TablesNames = { users: "users", departement: "departement", courier_assign
  * @property {number} departement_id
  * @property {string} created_at
  * @property {string} updated_at
+ */
+/**
+ * @typedef {object} DepartementGroup - left join with groups
+ * @property {number} departement_id
+ * @property {number} departement_parent_id
+ * @property {string} departement_name
+ * @property {(number | null)} group_id
+ * @property {(string | null)} group_name
  */
 
 /**
@@ -209,7 +224,9 @@ module.exports.Users = {
    */
   async read(by) {
     try {
-      const query = `SELECT * FROM ${TablesNames.users} WHERE ${parse_condition(by)}`;
+      const query = `SELECT * FROM ${TablesNames.users} WHERE ${parse_condition(
+        by
+      )}`;
       console.log(query);
       const [rows] = await db.query(query);
       return [null, rows];
@@ -238,7 +255,9 @@ module.exports.Users = {
         values.push(value);
         return `${key} = ?`;
       });
-      const query = `SELECT * FROM ${TablesNames.users} WHERE ${conditions.join(" AND ")}`;
+      const query = `SELECT * FROM ${TablesNames.users} WHERE ${conditions.join(
+        " AND "
+      )}`;
 
       const [rows] = await db.query(query, values);
       return [null, rows]; // Return users matching the criteria
@@ -271,12 +290,23 @@ module.exports.Departement = {
     }
   },
   /**
-   * @param {import("../utils").Condition<Departement>} by
+   * @param {import("../utils").Condition<DepartementGroup>} by
    * @returns {Promise<[(import("mysql2").QueryError|string|null),(insertResult|null)]>}
    */
   async read(by) {
     try {
-      const query = `SELECT * FROM ${TablesNames.departement} WHERE ${parse_condition(by)}`;
+      const query = `
+      SELECT ${TablesNames.departement}.id AS department_id,
+       ${TablesNames.departement}.name AS department_name,
+       ${TablesNames.departement}.name AS department_parent_id,
+       \`${TablesNames.group}\`.id AS   ${TablesNames.group}_id,
+       \`${TablesNames.group}\`.name AS   ${TablesNames.group}_name 
+        FROM ${TablesNames.departement} LEFT JOIN \`${TablesNames.group}\` 
+        ON ${TablesNames.departement}.id = \`${TablesNames.group}\`.${
+        TablesNames.departement
+      }_id;
+        WHERE ${parse_condition(by)} 
+      `;
 
       const [rows] = await db.query(query);
       return [null, rows];
@@ -376,7 +406,9 @@ module.exports.Group = {
    */
   async read(by) {
     try {
-      const query = `SELECT * FROM \`${TablesNames.group}\` WHERE ${parse_condition(by)}`;
+      const query = `SELECT * FROM \`${
+        TablesNames.group
+      }\` WHERE ${parse_condition(by)}`;
 
       const [rows] = await db.query(query);
       return [null, rows];
@@ -394,7 +426,8 @@ module.exports.Group = {
    */
   async update(id, updates) {
     try {
-      if (!id || Object.keys(updates).length === 0) return ["ID and update fields are required", null];
+      if (!id || Object.keys(updates).length === 0)
+        return ["ID and update fields are required", null];
       const fields = [];
       const values = [];
       for (const [key, value] of Object.entries(updates)) {
@@ -549,7 +582,9 @@ module.exports.Courier = {
   },
   async insertFiles(files) {
     try {
-      const query = `INSERT INTO courier_files (path, courier_id) VALUES ${files.map(() => "(?, ?)").join(", ")}`;
+      const query = `INSERT INTO courier_files (path, courier_id) VALUES ${files
+        .map(() => "(?, ?)")
+        .join(", ")}`;
       const values = files.flatMap((file) => [file.path, file.courier_id]);
       return [null, (await db.query(query, values))[0]];
     } catch (e) {
@@ -576,13 +611,16 @@ module.exports.Notifications = {
    */
   async AddNotif(notification) {
     try {
-      await db.query("INSERT INTO notifications (description, dep_id, grp_id, date, notified) VALUES (?, ?, ?, ?, ?)", [
-        notification.description,
-        notification.dep_id,
-        notification.grp_id,
-        notification.date,
-        false, // Default notified to false
-      ]);
+      await db.query(
+        "INSERT INTO notifications (description, dep_id, grp_id, date, notified) VALUES (?, ?, ?, ?, ?)",
+        [
+          notification.description,
+          notification.dep_id,
+          notification.grp_id,
+          notification.date,
+          false, // Default notified to false
+        ]
+      );
     } catch (e) {
       console.error("Error in notification preparation", e);
     }
@@ -599,12 +637,18 @@ module.exports.Notifications = {
     for (const notif of notifications) {
       try {
         let query = "SELECT email FROM users WHERE ";
-        if (notif.dep_id && !notif.grp_id) query += `departement_id=${notif.dep_id} AND group_id IS NULL`;
-        else if (notif.dep_id && notif.grp_id) query += `group_id=${notif.grp_id} OR (departement_id=${notif.dep_id} AND group_id IS NULL)`;
+        if (notif.dep_id && !notif.grp_id)
+          query += `departement_id=${notif.dep_id} AND group_id IS NULL`;
+        else if (notif.dep_id && notif.grp_id)
+          query += `group_id=${notif.grp_id} OR (departement_id=${notif.dep_id} AND group_id IS NULL)`;
 
         const [mailed_to] = await db.query(query);
         mailed_to.forEach((person) => {
-          mailer.sendEmail({ subject: "Notification OFPPT_COURIER", text: notif.description, to: person.email });
+          mailer.sendEmail({
+            subject: "Notification OFPPT_COURIER",
+            text: notif.description,
+            to: person.email,
+          });
         });
 
         await db.query("DELETE FROM notifications WHERE id = ?", [notif.id]);
@@ -622,8 +666,12 @@ module.exports.Notifications = {
    */
   async Sync() {
     const today = this.today.toISOString().split("T")[0];
-    const [notifications] = await db.query("SELECT * FROM notifications WHERE notified = false AND date = ?", [today]);
-    if (!this.NotificationsQueue[today]) this.NotificationsQueue[today] = notifications;
+    const [notifications] = await db.query(
+      "SELECT * FROM notifications WHERE notified = false AND date = ?",
+      [today]
+    );
+    if (!this.NotificationsQueue[today])
+      this.NotificationsQueue[today] = notifications;
     else this.NotificationsQueue[today].push(...notifications);
   },
 };
@@ -640,7 +688,9 @@ module.exports.CourierAssignee = {
     try {
       const columns = Object.keys(courier_assignee);
       if (columns.length == 0) return ["Fields required", null];
-      const query = `INSERT INTO ${TablesNames.courier_assigne} (${columns.join(", ")}) VALUES (${columns.map(() => "?").join(", ")})`;
+      const query = `INSERT INTO ${TablesNames.courier_assigne} (${columns.join(
+        ", "
+      )}) VALUES (${columns.map(() => "?").join(", ")})`;
       const values = Object.values(courier_assignee);
       return [null, (await db.query(query, values))[0]];
     } catch (e) {
@@ -663,9 +713,13 @@ module.exports.CourierAssignee = {
       ${TablesNames.courier_assigne}
       (${columns.join(", ")})
       VALUES
-      ${courier_assignee.map(() => `(${columns.map(() => "?").join(", ")})`).join(", ")}`;
+      ${courier_assignee
+        .map(() => `(${columns.map(() => "?").join(", ")})`)
+        .join(", ")}`;
 
-      const values = courier_assignee.flatMap((assigne) => Object.values(assigne)); //flate map to return 1 arry of all nested arrays like if [1,[2,3]].flatMap((num)=>num) => [1,2,3]
+      const values = courier_assignee.flatMap((assigne) =>
+        Object.values(assigne)
+      ); //flate map to return 1 arry of all nested arrays like if [1,[2,3]].flatMap((num)=>num) => [1,2,3]
       return [null, (await db.query(query, values))[0]];
     } catch (e) {
       console.error(e);
@@ -679,7 +733,9 @@ module.exports.CourierAssignee = {
    */
   async read(by) {
     try {
-      const query = `SELECT * FROM ${TablesNames.courier_assigne} WHERE ${parse_condition(by)}`;
+      const query = `SELECT * FROM ${
+        TablesNames.courier_assigne
+      } WHERE ${parse_condition(by)}`;
       console.log(query);
       const [rows] = await db.query(query);
       return [null, rows];
@@ -712,7 +768,9 @@ module.exports.CourierAssignee = {
     try {
       const columns = Object.keys(assignment);
       if (columns.length == 0) return ["Fields required", null];
-      const query = `UPDATE ${TablesNames.courier_assigne} SET ${columns.map((col) => `${col} = ?`).join(", ")} WHERE courier_id = ?`;
+      const query = `UPDATE ${TablesNames.courier_assigne} SET ${columns
+        .map((col) => `${col} = ?`)
+        .join(", ")} WHERE courier_id = ?`;
       const values = [...Object.values(assignment), assignment.courier_id];
       return [null, (await db.query(query, values))[0]];
     } catch (e) {

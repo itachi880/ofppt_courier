@@ -1,4 +1,4 @@
-.navbar-holder {
+/* .navbar-holder {
   display: flex;
   justify-content: center;
   width: 100%;
@@ -61,4 +61,102 @@
 .navbar .options button:hover {
   background-color: #29adb2;
   color: white;
+} */
+/* Style moderne pour la barre de navigation  by haidi iliass */
+
+/* Conteneur principal de la barre de navigation */
+.navbar-holder {
+  width: 100%;
+  background-color: #1e293b; /* Bleu foncé moderne */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 5px;
+}
+
+/* Navigation principale */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Profil utilisateur */
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.profile img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid #3b82f6; /* Couleur bleue claire */
+}
+
+.profile span {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #f3f4f6; /* Couleur claire pour le texte */
+}
+
+.profile .logout {
+  margin-left: 1rem;
+  color: #f87171; /* Rouge doux */
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.profile .logout:hover {
+  color: #ef4444; /* Rouge vif */
+}
+
+/* Boutons d'options */
+.options {
+  display: flex;
+  gap: 1rem;
+}
+
+.options button {
+  background-color: #3b82f6; /* Couleur bleue claire */
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.options button:hover {
+  background-color: #2563eb; /* Bleu plus foncé */
+  transform: translateY(-2px);
+}
+
+.options button:active {
+  transform: translateY(0);
+}
+
+/* Résponsive pour petits écrans */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .options {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .profile {
+    justify-content: space-between;
+    width: 100%;
+  }
 }

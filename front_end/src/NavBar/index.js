@@ -30,6 +30,7 @@ export default () => {
           <button onClick={() => Store.navigateTo("/courrier")}>show events</button>
           <button onClick={() => Store.navigateTo("/courrier/add")}>AddCourier</button>
           <button onClick={() => Store.navigateTo("/forume/add")}>AddForum</button>
+          <button onClick={() => Store.navigateTo("/departement/add")}>Adddepartement</button>
         </div>
       </nav>
     </div>

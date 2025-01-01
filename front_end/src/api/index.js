@@ -113,3 +113,37 @@ export const UpdateCourier = async (id, token, title, description, state, deadli
 
   return result;
 };
+export const AddDepartment = async (formData) => {
+  if (!formData) {
+    return ["All parameters (token, name, parent_departement_id) are required", null];
+  }
+  const result = [null, null];
+  try {
+    const response = await axios.post(`${BASE_URL}/departement/add`, formData, {
+      headers: {
+        Authorization: formData.token,
+      },
+    });
+    result[1] = response;
+  } catch (err) {
+    result[0] = err;
+  }
+  return result;
+}
+export const GetDepartments = async (Token ) => {
+  if (!Token) return ["token is empty", null];
+  const result = [null, null];
+  await axios
+    .get(`${BASE_URL}/departement/all`, {
+      headers: {
+        Authorization: Token,
+      },
+    })
+    .then((res) => {
+      result[1] = res;
+    })
+    .catch((err) => {
+      result[0] = err;
+    });
+  return result;
+}

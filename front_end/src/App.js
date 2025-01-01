@@ -6,6 +6,7 @@ import { LoginForm } from "./Routes/login";
 import { Store } from "react-data-stores";
 import { getDepartements, getGroups, tokenAuthApi } from "./api";
 import Courier from "./Routes/Courier";
+import Departement from "./Routes/departement";
 import NavBar from "./NavBar";
 
 function App() {
@@ -48,6 +49,7 @@ function App() {
         <Route index element={<>index</>} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/courrier/*" element={<Courier />} />
+        <Route path="/departement/*" element={<Departement/>} />
         <Route path="*" element={<>404</>} />
       </Routes>
     </>

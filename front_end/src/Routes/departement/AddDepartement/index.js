@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { departements_store, User } from "../../../data";
+import { departements_group_store, User } from "../../../data";
 import { AddDepartment } from "../../../api";
-import { GreenBox, RedBox } from "../../../utils";
 
 const styles = {
   container: {
@@ -48,13 +47,11 @@ const styles = {
 export default function AddDepartmentComponent() {
   const [formData, setFormData] = useState({
     name: "",
-    parent_departement_id: "",
-    created_at: "",
-    updated_at: "",
+    token:""
   });
 
   const [userData, setUserData] = User.useStore();
-  const [departements, setDepartements] = departements_store.useStore();
+  const [departements, setDepartements] = departements_group_store.useStore();
 
   useEffect(() => {
     console.log(formData);
@@ -72,44 +69,6 @@ export default function AddDepartmentComponent() {
         value={formData.name}
       />
 
-      <label style={styles.label}>Parent Department</label>
-      <select
-        style={styles.select}
-        onChange={(e) => {
-          setFormData({ ...formData, parent_departement_id: e.target.value });
-        }}
-        value={formData.parent_departement_id}
-      >
-        <option value="" hidden>
-          Select Parent Department
-        </option>
-        {departements.map((dep) => (
-          <option key={dep.id} value={dep.id}>
-            {dep.name}
-          </option>
-        ))}
-      </select>
-
-      <label style={styles.label}>Created At</label>
-      <input
-        style={styles.input}
-        type="date"
-        onChange={(e) => {
-          setFormData({ ...formData, created_at: e.target.value });
-        }}
-        value={formData.created_at}
-      />
-
-      <label style={styles.label}>Updated At</label>
-      <input
-        style={styles.input}
-        type="date"
-        onChange={(e) => {
-          setFormData({ ...formData, updated_at: e.target.value });
-        }}
-        value={formData.updated_at}
-      />
-
       <input
         type="submit"
         value="Add Department"
@@ -117,10 +76,7 @@ export default function AddDepartmentComponent() {
         onClick={() => {
           const departmentData = {
             name: formData.name,
-            parent_departement_id: formData.parent_departement_id,
-            created_at: formData.created_at,
-            updated_at: formData.updated_at,
-            token: userData.token,
+            token:userData.token
           };
 
           AddDepartment(departmentData)

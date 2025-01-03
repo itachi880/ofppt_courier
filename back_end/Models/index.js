@@ -298,8 +298,7 @@ module.exports.Departement = {
       const query = `
       SELECT ${TablesNames.departement}.id AS department_id,
        ${TablesNames.departement}.name AS department_name,
-       ${TablesNames.departement}.created_at AS department_created_at,
-       ${TablesNames.departement}.name AS department_parent_id,
+       ${TablesNames.departement}.parent_department_id AS department_parent_id,
        \`${TablesNames.group}\`.id AS   ${TablesNames.group}_id,
        \`${TablesNames.group}\`.name AS   ${TablesNames.group}_name 
         FROM ${TablesNames.departement} LEFT JOIN \`${TablesNames.group}\` 
@@ -309,7 +308,35 @@ module.exports.Departement = {
         WHERE ${parse_condition(by)} 
       `;
 
-      const [rows] = await db.query(query);
+      const rows = [];
+      const idsIndexes = {};
+      const queryResult = await db.query(query);
+      queryResult[0].forEach((row) => {
+        const index =
+          idsIndexes[row.department_id] ??
+          rows.findIndex((r) => r.department_id == row.department_id);
+        if (!idsIndexes[row.department_id])
+          idsIndexes[row.department_id] = index;
+        if (index >= 0) {
+          rows[index].groups.push({
+            id: row.group_id,
+            name: row.group_name,
+          });
+        } else {
+          rows.push({
+            department_id: row.department_id,
+            department_name: row.department_name,
+            department_parent_id: row.department_parent_id,
+            group: [
+              {
+                id: row.group_id,
+                name: row.group_name,
+              },
+            ],
+          });
+        }
+      });
+
       return [null, rows];
     } catch (e) {
       console.error(e);

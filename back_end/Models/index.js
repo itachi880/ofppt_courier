@@ -298,13 +298,14 @@ module.exports.Departement = {
       const query = `
       SELECT ${TablesNames.departement}.id AS department_id,
        ${TablesNames.departement}.name AS department_name,
+       ${TablesNames.departement}.created_at AS department_created_at,
        ${TablesNames.departement}.name AS department_parent_id,
        \`${TablesNames.group}\`.id AS   ${TablesNames.group}_id,
        \`${TablesNames.group}\`.name AS   ${TablesNames.group}_name 
         FROM ${TablesNames.departement} LEFT JOIN \`${TablesNames.group}\` 
         ON ${TablesNames.departement}.id = \`${TablesNames.group}\`.${
         TablesNames.departement
-      }_id;
+      }_id
         WHERE ${parse_condition(by)} 
       `;
 

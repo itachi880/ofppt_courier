@@ -4,14 +4,17 @@ import { AddDepartment } from "../../../api";
 
 const styles = {
   container: {
-    maxWidth: "600px",
-    margin: "20px auto",
+    Width: "900px",
+    position : "absolute",
+    top : "30%",
+    right : "30%",
     padding: "20px",
     border: "1px solid #ccc",
     borderRadius: "10px",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
     fontFamily: "Arial, sans-serif",
   },
+  
   input: {
     width: "100%",
     padding: "10px",
@@ -91,6 +94,3 @@ export default function AddDepartmentComponent() {
     </div>
   );
 }
-/**
- * mazal makamlax add departement
- */

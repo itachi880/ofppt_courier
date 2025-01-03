@@ -40,7 +40,7 @@ export const getDepartements = async (token) => {
   if (!token) return ["token is empty", null];
   const result = [null, null];
   await axios
-    .get(`${BASE_URL}/departement/all`, { headers: { Authorization: token } })
+    .get(`${BASE_URL}/departement/all`,{ headers: { Authorization: token } })
     .then((res) => {
       result[1] = res.data;
     })
@@ -128,22 +128,5 @@ export const AddDepartment = async (formData) => {
   } catch (err) {
     result[0] = err;
   }
-  return result;
-}
-export const GetDepartments = async (Token ) => {
-  if (!Token) return ["token is empty", null];
-  const result = [null, null];
-  await axios
-    .get(`${BASE_URL}/departement/all`, {
-      headers: {
-        Authorization: Token,
-      },
-    })
-    .then((res) => {
-      result[1] = res;
-    })
-    .catch((err) => {
-      result[0] = err;
-    });
   return result;
 }

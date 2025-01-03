@@ -19,7 +19,7 @@ router.post("/update", async (req, res) => {
 router.get("/all", async (req, res) => {
   const [err, result] = await Departement.read();
   if (err) return res.status(500).end("server err") && console.log(err);
-  res.json(result);
+  res.json(result); 
 });
 router.get("/:id", async (req, res) => {
   const [err, result] = await Departement.read({ and: [{ id: { value: req.params.id, operateur: "=" } }] });

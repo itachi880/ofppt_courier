@@ -12,11 +12,18 @@ import NavBar from "./NavBar";
 function App() {
   Store.navigateTo = useNavigate();
   const [userData, setUserData] = User.useStore();
-  const [departements_group, setDepartementsGroup] = departements_group_store.useStore();
+  const [departements_group, setDepartementsGroup] =
+    departements_group_store.useStore();
   useEffect(() => {
-    if (!userData.token) return Store.navigateTo("/login" + "?redirect=" + window.location.pathname);
+    if (!userData.token)
+      return Store.navigateTo(
+        "/login" + "?redirect=" + window.location.pathname
+      );
     tokenAuthApi(userData.token).then((response) => {
-      if (response[0]) return Store.navigateTo("/login" + "?redirect=" + window.location.pathname);
+      if (response[0])
+        return Store.navigateTo(
+          "/login" + "?redirect=" + window.location.pathname
+        );
       setUserData(response.data);
       Store.navigateTo("/");
     });
@@ -28,15 +35,14 @@ function App() {
   useEffect(() => {
     if (!userData.token) return;
     getDepartements(userData.token).then(async (departements_res) => {
-      if (departements_res[0]) return console.log("Error getting departements", departements_res[0]);
+      if (departements_res[0])
+        return console.log("Error getting departements", departements_res[0]);
       await getGroups(userData.token).then((groups_res) => {
-        if (groups_res[0]) return console.log("Error getting groups", groups_res[0]);
+        if (groups_res[0])
+          return console.log("Error getting groups", groups_res[0]);
 
         setDepartementsGroup({
-          departements: departements_res[1].map((dep) => ({
-            ...dep,
-            groups: groups_res[1].filter((group) => group.departement_id == dep.id),
-          })),
+          departements: departements_res[1],
           groups: groups_res[1],
         });
       });
@@ -49,7 +55,7 @@ function App() {
         <Route index element={<>index</>} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/courrier/*" element={<Courier />} />
-        <Route path="/departement/*" element={<Departement/>} />
+        <Route path="/departement/*" element={<Departement />} />
         <Route path="*" element={<>404</>} />
       </Routes>
     </>

@@ -56,7 +56,6 @@ export default function AddDepartmentComponent() {
   });
 
   const [userData, setUserData] = User.useStore();
-  const [departements, setDepartements] = departements_group_store.useStore();
 
   useEffect(() => {
     console.log(formData);

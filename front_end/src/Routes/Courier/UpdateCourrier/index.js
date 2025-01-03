@@ -4,6 +4,9 @@ import { UpdateCourier } from "../../../api";
 import { useParams } from "react-router-dom";
 import { GreenBox, RedBox } from "../../../utils";
 import { Store } from "react-data-stores";
+/**
+ * @type {Record<string,import("react").CSSProperties>}
+ */
 const styles = {
   container: {
     maxWidth: "600px",
@@ -69,7 +72,7 @@ export default function () {
     ],
     created_at: "",
   });
-
+  <div></div>;
   const [userData, setUserData] = User.useStore();
   const [departementsGroup, setDepartementsGroup] =
     departements_group_store.useStore();

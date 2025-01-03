@@ -1,20 +1,22 @@
 import { useEffect, useState } from "react";
 import { departements_group_store, User } from "../../../data";
 import { AddDepartment } from "../../../api";
-
+/**
+ * @type {Record<string,import("react").CSSProperties>}
+ */
 const styles = {
   container: {
     Width: "900px",
-    position : "absolute",
-    top : "30%",
-    right : "30%",
+    position: "absolute",
+    top: "30%",
+    right: "30%",
     padding: "20px",
     border: "1px solid #ccc",
     borderRadius: "10px",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
     fontFamily: "Arial, sans-serif",
   },
-  
+
   input: {
     width: "100%",
     padding: "10px",
@@ -50,7 +52,7 @@ const styles = {
 export default function AddDepartmentComponent() {
   const [formData, setFormData] = useState({
     name: "",
-    token:""
+    token: "",
   });
 
   const [userData, setUserData] = User.useStore();
@@ -79,7 +81,7 @@ export default function AddDepartmentComponent() {
         onClick={() => {
           const departmentData = {
             name: formData.name,
-            token:userData.token
+            token: userData.token,
           };
 
           AddDepartment(departmentData)

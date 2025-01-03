@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { departements_group_store, User } from "../../../data";
 import { AddCourier } from "../../../api";
 import { GreenBox, RedBox } from "../../../utils";
+/**
+ * @type {Record<string,import("react").CSSProperties>}
+ */
 const styles = {
   container: {
     maxWidth: "600px",

@@ -130,3 +130,21 @@ export const AddDepartment = async (formData) => {
   }
   return result;
 }
+export const DeleteDepartment = async (token,department_id) => {
+  if (!token || !department_id) {
+    return ["All parameters (token, department_id) are required", null];
+  }
+  
+  const result = [null, null];
+  try {
+    const response = await axios.delete(`${BASE_URL}/departement/${department_id}`, {
+      headers: {
+        Authorization: token,
+      },
+    });
+    result[1] = response;
+  } catch (err) {
+    result[0] = err;
+  }
+  return result;
+};

@@ -148,3 +148,26 @@ export const DeleteDepartment = async (token,department_id) => {
   }
   return result;
 };
+export const UpdateDepartementApi = async (token, department_id, updatedName) => {
+  if (!token || !department_id || !updatedName) {
+    return ["All parameters (token, department_id, updatedName) are required", null];
+  }
+
+  const result = [null, null];
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/departement/update/${department_id}`, 
+      { name: updatedName }, // Body de la requête
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+    result[1] = response.data; 
+  } catch (err) {
+    result[0] = err.response ? err.response.data : err.message;
+  }
+
+  return result;
+};

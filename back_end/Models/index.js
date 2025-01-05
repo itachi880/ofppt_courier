@@ -364,7 +364,6 @@ module.exports.Departement = {
         SET ${sql.join(" ,")} 
         WHERE id = ?
   `;
-
       return [null, (await db.query(query, values))[0]];
     } catch (e) {
       return [e, null];

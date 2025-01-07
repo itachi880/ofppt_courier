@@ -350,6 +350,7 @@ module.exports.Departement = {
    */
   async update(id, by) {
     try {
+      console.log(by)
       const data = Object.entries(by);
       if (!id || data.length == 0) return ["data required", null];
       const sql = [];

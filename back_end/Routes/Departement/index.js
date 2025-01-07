@@ -15,7 +15,7 @@ router.post("/update/:id", async (req, res) => {
   if (req.user.role != Roles.admin && req.user.dep_id != req.params.id) {
     return res.status(401).end("don't have access");
   }  
-  const [err] = await Departement.update(req.params.id, req.body.updateBy);
+  const [err] = await Departement.update(req.params.id, req.body.updateBy|| []);
   if (err) return res.status(500).end("server err") && console.log(err);
   return res.end("done");
 });

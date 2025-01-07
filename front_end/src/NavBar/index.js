@@ -32,6 +32,8 @@ export default () => {
           <button onClick={() => Store.navigateTo("/forume/add")}>AddForum</button>
           <button onClick={() => Store.navigateTo("/departement")}>show Departement</button>
           <button onClick={() => Store.navigateTo("/departement/add")}>Adddepartement</button>
+          <button onClick={() => Store.navigateTo("/Group")}>show Group</button>
+          <button onClick={() => Store.navigateTo("/Group/add")}>AddGroup</button>
         </div>
       </nav>
     </div>

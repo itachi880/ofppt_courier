@@ -157,7 +157,7 @@ export const UpdateDepartementApi = async (token, department_id, updatedName) =>
   try {
     const response = await axios.post(
       `${BASE_URL}/departement/update/${department_id}`, 
-      { name: updatedName }, // Body de la requête
+      { updateBy:{name: updatedName} }, // Body de la requête
       {
         headers: {
           Authorization: token,
@@ -169,5 +169,25 @@ export const UpdateDepartementApi = async (token, department_id, updatedName) =>
     result[0] = err.response ? err.response.data : err.message;
   }
 
+  return result;
+};
+export const AddGroupApi = async (formData) => {
+
+  if (!formData) {
+    return ["All parameters (token, name) are required", null];
+  }
+
+  const result = [null, null];
+  try {
+    // Requête POST vers l'API pour ajouter un groupe
+    const response = await axios.post(`${BASE_URL}/groups/add`, formData, {
+      headers: {
+        Authorization: formData.token,
+      },
+    });
+    result[1] = response.data; // Stocker les données de la réponse
+  } catch (err) {
+    result[0] = err.response?.data || err.message; // Gestion des erreurs
+  }
   return result;
 };

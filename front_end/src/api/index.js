@@ -172,22 +172,43 @@ export const UpdateDepartementApi = async (token, department_id, updatedName) =>
   return result;
 };
 export const AddGroupApi = async (formData) => {
-
-  if (!formData) {
-    return ["All parameters (token, name) are required", null];
+  if (!formData || !formData.token || !formData.name || !formData.department_id) {
+    return ["All parameters (token, name, departement_id) are required", null];
   }
 
   const result = [null, null];
   try {
-    // Requête POST vers l'API pour ajouter un groupe
-    const response = await axios.post(`${BASE_URL}/groups/add`, formData, {
+   
+    const response = await axios.post(
+      `${BASE_URL}/groups/add`,
+      { name: formData.name, departement_id:Number( formData. department_id) },
+      {
+        headers: {
+          Authorization: formData.token,
+        },
+      }
+    );    
+    result[1] = response.data; 
+  } catch (err) {
+    result[0] = err.response?.data || err.message; 
+  }
+  return result;
+};
+export const deleteGroupApi = async (id,token) => {
+  if (!id) {
+    return ["Group ID is required", null];
+  }
+  const result = [null, null];
+  try {
+    console.log("id",id);
+    const response = await axios.delete(`${BASE_URL}/groups/${id}`,{
       headers: {
-        Authorization: formData.token,
+        Authorization: token,
       },
     });
-    result[1] = response.data; // Stocker les données de la réponse
+    result[1] = response.data; // Stocker le succès
   } catch (err) {
-    result[0] = err.response?.data || err.message; // Gestion des erreurs
+    result[0] = err.response?.data || err.message; // Stocker l'erreur
   }
   return result;
 };

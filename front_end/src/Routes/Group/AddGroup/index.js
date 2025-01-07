@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { departements_group_store, User } from "../../../data";
+import { departements_group_store, User } from "../../../data/index";
 import { AddGroupApi } from "../../../api";
 
 /**
@@ -51,17 +51,18 @@ const styles = {
 };
 
 export default function AddGroup() {
+  const [userData, setUserData] = User.useStore();
     const [departementsGroups, setDepartmentsGroups] = departements_group_store.useStore();
   const [formData, setFormData] = useState({
     name: "",
-    DepartementAssign:"",
-    token: "",
+    token: userData.token,
+    id:0
   });
 
-  const [userData, setUserData] = User.useStore();
+
 
   useEffect(() => {
-    console.log(formData);
+    console.log(departementsGroups);
   }, [formData]);
 
   return (
@@ -76,15 +77,40 @@ export default function AddGroup() {
         value={formData.name}
       />
             <select onChange={(e)=>{
-                 setFormData({ ...formData,  DepartementAssign: e.target.value });
+                 setFormData({ ...formData,  DepartementAssign: e.target.value});
 
-            }}>
-        {departementsGroups.departements.map((e)=>{
-            console.log(e)
-            return <option>{e.department_name}</option>
+                  // index=e.target.selectedIndex
+
+            }} style={styles.select}>
+              <option selected>Select Department</option>
+        {departementsGroups.departements.map((e,i)=>{
+            return <option key={i} value={e.department_id} onClick={()=>{
+              setFormData({ ...formData,  id:e.department_id });
+            }}>{e.department_name}</option>
         })}
+   
 
       </select>
+      {/* <ul>
+          {departementsGroups.departements.map((e,i)=>{
+            return <li key={i}>{e.department_id
+}</li>
+          })}
+        </ul> */}
+      {/* <select onChange={(e)=>{
+                  setFormData({ ...formData,  DepartementAssign: e.target.value });
+      }}>
+        <option selected>Select Department</option>
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+
+      </select> */}
+      {/* <button onClick={()=>{
+          console.log(formData.token);
+      }}
+      >to</button> */}
+   
 
       <input
         type="submit"
@@ -93,10 +119,10 @@ export default function AddGroup() {
         onClick={() => {
           const departmentData = {
             name: formData.name,
-            token: userData.token,
-            DepartementAssign:formData.DepartementAssign
+            department_id:formData.DepartementAssign,
+            token: formData.token,
+  
           };
-          console.log(formData)
 
           AddGroupApi(departmentData)
             .then((res) => {

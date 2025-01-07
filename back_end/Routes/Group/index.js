@@ -7,11 +7,11 @@ router.use(auth_middleware);
 
 // Route to add a new group
 router.post("/add", async (req, res) => {
-  // if (req.user.role != Roles.admin || !req.body.name || !req.body.departement_id) return res.status(401).end("Don't have access");
-  if (req.user.role != Roles.admin && req.user.dep_id != req.params.id) {
-    return res.status(401).end("don't have access");
-  }  
-  const [err, response] = await Group.insert({ name: req.body.name, departement_id: req.body.departement_id });
+  if (req.user.role != Roles.admin || !req.body.name || !req.body.departement_id) return res.status(401).end("Don't have access");
+  // if (req.user.role != Roles.admin && req.user.dep_id != req.params.id) {
+  //   return res.status(401).end("don't have access");
+  // }  
+  const [err,response] = await Group.insert({ name: req.body.name, departement_id: req.body.departement_id });
   if (err) return res.status(500).end("Server error") && console.log(err);
   return res.end(response.insertId + "");
 });

@@ -212,3 +212,25 @@ export const deleteGroupApi = async (id,token) => {
   }
   return result;
 };
+export const UpdateGrouptApi = async (token, id, updatedName) => {
+  if (!token || !id || !updatedName) {
+    return ["All parameters (token, department_id, updatedName) are required", null];
+  }
+  const result = [null, null];
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/groups/update/${id}`, 
+      { updateBy:{name: updatedName} }, // Body de la requête
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+    result[1] = response.data; 
+  } catch (err) {
+    result[0] = err.response ? err.response.data : err.message;
+  }
+
+  return result;
+};

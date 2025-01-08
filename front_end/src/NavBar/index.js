@@ -29,7 +29,7 @@ export default () => {
         <div className="options">
           <button onClick={() => Store.navigateTo("/courrier")}>show events</button>
           <button onClick={() => Store.navigateTo("/courrier/add")}>AddCourier</button>
-          <button onClick={() => Store.navigateTo("/forume/add")}>AddForum</button>
+          {/* <button onClick={() => Store.navigateTo("/forume/add")}>AddForum</button> */}
           <button onClick={() => Store.navigateTo("/departement")}>show Departement</button>
           <button onClick={() => Store.navigateTo("/departement/add")}>Adddepartement</button>
           <button onClick={() => Store.navigateTo("/Group")}>show Group</button>

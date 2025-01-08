@@ -1,11 +1,12 @@
 import { useEffect, useState,useRef } from "react";
-import { tokenAuthApi, UpdateDepartementApi } from "../../../api"; // Assurez-vous que cette fonction existe dans vos APIs.
+import { tokenAuthApi,UpdateGrouptApi } from "../../../api"; // Assurez-vous que cette fonction existe dans vos APIs.
 import { User } from "../../../data";
 import { useParams } from "react-router-dom";
 
-export default function UpdateDepartment() {
+export default function UpdateGroup() {
   const {id}= useParams();
-  const [userData, setUserData] = User.useStore();  const in1=useRef()
+  const [userData, setUserData] = User.useStore();
+  const in1=useRef()
   const styles = {
     container: {
       display: "flex",
@@ -47,18 +48,19 @@ export default function UpdateDepartment() {
   };
   useEffect(() => {
     console.log(id);
+    console.log(userData.token);
   }, []);
 
 
   return     <div style={styles.container}>
-  <input style={styles.input} placeholder="Enter new name"  ref={in1}/>
+  <input style={styles.input} placeholder="Enter new name Of group"  ref={in1}/>
   <button style={styles.button} onClick={()=>{
-    UpdateDepartementApi(userData.token, id, in1.current.value).then((response) => {
+    UpdateGrouptApi(userData.token, id, in1.current.value).then((response) => {
       if (response[0]) {
-        console.log("Error updating department:", response[0]);
+        console.log("Error updating group:", response[0]);
         return;
       }
-      console.log("Department updated successfully");
+      console.log("group updated successfully");
     });
   }}>Update</button>
 </div>

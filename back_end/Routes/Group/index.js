@@ -17,9 +17,9 @@ router.post("/add", async (req, res) => {
 });
 
 // Route to update an existing group
-router.post("/update", async (req, res) => {
-  if (req.user.role != Roles.admin || !req.body.id || !req.body.updateBy) return res.status(401).end("Don't have access");
-  const [err] = await Group.update(req.body.id, req.body.updateBy);
+router.post("/update/:id", async (req, res) => {
+  if (req.user.role != Roles.admin || !req.params.id || !req.body.updateBy) return res.status(401).end("Don't have access");
+  const [err] = await Group.update(req.params.id, req.body.updateBy);
   if (err) return res.status(500).end("Server error") && console.log(err);
   return res.end("Done");
 });

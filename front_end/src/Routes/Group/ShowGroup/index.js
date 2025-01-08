@@ -30,6 +30,10 @@ export default function ShowGroup() {
     });
     // console.log("delete group with id: ", id);
   };
+  
+  const handleUpdate = (id) => {
+    navigate("update/"+id );
+  };
 
   
   return (
@@ -53,7 +57,7 @@ export default function ShowGroup() {
                   <button onClick={()=>{
                     handleDelete(e.id)
                   }} >Delete</button>
-                  <button >Update</button>
+                  <button onClick={()=>{handleUpdate(e.id)}} >Update</button>
                 </td>
               </tr>
             ))}

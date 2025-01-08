@@ -1,5 +1,5 @@
 import axios from "axios";
-const BASE_URL = "http://localhost:4000";
+export const BASE_URL = "http://localhost:4000";
 export const LoginApi = async (email, password) => {
   if (!email || !password) return ["email or password is empty", null];
 
@@ -13,7 +13,11 @@ export const LoginApi = async (email, password) => {
 export const tokenAuthApi = async (Token = "") => {
   if (!Token) return ["token is empty", null];
   try {
-    const response = await axios.post(`${BASE_URL}/login/token`, {}, { headers: { Authorization: Token } });
+    const response = await axios.post(
+      `${BASE_URL}/login/token`,
+      {},
+      { headers: { Authorization: Token } }
+    );
     return [null, response.data];
   } catch (error) {
     return [error, null];
@@ -40,7 +44,7 @@ export const getDepartements = async (token) => {
   if (!token) return ["token is empty", null];
   const result = [null, null];
   await axios
-    .get(`${BASE_URL}/departement/all`,{ headers: { Authorization: token } })
+    .get(`${BASE_URL}/departement/all`, { headers: { Authorization: token } })
     .then((res) => {
       result[1] = res.data;
     })
@@ -64,7 +68,10 @@ export const getGroups = async (token) => {
 };
 export const AddCourier = async (formData, departements) => {
   if (!formData) {
-    return ["All parameters (token, title, description, deadline, critical, departements) are required", null];
+    return [
+      "All parameters (token, title, description, deadline, critical, departements) are required",
+      null,
+    ];
   }
   const result = [null, null];
   try {
@@ -90,9 +97,21 @@ export const AddCourier = async (formData, departements) => {
   return result;
 };
 
-export const UpdateCourier = async (id, token, title, description, state, deadline, critical, departement) => {
+export const UpdateCourier = async (
+  id,
+  token,
+  title,
+  description,
+  state,
+  deadline,
+  critical,
+  departement
+) => {
   if (!id || !token || !title || !description || !deadline || !state) {
-    return ["All parameters (id, token, title, description, state) are required", null];
+    return [
+      "All parameters (id, token, title, description, state) are required",
+      null,
+    ];
   }
 
   const result = [null, null];
@@ -115,7 +134,10 @@ export const UpdateCourier = async (id, token, title, description, state, deadli
 };
 export const AddDepartment = async (formData) => {
   if (!formData) {
-    return ["All parameters (token, name, parent_departement_id) are required", null];
+    return [
+      "All parameters (token, name, parent_departement_id) are required",
+      null,
+    ];
   }
   const result = [null, null];
   try {
@@ -129,42 +151,52 @@ export const AddDepartment = async (formData) => {
     result[0] = err;
   }
   return result;
-}
-export const DeleteDepartment = async (token,department_id) => {
+};
+export const DeleteDepartment = async (token, department_id) => {
   if (!token || !department_id) {
     return ["All parameters (token, department_id) are required", null];
-  }
-  
-  const result = [null, null];
-  try {
-    const response = await axios.delete(`${BASE_URL}/departement/${department_id}`, {
-      headers: {
-        Authorization: token,
-      },
-    });
-    result[1] = response;
-  } catch (err) {
-    result[0] = err;
-  }
-  return result;
-};
-export const UpdateDepartementApi = async (token, department_id, updatedName) => {
-  if (!token || !department_id || !updatedName) {
-    return ["All parameters (token, department_id, updatedName) are required", null];
   }
 
   const result = [null, null];
   try {
-    const response = await axios.post(
-      `${BASE_URL}/departement/update/${department_id}`, 
-      { updateBy:{name: updatedName} }, // Body de la requête
+    const response = await axios.delete(
+      `${BASE_URL}/departement/${department_id}`,
       {
         headers: {
           Authorization: token,
         },
       }
     );
-    result[1] = response.data; 
+    result[1] = response;
+  } catch (err) {
+    result[0] = err;
+  }
+  return result;
+};
+export const UpdateDepartementApi = async (
+  token,
+  department_id,
+  updatedName
+) => {
+  if (!token || !department_id || !updatedName) {
+    return [
+      "All parameters (token, department_id, updatedName) are required",
+      null,
+    ];
+  }
+
+  const result = [null, null];
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/departement/update/${department_id}`,
+      { updateBy: { name: updatedName } }, // Body de la requête
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+    result[1] = response.data;
   } catch (err) {
     result[0] = err.response ? err.response.data : err.message;
   }
@@ -172,36 +204,40 @@ export const UpdateDepartementApi = async (token, department_id, updatedName) =>
   return result;
 };
 export const AddGroupApi = async (formData) => {
-  if (!formData || !formData.token || !formData.name || !formData.department_id) {
+  if (
+    !formData ||
+    !formData.token ||
+    !formData.name ||
+    !formData.department_id
+  ) {
     return ["All parameters (token, name, departement_id) are required", null];
   }
 
   const result = [null, null];
   try {
-   
     const response = await axios.post(
       `${BASE_URL}/groups/add`,
-      { name: formData.name, departement_id:Number( formData. department_id) },
+      { name: formData.name, departement_id: Number(formData.department_id) },
       {
         headers: {
           Authorization: formData.token,
         },
       }
-    );    
-    result[1] = response.data; 
+    );
+    result[1] = response.data;
   } catch (err) {
-    result[0] = err.response?.data || err.message; 
+    result[0] = err.response?.data || err.message;
   }
   return result;
 };
-export const deleteGroupApi = async (id,token) => {
+export const deleteGroupApi = async (id, token) => {
   if (!id) {
     return ["Group ID is required", null];
   }
   const result = [null, null];
   try {
-    console.log("id",id);
-    const response = await axios.delete(`${BASE_URL}/groups/${id}`,{
+    console.log("id", id);
+    const response = await axios.delete(`${BASE_URL}/groups/${id}`, {
       headers: {
         Authorization: token,
       },
@@ -214,20 +250,23 @@ export const deleteGroupApi = async (id,token) => {
 };
 export const UpdateGrouptApi = async (token, id, updatedName) => {
   if (!token || !id || !updatedName) {
-    return ["All parameters (token, department_id, updatedName) are required", null];
+    return [
+      "All parameters (token, department_id, updatedName) are required",
+      null,
+    ];
   }
   const result = [null, null];
   try {
     const response = await axios.post(
-      `${BASE_URL}/groups/update/${id}`, 
-      { updateBy:{name: updatedName} }, // Body de la requête
+      `${BASE_URL}/groups/update/${id}`,
+      { updateBy: { name: updatedName } }, // Body de la requête
       {
         headers: {
           Authorization: token,
         },
       }
     );
-    result[1] = response.data; 
+    result[1] = response.data;
   } catch (err) {
     result[0] = err.response ? err.response.data : err.message;
   }

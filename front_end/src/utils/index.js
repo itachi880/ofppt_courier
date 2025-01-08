@@ -20,7 +20,9 @@ export function Calendar({
       components={{
         agenda: {
           event: ({ event }) => (
-            <div onClick={() => Store.navigateTo(`/courrier/update/${event.id}`)}>
+            <div
+              onClick={() => Store.navigateTo(`/courrier/update/${event.id}`)}
+            >
               <h4 style={{ margin: "0" }}>{event.title}</h4>
               <p style={{ margin: "0" }}>{event.description}</p>
             </div>
@@ -30,7 +32,16 @@ export function Calendar({
 
         month: {
           event: ({ event }) => (
-            <div style={{ backgroundColor: event.backgroundColor, borderRadius: "5px", margin: "5px 0" }}>
+            <div
+              style={{
+                backgroundColor: event.backgroundColor,
+                borderRadius: "5px",
+                margin: "2px 0",
+              }}
+              onClick={() => {
+                Store.navigateTo("/courrier/update/" + event.id);
+              }}
+            >
               <strong>{event.title}</strong>
             </div>
           ),

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { departements_group_store, events, User } from "../../../data";
-import { UpdateCourier } from "../../../api";
+import { BASE_URL, UpdateCourier } from "../../../api";
 import { useParams } from "react-router-dom";
 import { GreenBox, RedBox } from "../../../utils";
 import { Store } from "react-data-stores";
@@ -71,6 +71,7 @@ export default function () {
       // { id: 2, name: "departement 2", groups: [{ id: 2, name: "group 2" }] },
     ],
     created_at: "",
+    imgs: [],
   });
   <div></div>;
   const [userData, setUserData] = User.useStore();
@@ -80,9 +81,7 @@ export default function () {
     console.log(formData);
   }, [formData]);
   useEffect(() => {
-    console.log(eventsStore.data);
     const event = eventsStore.data.find((event) => event.id == formData.id);
-    console.log(event);
     if (!event) return Store.navigateTo("/");
     console.log(event);
     setFormData({
@@ -93,11 +92,14 @@ export default function () {
       critical: event.critical,
       created_at: event.created_at,
       departements: departementsGroup.departements
-        .filter((dep) => {
-          if (event.departements.includes(dep.id)) return true;
-          return false;
-        })
-        .map((dep) => {}),
+        .filter((dep) => event.departements.includes(dep.department_id))
+        .map((dep) => ({
+          ...dep,
+          groups: dep.groups
+            ? dep.groups.filter((grp) => event.groups.includes(grp.id))
+            : [],
+        })),
+      imgs: event.imgs,
     });
   }, []);
   return (
@@ -115,34 +117,45 @@ export default function () {
         <RedBox>departements</RedBox>
         <GreenBox>groups</GreenBox>
         <hr />
-        {formData.departements?.map((dep) => (
-          <div
-            style={{ display: "flex", alignItems: "center", margin: "10px 0" }}
-          >
-            <RedBox>{dep?.name}</RedBox>
-            {dep.groups == "all" ? (
-              <GreenBox>all</GreenBox>
-            ) : dep.groups == "none" ? (
-              <GreenBox>none</GreenBox>
-            ) : (
-              dep.groups?.map((grp) => <GreenBox>{grp.name}</GreenBox>)
-            )}
-          </div>
-        ))}
+        {formData.departements?.map((dep) => {
+          console.log(dep);
+          return (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                margin: "10px 0",
+              }}
+            >
+              <RedBox>{dep?.department_name}</RedBox>
+              {dep.groups == "all" ? (
+                <GreenBox>all</GreenBox>
+              ) : dep.groups == "none" ? (
+                <GreenBox>none</GreenBox>
+              ) : (
+                dep.groups?.map((grp) => <GreenBox>{grp.name}</GreenBox>)
+              )}
+            </div>
+          );
+        })}
       </div>
       <label style={styles.label}>Departements</label>
       <select
         style={styles.select}
         onChange={(e) => {
           console.log("selected dep", e.target.value);
-          if (formData.departements.find((dep) => dep.id == e.target.value))
+          if (
+            formData.departements.find(
+              (dep) => dep.department_id == e.target.value
+            )
+          )
             return;
 
           formData.departements.push({
-            id: e.target.value,
-            name: departementsGroup.departements.find(
-              (dep) => dep.id == e.target.value
-            ).name,
+            department_id: e.target.value,
+            department_name: departementsGroup.departements.find(
+              (dep) => dep.department_id == e.target.value
+            ).department_name,
             groups: [],
           });
           setFormData({ ...formData });
@@ -153,7 +166,7 @@ export default function () {
         </option>
 
         {departementsGroup.departements.map((dep) => (
-          <option value={dep.id}>{dep.name}</option>
+          <option value={dep.department_id}>{dep.department_name}</option>
         ))}
       </select>
 
@@ -163,7 +176,7 @@ export default function () {
         onChange={(e) => {
           const depId = e.target.previousSibling.previousSibling.value;
           const depIndex = formData.departements.findIndex(
-            (dep) => dep.id == depId
+            (dep) => dep.department_id == depId
           );
 
           if (e.target.value == "all") {
@@ -195,13 +208,7 @@ export default function () {
         <option value="" hidden>
           Select Group
         </option>
-        {departementsGroup.departements
-          .filter((dep) => formData.departements.find((e) => e.id == dep.id))
-          .map((deps) =>
-            deps.groups.map((group) => (
-              <option value={group.id}>{group.name}</option>
-            ))
-          )}
+
         <option value="all">toutes</option>
         <option value="none">aucun</option>
       </select>
@@ -217,15 +224,30 @@ export default function () {
       />
 
       <label style={styles.label}>Upload Images</label>
-      <input
-        type="file"
-        style={styles.fileInput}
-        multiple={true}
-        onChange={(e) => {
-          setFormData({ ...formData, images: e.target.files });
-        }}
-      />
-
+      <div>
+        <input
+          type="file"
+          style={styles.fileInput}
+          multiple={true}
+          onChange={(e) => {
+            setFormData({ ...formData, images: e.target.files });
+          }}
+        />
+        {formData.imgs.map((img) => (
+          <img
+            width={50}
+            height={50}
+            src={BASE_URL + "/" + img}
+            onClick={() => {
+              const link = document.createElement("a");
+              link.href = BASE_URL + "/" + img;
+              link.target = "_blank";
+              link.click();
+            }}
+            style={{ cursor: "pointer" }}
+          />
+        ))}
+      </div>
       <label style={styles.label}>Deadline</label>
       <input
         style={styles.input}

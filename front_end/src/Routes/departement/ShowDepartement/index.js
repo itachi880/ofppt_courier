@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 import { getDepartements, DeleteDepartment } from "../../../api"; // Assurez-vous que cette fonction existe dans vos APIs.
 import { departements_group_store, User } from "../../../data";
-import UpdateDepartment from  '../updateDepartement'
+import UpdateDepartment from "../updateDepartement";
 import { useNavigate } from "react-router-dom";
 
 export default function ShowDepartments() {
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = User.useStore();
-  const [departementsGroups, setDepartmentsGroups] = departements_group_store.useStore();
+  const [departementsGroups, setDepartmentsGroups] =
+    departements_group_store.useStore();
   const [selectedDepartment, setSelectedDepartment] = useState(null);
   const navigate = useNavigate();
 
@@ -34,8 +35,7 @@ export default function ShowDepartments() {
   };
 
   const handleUpdate = (id) => {
-  
-    navigate("update/"+id );
+    navigate("update/" + id);
   };
 
   return (
@@ -44,24 +44,35 @@ export default function ShowDepartments() {
       {loading ? (
         <p>Loading...</p>
       ) : selectedDepartment ? (
-        <UpdateDepartment department={selectedDepartment} onUpdate={() => setSelectedDepartment(null)} />
+        <UpdateDepartment
+          department={selectedDepartment}
+          onUpdate={() => setSelectedDepartment(null)}
+        />
       ) : (
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
             <tr>
-              <th style={{ border: "1px solid black", padding: "8px" }}>Name</th>
-              <th style={{ border: "1px solid black", padding: "8px" }}>Created At</th>
-              <th style={{ border: "1px solid black", padding: "8px" }}>Option</th>
+              <th style={{ border: "1px solid black", padding: "8px" }}>
+                Name
+              </th>
+              <th style={{ border: "1px solid black", padding: "8px" }}>
+                Option
+              </th>
             </tr>
           </thead>
           <tbody>
             {departments.map((e) => (
-              <tr key={e.id}> {/* Add a key to each row */}
-                <td style={{ border: "1px solid black", padding: "8px" }}>{e.department_name}</td>
-                <td style={{ border: "1px solid black", padding: "8px" }}>{e.department_created_at}</td>
+              <tr key={e.id}>
                 <td style={{ border: "1px solid black", padding: "8px" }}>
-                  <button onClick={() => handleDelete(e.department_id)}>Delete</button>
-                  <button onClick={() => handleUpdate(e.department_id)}>Update</button>
+                  {e.department_name}
+                </td>
+                <td style={{ border: "1px solid black", padding: "8px" }}>
+                  <button onClick={() => handleDelete(e.department_id)}>
+                    Delete
+                  </button>
+                  <button onClick={() => handleUpdate(e.department_id)}>
+                    Update
+                  </button>
                 </td>
               </tr>
             ))}
@@ -71,8 +82,3 @@ export default function ShowDepartments() {
     </div>
   );
 }
-
-
-
-
-

@@ -118,9 +118,10 @@ export default function () {
             alignItems: "center",
             margin: "10px 0",
             width: "100%",
+            flexWrap: "wrap",
+            gap: "5px",
           }}
         >
-          {" "}
           {formData.departements.map((dep) => {
             return (
               <RedBox>

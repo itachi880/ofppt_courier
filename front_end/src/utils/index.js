@@ -62,8 +62,9 @@ export function Calendar({
     />
   );
 }
-export const GreenBox = ({ children }) => (
+export const GreenBox = ({ children, onClick = () => {} }) => (
   <span
+    onClick={onClick}
     style={{
       padding: "5px 10px",
       background: "rgba(130, 255, 213, 0.48)",
@@ -75,8 +76,9 @@ export const GreenBox = ({ children }) => (
     {children}
   </span>
 );
-export const RedBox = ({ children }) => (
+export const RedBox = ({ children, onClick = () => {} }) => (
   <span
+    onClick={onClick}
     style={{
       padding: "5px 10px",
       background: "rgba(255, 156, 156, 0.48)",

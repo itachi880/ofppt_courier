@@ -75,26 +75,50 @@ export default function () {
     console.log(formData);
   }, [formData]);
   return (
-    <div className="p-8 max-w-4xl mx-auto bg-gray-100 rounded-lg shadow-lg grid grid-cols-2 gap-6 min-h-screen">
-    {/* Left Side */}
-    <div>
-      <label className="block mb-2 font-semibold text-gray-700">Object Title</label>
+      
+    
+
+    <div style={styles.container}>
+      <label style={styles.label}>Object Title</label>
       <input
-        className="w-full mb-4 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        style={styles.input}
         placeholder="Object"
-        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+        onChange={(e) => {
+          setFormData({ ...formData, title: e.target.value });
+        }}
         value={formData.title}
       />
-  
-      <label className="block mb-2 font-semibold text-gray-700">Departements</label>
+      <div style={{ margin: "10px 0" }}>
+        <RedBox>departements</RedBox>
+        <GreenBox>groups</GreenBox>
+        <hr />
+        {formData.departements?.map((dep) => (
+          <div
+            style={{ display: "flex", alignItems: "center", margin: "10px 0" }}
+          >
+            <RedBox>{dep?.name}</RedBox>
+            {dep.groups == "all" ? (
+              <GreenBox>all</GreenBox>
+            ) : dep.groups == "none" ? (
+              <GreenBox>none</GreenBox>
+            ) : (
+              dep.groups?.map((grp) => <GreenBox>{grp.name}</GreenBox>)
+            )}
+          </div>
+        ))}
+      </div>
+      <label style={styles.label}>Departements</label>
       <select
-        className="w-full mb-4 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        style={styles.select}
         onChange={(e) => {
-          if (formData.departements.find((dep) => dep.id == e.target.value)) return;
-  
+          if (formData.departements.find((dep) => dep.id == e.target.value))
+            return;
+
           formData.departements.push({
             id: e.target.value,
-            name: departementsGroup.departements.find((dep) => dep.id == e.target.value).name,
+            name: departementsGroup.departements.find(
+              (dep) => dep.id == e.target.value
+            ).name,
             groups: [],
           });
           setFormData({ ...formData });
@@ -104,14 +128,15 @@ export default function () {
         <option value="" hidden>
           Select Departement
         </option>
+
         {departementsGroup.departements.map((dep) => (
           <option value={dep.id}>{dep.name}</option>
         ))}
       </select>
-  
-      <label className="block mb-2 font-semibold text-gray-700">Groups</label>
+
+      <label style={styles.label}>Groups</label>
       <select
-        className="w-full mb-4 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        style={styles.select}
         onChange={(e) => {
           const grpId = e.target.value;
           const dep =
@@ -121,22 +146,29 @@ export default function () {
             departementsGroup.departements.find(
               (dep) => dep.id == e.target.previousSibling.previousSibling.value
             );
-          const depIndex = formData.departements.findIndex((e) => e.id == dep.id);
-          if (depIndex === -1) return;
-          if (e.target.value === "all") {
+          const depIndex = formData.departements.findIndex(
+            (e) => e.id == dep.id
+          );
+          if (depIndex == -1) return;
+          if (e.target.value == "all") {
             formData.departements[depIndex].groups = "all";
-          } else if (e.target.value === "none") {
+          } else if (e.target.value == "none") {
             formData.departements[depIndex].groups = [];
           } else {
             if (!formData.departements[depIndex].groups.push)
               formData.departements[depIndex].groups = [];
-            if (formData.departements[depIndex].groups.find((grp) => grp.id == grpId))
+            if (
+              formData.departements[depIndex].groups.find(
+                (grp) => grp.id == grpId
+              )
+            )
               return;
             formData.departements[depIndex].groups.push(
               dep.groups.find((grp) => grp.id == grpId)
             );
           }
           setFormData({ ...formData });
+          console.log(formData);
         }}
       >
         <option value="" hidden>
@@ -145,43 +177,47 @@ export default function () {
         {departementsGroup.departements
           .filter((dep) => formData.departements.find((e) => e.id == dep.id))
           .map((deps) =>
-            deps.groups.map((group) => <option value={group.id}>{group.name}</option>)
+            deps.groups.map((group) => (
+              <option value={group.id}>{group.name}</option>
+            ))
           )}
-        <option value="all">All</option>
-        <option value="none">None</option>
+        <option value="all">toutes</option>
+        <option value="none">aucun</option>
       </select>
-  
-      <label className="block mb-2 font-semibold text-gray-700">Description</label>
+
+      <label style={styles.label}>Description</label>
       <input
-        className="w-full mb-4 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+        style={styles.input}
+        onChange={(e) => {
+          setFormData({ ...formData, description: e.target.value });
+        }}
         value={formData.description}
         placeholder="Description"
       />
-    </div>
-  
-    {/* Right Side */}
-    <div>
-      <label className="block mb-2 font-semibold text-gray-700">Upload Images</label>
+
+      <label style={styles.label}>Upload Images</label>
       <input
         type="file"
-        className="w-full mb-4 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        style={styles.fileInput}
         multiple={true}
-        onChange={(e) => setFormData({ ...formData, images: e.target.files })}
+        onChange={(e) => {
+          setFormData({ ...formData, images: e.target.files });
+        }}
       />
-  
-      <label className="block mb-2 font-semibold text-gray-700">Deadline</label>
+
+      <label style={styles.label}>Deadline</label>
       <input
-        className="w-full mb-4 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        style={styles.input}
         type="date"
-        onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
+        onChange={(e) => {
+          setFormData({ ...formData, deadline: e.target.value });
+        }}
         value={formData.deadline}
       />
-  
-      <label className="block mb-2 font-semibold text-gray-700">State</label>
-      <div className="mb-4">
+      <label style={styles.label}>State</label>
+      <div>
         {["normal", "urgent", "tres urgent"].map((state) => (
-          <div key={state} className="flex items-center space-x-2 mb-2">
+          <div key={state} style={{ marginBottom: "10px" }}>
             <input
               type="checkbox"
               value={state}
@@ -190,25 +226,32 @@ export default function () {
                 if (e.target.checked) {
                   setFormData({ ...formData, state: e.target.value });
                 } else {
-                  setFormData({ ...formData, state: "" });
+                  setFormData({ ...formData, state: "" }); // Décocher réinitialise à vide
                 }
               }}
             />
-            <label className="text-gray-700 capitalize">{state}</label>
+            <label htmlFor={state} style={{ marginLeft: "10px" }}>
+              {state.charAt(0).toUpperCase() + state.slice(1)}{" "}
+              {/* Capitalisation */}
+            </label>
           </div>
         ))}
       </div>
-  
-      <label className="block mb-2 font-semibold text-gray-700">Created At</label>
+
+      <label style={styles.label}>Created At</label>
       <input
-        className="w-full mb-4 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        style={styles.input}
         type="date"
-        onChange={(e) => setFormData({ ...formData, created_at: e.target.value })}
+        onChange={(e) => {
+          setFormData({ ...formData, created_at: e.target.value });
+        }}
         value={formData.created_at}
       />
-  
-      <button
-        className="w-full py-3 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition"
+
+      <input
+        type="submit"
+        value="Send"
+        style={styles.submitButton}
         onClick={() => {
           const formDataToSend = new FormData();
           formDataToSend.append("token", userData.token);
@@ -223,17 +266,16 @@ export default function () {
               formDataToSend.append("files", image);
             });
           }
+          console.log(formDataToSend);
           AddCourier(formDataToSend, formData.departements)
-            .then((res) => console.log(res))
-            .catch((err) => console.error("Upload failed:", err));
+            .then((res) => {
+              console.log(res);
+            })
+            .catch((err) => {
+              console.error("Upload failed:", err);
+            });
         }}
-      >
-        Send
-      </button>
+      />
     </div>
-  </div>
-  
-  
-
   );
 }

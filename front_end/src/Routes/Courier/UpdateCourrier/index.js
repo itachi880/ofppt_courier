@@ -199,7 +199,7 @@ export default function () {
             );
             if (
               formData.departements[depIndex].groups.push &&
-              !formData.departements[depIndex].groups.find(
+              formData.departements[depIndex].groups.find(
                 (grp) => grp.id == e.target.value
               )
             ) {

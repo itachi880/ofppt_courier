@@ -177,8 +177,6 @@ export default function () {
           .flatMap((grps) =>
             grps.map((grp) => <option value={grp.id}>{grp.name}</option>)
           )}
-        <option value="all">toutes</option>
-        <option value="none">aucun</option>
       </select>
 
       <label style={styles.label}>Description</label>

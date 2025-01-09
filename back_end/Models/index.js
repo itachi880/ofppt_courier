@@ -327,12 +327,14 @@ module.exports.Departement = {
             department_id: row.department_id,
             department_name: row.department_name,
             department_parent_id: row.department_parent_id,
-            group: [
-              {
-                id: row.group_id,
-                name: row.group_name,
-              },
-            ],
+            groups: row.group_id
+              ? [
+                  {
+                    id: row.group_id,
+                    name: row.group_name,
+                  },
+                ]
+              : [],
           });
         }
       });

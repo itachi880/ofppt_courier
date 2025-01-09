@@ -66,6 +66,8 @@ export default function () {
       // { id: 2, name: "departement 2", groups: [{ id: 2, name: "group 2" }] },
     ],
     created_at: "",
+    departements: [],
+    imgs: [],
   });
   const [userData, setUserData] = User.useStore();
   const [departementsGroup, setDepartementsGroup] =
@@ -89,37 +91,49 @@ export default function () {
         <RedBox>departements</RedBox>
         <GreenBox>groups</GreenBox>
         <hr />
-        {formData.departements?.map((dep) => (
-          <div
-            style={{ display: "flex", alignItems: "center", margin: "10px 0" }}
-          >
-            <RedBox>{dep?.name}</RedBox>
-            {dep.groups == "all" ? (
-              <GreenBox>all</GreenBox>
-            ) : dep.groups == "none" ? (
-              <GreenBox>none</GreenBox>
-            ) : (
-              dep.groups?.map((grp) => <GreenBox>{grp.name}</GreenBox>)
-            )}
-          </div>
-        ))}
+        {formData.departements?.map((dep) => {
+          console.log(dep);
+          return (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                margin: "10px 0",
+              }}
+            >
+              <RedBox>{dep?.department_name}</RedBox>
+              {dep.groups == "all" ? (
+                <GreenBox>all</GreenBox>
+              ) : dep.groups == "none" ? (
+                <GreenBox>none</GreenBox>
+              ) : (
+                dep.groups?.map((grp) => <GreenBox>{grp.name}</GreenBox>)
+              )}
+            </div>
+          );
+        })}
       </div>
       <label style={styles.label}>Departements</label>
       <select
         style={styles.select}
         onChange={(e) => {
-          if (formData.departements.find((dep) => dep.id == e.target.value))
+          console.log("selected dep", e.target.value);
+          if (
+            formData.departements.find(
+              (dep) => dep.department_id == e.target.value
+            )
+          )
             return;
 
           formData.departements.push({
-            id: e.target.value,
-            name: departementsGroup.departements.find(
-              (dep) => dep.id == e.target.value
-            ).name,
+            department_id: e.target.value,
+            department_name: departementsGroup.departements.find(
+              (dep) => dep.department_id == e.target.value
+            ).department_name,
             groups: [],
           });
           setFormData({ ...formData });
-          e.target.nextSibling.nextSibling.value = "";
+          e.target.nextElementSibling.nextElementSibling.value = "";
         }}
       >
         <option value="" hidden>
@@ -127,7 +141,7 @@ export default function () {
         </option>
 
         {departementsGroup.departements.map((dep) => (
-          <option value={dep.id}>{dep.name}</option>
+          <option value={dep.department_id}>{dep.department_name}</option>
         ))}
       </select>
 
@@ -135,34 +149,32 @@ export default function () {
       <select
         style={styles.select}
         onChange={(e) => {
-          const grpId = e.target.value;
-          const dep =
-            departementsGroup.departements.find((dep) =>
-              dep.groups.find((grp) => grp.id == grpId)
-            ) ??
-            departementsGroup.departements.find(
-              (dep) => dep.id == e.target.previousSibling.previousSibling.value
-            );
+          const depId = e.target.previousSibling.previousSibling.value;
           const depIndex = formData.departements.findIndex(
-            (e) => e.id == dep.id
+            (dep) => dep.department_id == depId
           );
-          if (depIndex == -1) return;
+
           if (e.target.value == "all") {
             formData.departements[depIndex].groups = "all";
           } else if (e.target.value == "none") {
             formData.departements[depIndex].groups = [];
           } else {
-            if (!formData.departements[depIndex].groups.push)
-              formData.departements[depIndex].groups = [];
-            if (
-              formData.departements[depIndex].groups.find(
-                (grp) => grp.id == grpId
-              )
-            )
-              return;
-            formData.departements[depIndex].groups.push(
-              dep.groups.find((grp) => grp.id == grpId)
+            const grp = departementsGroup.groups.find(
+              (group) => group.id == e.target.value
             );
+            if (formData.departements[depIndex].groups.push) {
+              formData.departements[depIndex].groups.push({
+                id: grp.id,
+                name: grp.name,
+              });
+            } else {
+              formData.departements[depIndex].groups = [
+                {
+                  id: grp.id,
+                  name: grp.name,
+                },
+              ];
+            }
           }
           setFormData({ ...formData });
           console.log(formData);
@@ -171,13 +183,7 @@ export default function () {
         <option value="" hidden>
           Select Group
         </option>
-        {departementsGroup.departements
-          .filter((dep) => formData.departements.find((e) => e.id == dep.id))
-          .map((deps) =>
-            deps.groups.map((group) => (
-              <option value={group.id}>{group.name}</option>
-            ))
-          )}
+
         <option value="all">toutes</option>
         <option value="none">aucun</option>
       </select>

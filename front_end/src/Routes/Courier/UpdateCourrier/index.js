@@ -174,10 +174,20 @@ export default function () {
       <select
         style={styles.select}
         onChange={(e) => {
-          const depId = e.target.previousSibling.previousSibling.value;
-          const depIndex = formData.departements.findIndex(
-            (dep) => dep.department_id == depId
+          console.log(
+            departementsGroup.departements.filter((dep) =>
+              dep.groups.find((grp) => grp.id == e.target.value)
+            )
           );
+          const depId = departementsGroup.departements.filter((dep) =>
+            dep.groups.find((grp) => grp.id == e.target.value)
+          )[0]?.department_id;
+
+          const depIndex = depId
+            ? formData.departements.findIndex(
+                (dep) => dep.department_id == depId
+              )
+            : formData.departements.length - 1;
 
           if (e.target.value == "all") {
             formData.departements[depIndex].groups = "all";
@@ -187,7 +197,12 @@ export default function () {
             const grp = departementsGroup.groups.find(
               (group) => group.id == e.target.value
             );
-            if (formData.departements[depIndex].groups.push) {
+            if (
+              formData.departements[depIndex].groups.push &&
+              !formData.departements[depIndex].groups.find(
+                (grp) => grp.id == e.target.value
+              )
+            ) {
               formData.departements[depIndex].groups.push({
                 id: grp.id,
                 name: grp.name,
@@ -208,7 +223,11 @@ export default function () {
         <option value="" hidden>
           Select Group
         </option>
-
+        {departementsGroup.departements
+          .map((dep) => dep.groups)
+          .flatMap((grps) =>
+            grps.map((grp) => <option value={grp.id}>{grp.name}</option>)
+          )}
         <option value="all">toutes</option>
         <option value="none">aucun</option>
       </select>

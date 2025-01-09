@@ -5,10 +5,10 @@ import { useEffect } from "react";
 
 export default () => {
   const [userData, setUserData] = User.useStore();
+  if (!userData.token) return null;
   useEffect(() => {
     console.log(userData);
   }, [userData]);
-  if (!userData.token) return null;
   return (
     <div className="navbar-holder">
       <nav className="navbar">

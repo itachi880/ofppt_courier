@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { tokenAuthApi, UpdateDepartementApi } from "../../../api"; // Assurez-vous que cette fonction existe dans vos APIs.
+import { UpdateDepartementApi } from "../../../api"; // Assurez-vous que cette fonction existe dans vos APIs.
 import { User } from "../../../data";
 import { useParams } from "react-router-dom";
 

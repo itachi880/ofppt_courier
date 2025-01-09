@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { LoginApi, tokenAuthApi } from "../../api/index";
+import { LoginApi } from "../../api/index";
 import { User } from "../../data";
 import { Store } from "react-data-stores";
 export function LoginForm() {
@@ -10,21 +10,14 @@ export function LoginForm() {
   const [userData, setUserData] = User.useStore();
   useEffect(() => {
     if (!userData.token) return;
-    tokenAuthApi(userData.token).then(([err, data]) => {
-      if (err) {
-        console.log("Token invalid or expired");
-        setUserData({}, true);
-      } else {
-        console.log("User data:", data);
-        setUserData(data);
-      }
-    });
   }, []); // Cette fonction est exécutée une seule fois après le premier rendu.
   const handleLogin = async (e) => {
     e.preventDefault(); // Empêche le rechargement de la page.
     const [err, data] = await LoginApi(email, password);
     if (err) {
-      setError(err?.response?.data?.message || "An error occurred during login");
+      setError(
+        err?.response?.data?.message || "An error occurred during login"
+      );
       setSuccess(null);
     } else {
       setSuccess("Login successful!");
@@ -37,16 +30,37 @@ export function LoginForm() {
   };
 
   return (
-    <div style={{ maxWidth: "400px", margin: "0 auto", padding: "20px", textAlign: "center" }}>
+    <div
+      style={{
+        maxWidth: "400px",
+        margin: "0 auto",
+        padding: "20px",
+        textAlign: "center",
+      }}
+    >
       <h2>Login</h2>
       <form onSubmit={handleLogin}>
         <div style={{ marginBottom: "10px" }}>
           <label htmlFor="email">Email:</label>
-          <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} style={{ width: "100%", padding: "8px", marginTop: "5px" }} required />
+          <input
+            type="email"
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={{ width: "100%", padding: "8px", marginTop: "5px" }}
+            required
+          />
         </div>
         <div style={{ marginBottom: "10px" }}>
           <label htmlFor="password">Password:</label>
-          <input type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} style={{ width: "100%", padding: "8px", marginTop: "5px" }} required />
+          <input
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            style={{ width: "100%", padding: "8px", marginTop: "5px" }}
+            required
+          />
         </div>
         <button
           type="submit"
@@ -64,7 +78,9 @@ export function LoginForm() {
       </form>
 
       {error && <p style={{ color: "red", marginTop: "10px" }}>{error}</p>}
-      {success && <p style={{ color: "green", marginTop: "10px" }}>{success}</p>}
+      {success && (
+        <p style={{ color: "green", marginTop: "10px" }}>{success}</p>
+      )}
     </div>
   );
 }

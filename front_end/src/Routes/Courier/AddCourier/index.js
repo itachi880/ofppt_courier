@@ -125,20 +125,8 @@ export default function () {
         style={styles.select}
         onChange={(e) => {
           console.log("selected dep", e.target.value);
-          if (
-            formData.departements.find(
-              (dep) => dep.department_id == e.target.value
-            )
-          )
-            return;
-
-          formData.departements.push({
-            department_id: e.target.value,
-            department_name: departementsGroup.departements.find(
-              (dep) => dep.department_id == e.target.value
-            ).department_name,
-            groups: [],
-          });
+          if (formData.departements.includes(+e.target.value)) return;
+          formData.departements.push(+e.target.value);
           setFormData({ ...formData });
           e.target.nextElementSibling.nextElementSibling.value = "";
         }}
@@ -156,43 +144,14 @@ export default function () {
       <select
         style={styles.select}
         onChange={(e) => {
-          const depId = e.target.previousSibling.previousSibling.value;
-          const depIndex = formData.departements.findIndex(
-            (dep) => dep.department_id == depId
-          );
-
-          if (e.target.value == "all") {
-            formData.departements[depIndex].groups = "all";
-          } else if (e.target.value == "none") {
-            formData.departements[depIndex].groups = [];
-          } else {
-            const grp = departementsGroup.groups.find(
-              (group) => group.id == e.target.value
-            );
-            if (formData.departements[depIndex].groups.push) {
-              formData.departements[depIndex].groups.push({
-                id: grp.id,
-                name: grp.name,
-              });
-            } else {
-              formData.departements[depIndex].groups = [
-                {
-                  id: grp.id,
-                  name: grp.name,
-                },
-              ];
-            }
-          }
+          if (formData.groups.includes(+e.target.value)) return;
+          formData.groups.push(+e.target.value);
           setFormData({ ...formData });
-          console.log(formData);
         }}
       >
         <option value="" hidden>
           Select Group
         </option>
-
-        <option value="all">toutes</option>
-        <option value="none">aucun</option>
       </select>
 
       <label style={styles.label}>Description</label>

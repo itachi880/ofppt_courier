@@ -242,7 +242,7 @@ export default function () {
         onChange={(e) => {
           setFormData({ ...formData, deadline: e.target.value });
         }}
-        value={formData.deadline}
+        value={formData.deadline.split("T")[0]}
       />
       <label style={styles.label}>State</label>
       <div>
@@ -275,7 +275,7 @@ export default function () {
         onChange={(e) => {
           setFormData({ ...formData, created_at: e.target.value });
         }}
-        value={formData.created_at}
+        value={formData.created_at.split("T")[0]}
       />
 
       <input

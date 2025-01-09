@@ -68,6 +68,7 @@ export default function () {
     created_at: "",
     departements: [],
     imgs: [],
+    groups: [],
   });
   const [userData, setUserData] = User.useStore();
   const [departementsGroup, setDepartementsGroup] =
@@ -91,27 +92,33 @@ export default function () {
         <RedBox>departements</RedBox>
         <GreenBox>groups</GreenBox>
         <hr />
-        {formData.departements?.map((dep) => {
-          console.log(dep);
-          return (
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                margin: "10px 0",
-              }}
-            >
-              <RedBox>{dep?.department_name}</RedBox>
-              {dep.groups == "all" ? (
-                <GreenBox>all</GreenBox>
-              ) : dep.groups == "none" ? (
-                <GreenBox>none</GreenBox>
-              ) : (
-                dep.groups?.map((grp) => <GreenBox>{grp.name}</GreenBox>)
-              )}
-            </div>
-          );
-        })}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            margin: "10px 0",
+            gap: "5px",
+            flexWrap: "wrap",
+            width: "100%",
+          }}
+        >
+          {formData.departements.map((dep) => {
+            return (
+              <RedBox>
+                {
+                  departementsGroup.departements.find(
+                    (departement) => departement.department_id == dep
+                  ).department_name
+                }
+              </RedBox>
+            );
+          })}
+          {formData.groups.map((grp) => (
+            <GreenBox>
+              {departementsGroup.groups.find((group) => group.id == grp).name}
+            </GreenBox>
+          ))}
+        </div>
       </div>
       <label style={styles.label}>Departements</label>
       <select

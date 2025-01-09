@@ -283,15 +283,20 @@ export default function () {
         value="update"
         style={styles.submitButton}
         onClick={() => {
+          const formDataToSend = new FormData();
+          formDataToSend.append("title", formData.title);
+          formDataToSend.append(".description", formData.description);
+          formDataToSend.append("id", formData.id);
+          formDataToSend.append("state", formData.state);
+          formDataToSend.append("created_at", formData.created_at);
+          formDataToSend.append("deadline", formData.deadline);
+          formDataToSend.append("critical", formData.critical);
+          formDataToSend.append("token", userData.token);
+          // ! needs to be added formData.files
           UpdateCourier(
-            formData.id,
-            userData.token,
-            formData.title,
-            formData.description,
-            formData.state,
-            formData.deadline,
-            formData.critical,
-            formData.departements
+            formDataToSend,
+            formData.departements,
+            formData.groups
           ).then((res) => {
             console.log(res);
           });

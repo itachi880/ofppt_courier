@@ -69,6 +69,7 @@ export default function () {
     departements: [],
     imgs: [],
     groups: [],
+    files: [],
   });
   const [userData, setUserData] = User.useStore();
   const [departementsGroup, setDepartementsGroup] =
@@ -192,7 +193,7 @@ export default function () {
         style={styles.fileInput}
         multiple={true}
         onChange={(e) => {
-          setFormData({ ...formData, images: e.target.files });
+          setFormData({ ...formData, files: e.target.files });
         }}
       />
 
@@ -252,13 +253,13 @@ export default function () {
           formDataToSend.append("deadline", formData.deadline);
           formDataToSend.append("critical", formData.critical);
           formDataToSend.append("created_at", formData.created_at);
-          if (formData.images) {
-            Array.from(formData.images).forEach((image) => {
-              formDataToSend.append("files", image);
+          if (formData.files) {
+            Array.from(formData.files).forEach((file) => {
+              formDataToSend.append("files", file);
             });
           }
           console.log(formDataToSend);
-          AddCourier(formDataToSend, formData.departements)
+          AddCourier(formDataToSend, formData.departements, formData.groups)
             .then((res) => {
               console.log(res);
             })

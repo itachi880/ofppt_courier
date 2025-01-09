@@ -66,7 +66,7 @@ export const getGroups = async (token) => {
     });
   return result;
 };
-export const AddCourier = async (formData, departements) => {
+export const AddCourier = async (formData, departements, groups) => {
   if (!formData) {
     return [
       "All parameters (token, title, description, deadline, critical, departements) are required",
@@ -75,15 +75,13 @@ export const AddCourier = async (formData, departements) => {
   }
   const result = [null, null];
   try {
-    const dep_grps = [];
-    for (let i = 0; i < departements.length; i++) {
-      dep_grps.push({ department_id: departements[i].id });
-      for (let j = 0; j < departements[i].groups.length; j++) {
-        dep_grps.push({ group_id: departements[i].groups[j].id });
-      }
-    }
-
-    formData.append("assigneed_to", JSON.stringify(dep_grps));
+    formData.append(
+      "assigneed_to",
+      JSON.stringify({
+        departements,
+        groups,
+      })
+    );
     const response = await axios.post(`${BASE_URL}/courier/add`, formData, {
       headers: {
         Authorization: formData.get("token"),
@@ -97,17 +95,8 @@ export const AddCourier = async (formData, departements) => {
   return result;
 };
 
-export const UpdateCourier = async (
-  id,
-  token,
-  title,
-  description,
-  state,
-  deadline,
-  critical,
-  departement
-) => {
-  if (!id || !token || !title || !description || !deadline || !state) {
+export const UpdateCourier = async (formData, departements, groups) => {
+  if (!formData.token || departements.length == 0 || groups.length == 0) {
     return [
       "All parameters (id, token, title, description, state) are required",
       null,
@@ -116,12 +105,20 @@ export const UpdateCourier = async (
 
   const result = [null, null];
   try {
+    formData.append(
+      "assigneed_to",
+      JSON.stringify({
+        departements,
+        groups,
+      })
+    );
     const response = await axios.post(
-      `${BASE_URL}/courier/${id}`,
-      { title, description, state, deadline, critical, departement },
+      `${BASE_URL}/courier/${formData.id}`,
+      formData,
       {
         headers: {
-          Authorization: token,
+          Authorization: formData.get("token"),
+          "Content-Type": "multipart/form-data",
         },
       }
     );

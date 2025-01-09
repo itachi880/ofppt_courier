@@ -17,7 +17,7 @@ export const departements_group_store = createStore({
   departements: [
     {
       department_id: 1,
-      departement_name: "departement 1",
+      department_name: "departement 1",
       groups: [
         {
           id: 1,

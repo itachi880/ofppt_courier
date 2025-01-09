@@ -11,7 +11,6 @@ export default () => {
     if (!userData.token) return;
     GetEvents(userData.token).then((response) => {
       if (response[0]) return console.log("Error getting events", response[0]);
-      const events = [];
       console.log(response);
       setCalendarEvents({ data: response[1].data });
     });

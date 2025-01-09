@@ -71,6 +71,7 @@ export default function () {
       // { id: 2, name: "departement 2", groups: [{ id: 2, name: "group 2" }] },
     ],
     created_at: "",
+    groups: [],
     imgs: [],
   });
   <div></div>;
@@ -91,15 +92,9 @@ export default function () {
       state: event.state,
       critical: event.critical,
       created_at: event.created_at,
-      departements: departementsGroup.departements
-        .filter((dep) => event.departements.includes(dep.department_id))
-        .map((dep) => ({
-          ...dep,
-          groups: dep.groups
-            ? dep.groups.filter((grp) => event.groups.includes(grp.id))
-            : [],
-        })),
+      departements: event.departements,
       imgs: event.imgs,
+      groups: event.groups,
     });
   }, []);
   return (
@@ -117,47 +112,41 @@ export default function () {
         <RedBox>departements</RedBox>
         <GreenBox>groups</GreenBox>
         <hr />
-        {formData.departements?.map((dep) => {
-          console.log(dep);
-          return (
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                margin: "10px 0",
-              }}
-            >
-              <RedBox>{dep?.department_name}</RedBox>
-              {dep.groups == "all" ? (
-                <GreenBox>all</GreenBox>
-              ) : dep.groups == "none" ? (
-                <GreenBox>none</GreenBox>
-              ) : (
-                dep.groups?.map((grp) => <GreenBox>{grp.name}</GreenBox>)
-              )}
-            </div>
-          );
-        })}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            margin: "10px 0",
+            width: "100%",
+          }}
+        >
+          {" "}
+          {formData.departements.map((dep) => {
+            return (
+              <RedBox>
+                {
+                  departementsGroup.departements.find(
+                    (departement) => departement.department_id == dep
+                  ).department_name
+                }
+              </RedBox>
+            );
+          })}
+          {formData.groups.map((grp) => {
+            return (
+              <GreenBox>
+                {departementsGroup.groups.find((group) => group.id == grp).name}
+              </GreenBox>
+            );
+          })}
+        </div>
       </div>
       <label style={styles.label}>Departements</label>
       <select
         style={styles.select}
         onChange={(e) => {
-          console.log("selected dep", e.target.value);
-          if (
-            formData.departements.find(
-              (dep) => dep.department_id == e.target.value
-            )
-          )
-            return;
-
-          formData.departements.push({
-            department_id: e.target.value,
-            department_name: departementsGroup.departements.find(
-              (dep) => dep.department_id == e.target.value
-            ).department_name,
-            groups: [],
-          });
+          if (formData.departements.includes(+e.target.value)) return;
+          formData.departements.push(+e.target.value);
           setFormData({ ...formData });
         }}
       >
@@ -174,48 +163,8 @@ export default function () {
       <select
         style={styles.select}
         onChange={(e) => {
-          console.log(
-            departementsGroup.departements.filter((dep) =>
-              dep.groups.find((grp) => grp.id == e.target.value)
-            )
-          );
-          const depId = departementsGroup.departements.filter((dep) =>
-            dep.groups.find((grp) => grp.id == e.target.value)
-          )[0]?.department_id;
-
-          const depIndex = depId
-            ? formData.departements.findIndex(
-                (dep) => dep.department_id == depId
-              )
-            : formData.departements.length - 1;
-
-          if (e.target.value == "all") {
-            formData.departements[depIndex].groups = "all";
-          } else if (e.target.value == "none") {
-            formData.departements[depIndex].groups = [];
-          } else {
-            const grp = departementsGroup.groups.find(
-              (group) => group.id == e.target.value
-            );
-            if (
-              formData.departements[depIndex].groups.push &&
-              formData.departements[depIndex].groups.find(
-                (grp) => grp.id == e.target.value
-              )
-            ) {
-              formData.departements[depIndex].groups.push({
-                id: grp.id,
-                name: grp.name,
-              });
-            } else {
-              formData.departements[depIndex].groups = [
-                {
-                  id: grp.id,
-                  name: grp.name,
-                },
-              ];
-            }
-          }
+          if (formData.groups.includes(+e.target.value)) return;
+          formData.groups.push(+e.target.value);
           setFormData({ ...formData });
           console.log(formData);
         }}

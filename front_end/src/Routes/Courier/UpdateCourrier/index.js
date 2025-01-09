@@ -123,20 +123,40 @@ export default function () {
           }}
         >
           {formData.departements.map((dep) => {
+            const depObj = departementsGroup.departements.find(
+              (departement) => departement.department_id == dep
+            );
             return (
-              <RedBox>
-                {
-                  departementsGroup.departements.find(
-                    (departement) => departement.department_id == dep
-                  ).department_name
-                }
+              <RedBox
+                onClick={() => {
+                  formData.departements = formData.departements.filter(
+                    (departement) => departement != dep
+                  );
+                  setFormData({
+                    ...formData,
+                  });
+                }}
+              >
+                {depObj.department_name}
               </RedBox>
             );
           })}
           {formData.groups.map((grp) => {
+            const grpObj = departementsGroup.groups.find(
+              (group) => group.id == grp
+            );
             return (
-              <GreenBox>
-                {departementsGroup.groups.find((group) => group.id == grp).name}
+              <GreenBox
+                onClick={() => {
+                  formData.groups = formData.groups.filter(
+                    (group) => group != grp
+                  );
+                  setFormData({
+                    ...formData,
+                  });
+                }}
+              >
+                {grpObj.name}
               </GreenBox>
             );
           })}

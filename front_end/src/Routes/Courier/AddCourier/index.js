@@ -75,7 +75,8 @@ export default function () {
     console.log(formData);
   }, [formData]);
   return (
-    <div className="p-8 max-w-4xl mx-auto bg-gray-100 rounded-lg shadow-lg grid grid-cols-2 gap-6 min-h-screen">
+   <div className="min-h-screen flex items-center justify-center bg-gray-100">
+  <div className="p-8 w-full max-w-4xl bg-white rounded-lg shadow-lg grid grid-cols-1 sm:grid-cols-2 gap-6">
     {/* Left Side */}
     <div>
       <label className="block mb-2 font-semibold text-gray-700">Object Title</label>
@@ -85,13 +86,13 @@ export default function () {
         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
         value={formData.title}
       />
-  
+
       <label className="block mb-2 font-semibold text-gray-700">Departements</label>
       <select
         className="w-full mb-4 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         onChange={(e) => {
           if (formData.departements.find((dep) => dep.id == e.target.value)) return;
-  
+
           formData.departements.push({
             id: e.target.value,
             name: departementsGroup.departements.find((dep) => dep.id == e.target.value).name,
@@ -105,10 +106,12 @@ export default function () {
           Select Departement
         </option>
         {departementsGroup.departements.map((dep) => (
-          <option value={dep.id}>{dep.name}</option>
+          <option key={dep.id} value={dep.id}>
+            {dep.name}
+          </option>
         ))}
       </select>
-  
+
       <label className="block mb-2 font-semibold text-gray-700">Groups</label>
       <select
         className="w-full mb-4 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -145,12 +148,12 @@ export default function () {
         {departementsGroup.departements
           .filter((dep) => formData.departements.find((e) => e.id == dep.id))
           .map((deps) =>
-            deps.groups.map((group) => <option value={group.id}>{group.name}</option>)
+            deps.groups.map((group) => <option key={group.id} value={group.id}>{group.name}</option>)
           )}
         <option value="all">All</option>
         <option value="none">None</option>
       </select>
-  
+
       <label className="block mb-2 font-semibold text-gray-700">Description</label>
       <input
         className="w-full mb-4 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -159,7 +162,7 @@ export default function () {
         placeholder="Description"
       />
     </div>
-  
+
     {/* Right Side */}
     <div>
       <label className="block mb-2 font-semibold text-gray-700">Upload Images</label>
@@ -169,7 +172,7 @@ export default function () {
         multiple={true}
         onChange={(e) => setFormData({ ...formData, images: e.target.files })}
       />
-  
+
       <label className="block mb-2 font-semibold text-gray-700">Deadline</label>
       <input
         className="w-full mb-4 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -177,7 +180,7 @@ export default function () {
         onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
         value={formData.deadline}
       />
-  
+
       <label className="block mb-2 font-semibold text-gray-700">State</label>
       <div className="mb-4">
         {["normal", "urgent", "tres urgent"].map((state) => (
@@ -198,7 +201,7 @@ export default function () {
           </div>
         ))}
       </div>
-  
+
       <label className="block mb-2 font-semibold text-gray-700">Created At</label>
       <input
         className="w-full mb-4 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -206,7 +209,7 @@ export default function () {
         onChange={(e) => setFormData({ ...formData, created_at: e.target.value })}
         value={formData.created_at}
       />
-  
+
       <button
         className="w-full py-3 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition"
         onClick={() => {
@@ -232,7 +235,8 @@ export default function () {
       </button>
     </div>
   </div>
-  
+</div>
+
   
 
   );

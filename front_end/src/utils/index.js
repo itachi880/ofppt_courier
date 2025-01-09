@@ -19,6 +19,8 @@ export function Calendar({
     <BigCalendar
       components={{
         agenda: {
+/*************  ✨ Codeium Command ⭐  *************/
+/******  d4135cc0-9de7-4828-90a4-f632ca30e963  *******/
           event: ({ event }) => (
             <div onClick={() => Store.navigateTo(`/courrier/update/${event.id}`)}>
               <h4 style={{ margin: "0" }}>{event.title}</h4>

@@ -96,11 +96,9 @@ export const AddCourier = async (formData, departements, groups) => {
 };
 
 export const UpdateCourier = async (formData, departements, groups) => {
-  if (!formData.token || departements.length == 0 || groups.length == 0) {
-    return [
-      "All parameters (id, token, title, description, state) are required",
-      null,
-    ];
+  console.log(formData, departements, groups);
+  if (!formData.get("token")) {
+    return ["token error", null];
   }
 
   const result = [null, null];
@@ -113,7 +111,7 @@ export const UpdateCourier = async (formData, departements, groups) => {
       })
     );
     const response = await axios.post(
-      `${BASE_URL}/courier/${formData.id}`,
+      `${BASE_URL}/courier/update/${formData.get("id")}`,
       formData,
       {
         headers: {

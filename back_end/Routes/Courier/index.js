@@ -147,41 +147,39 @@ router.get("/assigne/:courierId", async (req, res) => {
 
   return res.json(response);
 });
-router.post("/update/:courierId", async (req, res) => {
-  const courierId = req.params.courierId;
+router.post(
+  "/update/:courierId",
+  fileSaver.array("files", 3),
+  async (req, res) => {
+    const courierId = req.params.courierId;
 
-  if (!courierId) {
-    return res.status(400).send("Courier ID is required");
-  }
-
-  const { title, description, deadline, critical } = req.body;
-  // Validation des données
-  if (!title || !description || !deadline) {
-    return res
-      .status(400)
-      .send("Missing required fields: title, description, or deadline");
-  }
-
-  try {
-    // Rechercher le courrier dans la base de données
-    const courier = await Courier.updateByID(courierId, {
-      title,
-      description,
-      deadline,
-      critical,
-    });
-    if (!courier) {
-      return res.status(404).send("Courier not found");
+    if (!courierId) {
+      return res.status(400).send("Courier ID is required");
     }
-    res.status(200).json({
-      message: "Courier updated successfully",
-      courier,
-    });
-  } catch (error) {
-    console.error("Error updating courier:", error);
-    res.status(500).send("Server error");
+
+    try {
+      // Rechercher le courrier dans la base de données
+      const [updateError] = await Courier.updateByID(courierId, {
+        title: req.body.title,
+        description: req.body.description,
+        deadline: req.body.deadline,
+        critical: req.body.critical,
+        created_at: req.body.created_at,
+        state: req.body.state,
+      });
+      if (updateError) {
+        return res.status(404).send("Courier not found");
+      }
+      const [assigneError] = CourierAssignee.updateAssignment(
+        JSON.parse(req.body.assigneed_to)
+      );
+      res.status(200).end("Courier updated successfully");
+    } catch (error) {
+      console.error("Error updating courier:", error);
+      res.status(500).send("Server error");
+    }
   }
-});
+);
 
 //!
 module.exports = router;

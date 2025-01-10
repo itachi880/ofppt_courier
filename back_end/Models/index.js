@@ -61,7 +61,7 @@ const TablesNames = {
 /**
  * @typedef {object} Courier - table database COURIER
  * @property {number} id - id de Courier
- * @property {string} titel
+ * @property {string} title
  * @property {string} description
  * @property {string} deadline
  * @property {"normal"|"urgent"|"tres urgent"} state
@@ -568,6 +568,7 @@ module.exports.Courier = {
     try {
       const query = `SELECT id ,
       description,
+      title,
       deadline,
       state,
       create_by,
@@ -791,18 +792,19 @@ module.exports.CourierAssignee = {
   },
   /**
    * Update an existing assignment
-   * @param {Partial<CourierAssignee>} assignment
-   * @returns {Promise<[(import("mysql2").QueryError | string | null ),(updateResult | null)]>}
+   * @param {Partial<{departements:number[],groups:number[]}>} assignment
+   * @returns {Promise<[(import("mysql2").QueryError | string | null ),(insertResult | null)]>}
    */
-  async updateAssignment(assignment) {
+  async updateAssignment(assignment, id) {
     try {
-      const columns = Object.keys(assignment);
-      if (columns.length == 0) return ["Fields required", null];
-      const query = `UPDATE ${TablesNames.courier_assigne} SET ${columns
-        .map((col) => `${col} = ?`)
-        .join(", ")} WHERE courier_id = ?`;
-      const values = [...Object.values(assignment), assignment.courier_id];
-      return [null, (await db.query(query, values))[0]];
+      const [res] = await db.query(`
+      DELET FROM ${TablesNames.courier_assigne} WHERE courier_id=${id};
+      INSERT INTO ${TablesNames.courier_assigne} values (${
+        assignment.departements ? assignment.departements.join(" ,") : ""
+      }) 
+      (${assignment.groups ? assignment.groups.join(" ,") : ""});
+      `);
+      return [null, res];
     } catch (e) {
       console.error(e);
       return [e, null];
@@ -818,7 +820,7 @@ module.exports.CourierAssignee = {
     try {
       let query = `SELECT 
         ${TablesNames.courier}.id, 
-        ${TablesNames.courier}.titel, 
+        ${TablesNames.courier}.title, 
         ${TablesNames.courier}.description, 
         ${TablesNames.courier}.deadline, 
         ${TablesNames.courier}.state, 
@@ -845,7 +847,6 @@ module.exports.CourierAssignee = {
         query += ` WHERE ${TablesNames.courier_assigne}.group_id = ?`;
         values.push(grp_id);
       }
-
       const [rows] = await db.query(query, values);
 
       const result = [];
@@ -856,7 +857,7 @@ module.exports.CourierAssignee = {
         if (!insertedIds.has(courierId)) {
           result.push({
             id: courierId,
-            titel: row[`titel`],
+            title: row[`title`],
             description: row[`description`],
             deadline: row[`deadline`],
             state: row[`state`],

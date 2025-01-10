@@ -32,7 +32,7 @@ export default () => {
           id: e.id,
           start: new Date(e.deadline.split("T")[0]),
           end: new Date(e.deadline.split("T")[0]),
-          title: e.titel,
+          title: e.title,
           backgroundColor: "red",
           description: e.description,
         }))}

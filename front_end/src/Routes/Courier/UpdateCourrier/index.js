@@ -58,9 +58,10 @@ const styles = {
 };
 export default function () {
   const [eventsStore, setEventsStore] = events.useStore();
+  const id = useParams().id;
 
   const [formData, setFormData] = useState({
-    id: useParams().id,
+    id: undefined,
     title: "",
     description: "",
     deadline: "",
@@ -73,8 +74,8 @@ export default function () {
     created_at: "",
     groups: [],
     imgs: [],
+    files: [],
   });
-  <div></div>;
   const [userData, setUserData] = User.useStore();
   const [departementsGroup, setDepartementsGroup] =
     departements_group_store.useStore();
@@ -82,10 +83,11 @@ export default function () {
     console.log(formData);
   }, [formData]);
   useEffect(() => {
-    const event = eventsStore.data.find((event) => event.id == formData.id);
+    const event = eventsStore.data.find((event) => event.id == id);
     if (!event) return Store.navigateTo("/");
     console.log(event);
     setFormData({
+      id: id,
       title: event.title,
       description: event.description,
       deadline: event.deadline,
@@ -95,6 +97,7 @@ export default function () {
       departements: event.departements,
       imgs: event.imgs,
       groups: event.groups,
+      files: [],
     });
   }, []);
   return (
@@ -217,7 +220,7 @@ export default function () {
           style={styles.fileInput}
           multiple={true}
           onChange={(e) => {
-            setFormData({ ...formData, images: e.target.files });
+            setFormData({ ...formData, files: e.target.files });
           }}
         />
         {formData.imgs.map((img) => (
@@ -283,23 +286,24 @@ export default function () {
         value="update"
         style={styles.submitButton}
         onClick={() => {
+          console.log(formData);
           const formDataToSend = new FormData();
           formDataToSend.append("title", formData.title);
-          formDataToSend.append(".description", formData.description);
+          formDataToSend.append("description", formData.description);
           formDataToSend.append("id", formData.id);
           formDataToSend.append("state", formData.state);
           formDataToSend.append("created_at", formData.created_at);
           formDataToSend.append("deadline", formData.deadline);
           formDataToSend.append("critical", formData.critical);
           formDataToSend.append("token", userData.token);
-          // ! needs to be added formData.files
-          UpdateCourier(
-            formDataToSend,
-            formData.departements,
-            formData.groups
-          ).then((res) => {
-            console.log(res);
+          formData.files.forEach((file) => {
+            formDataToSend.append("files", file);
           });
+          UpdateCourier(formDataToSend, formData.departements, formData.groups)
+            .then((res) => {
+              console.log(res);
+            })
+            .catch(console.log);
         }}
       />
     </div>

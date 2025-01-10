@@ -102,7 +102,6 @@
   font-weight: 500;
   color: #f3f4f6; /* Couleur claire pour le texte */
 }
-
 .profile .logout {
   margin-left: 1rem;
   color: #f87171; /* Rouge doux */
@@ -119,7 +118,6 @@
   display: flex;
   gap: 1rem;
 }
-
 .options button {
   background-color: #3b82f6; /* Couleur bleue claire */
   color: #ffffff;

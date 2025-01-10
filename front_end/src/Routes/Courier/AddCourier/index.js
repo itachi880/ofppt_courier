@@ -66,6 +66,10 @@ export default function () {
       // { id: 2, name: "departement 2", groups: [{ id: 2, name: "group 2" }] },
     ],
     created_at: "",
+    departements: [],
+    imgs: [],
+    groups: [],
+    files: [],
   });
   const [userData, setUserData] = User.useStore();
   const [departementsGroup, setDepartementsGroup] =
@@ -89,37 +93,65 @@ export default function () {
         <RedBox>departements</RedBox>
         <GreenBox>groups</GreenBox>
         <hr />
-        {formData.departements?.map((dep) => (
-          <div
-            style={{ display: "flex", alignItems: "center", margin: "10px 0" }}
-          >
-            <RedBox>{dep?.name}</RedBox>
-            {dep.groups == "all" ? (
-              <GreenBox>all</GreenBox>
-            ) : dep.groups == "none" ? (
-              <GreenBox>none</GreenBox>
-            ) : (
-              dep.groups?.map((grp) => <GreenBox>{grp.name}</GreenBox>)
-            )}
-          </div>
-        ))}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            margin: "10px 0",
+            gap: "5px",
+            flexWrap: "wrap",
+            width: "100%",
+          }}
+        >
+          {formData.departements.map((dep) => {
+            const depObj = departementsGroup.departements.find(
+              (departement) => departement.department_id == dep
+            );
+            return (
+              <RedBox
+                onClick={() => {
+                  formData.departements = formData.departements.filter(
+                    (departement) => departement != dep
+                  );
+                  setFormData({
+                    ...formData,
+                  });
+                }}
+              >
+                {depObj.department_name}
+              </RedBox>
+            );
+          })}
+          {formData.groups.map((grp) => {
+            const grpObj = departementsGroup.groups.find(
+              (group) => group.id == grp
+            );
+            return (
+              <GreenBox
+                onClick={() => {
+                  formData.groups = formData.groups.filter(
+                    (group) => group != grp
+                  );
+                  setFormData({
+                    ...formData,
+                  });
+                }}
+              >
+                {grpObj.name}
+              </GreenBox>
+            );
+          })}
+        </div>
       </div>
       <label style={styles.label}>Departements</label>
       <select
         style={styles.select}
         onChange={(e) => {
-          if (formData.departements.find((dep) => dep.id == e.target.value))
-            return;
-
-          formData.departements.push({
-            id: e.target.value,
-            name: departementsGroup.departements.find(
-              (dep) => dep.id == e.target.value
-            ).name,
-            groups: [],
-          });
+          console.log("selected dep", e.target.value);
+          if (formData.departements.includes(+e.target.value)) return;
+          formData.departements.push(+e.target.value);
           setFormData({ ...formData });
-          e.target.nextSibling.nextSibling.value = "";
+          e.target.nextElementSibling.nextElementSibling.value = "";
         }}
       >
         <option value="" hidden>
@@ -127,7 +159,7 @@ export default function () {
         </option>
 
         {departementsGroup.departements.map((dep) => (
-          <option value={dep.id}>{dep.name}</option>
+          <option value={dep.department_id}>{dep.department_name}</option>
         ))}
       </select>
 
@@ -135,51 +167,14 @@ export default function () {
       <select
         style={styles.select}
         onChange={(e) => {
-          const grpId = e.target.value;
-          const dep =
-            departementsGroup.departements.find((dep) =>
-              dep.groups.find((grp) => grp.id == grpId)
-            ) ??
-            departementsGroup.departements.find(
-              (dep) => dep.id == e.target.previousSibling.previousSibling.value
-            );
-          const depIndex = formData.departements.findIndex(
-            (e) => e.id == dep.id
-          );
-          if (depIndex == -1) return;
-          if (e.target.value == "all") {
-            formData.departements[depIndex].groups = "all";
-          } else if (e.target.value == "none") {
-            formData.departements[depIndex].groups = [];
-          } else {
-            if (!formData.departements[depIndex].groups.push)
-              formData.departements[depIndex].groups = [];
-            if (
-              formData.departements[depIndex].groups.find(
-                (grp) => grp.id == grpId
-              )
-            )
-              return;
-            formData.departements[depIndex].groups.push(
-              dep.groups.find((grp) => grp.id == grpId)
-            );
-          }
+          if (formData.groups.includes(+e.target.value)) return;
+          formData.groups.push(+e.target.value);
           setFormData({ ...formData });
-          console.log(formData);
         }}
       >
         <option value="" hidden>
           Select Group
         </option>
-        {departementsGroup.departements
-          .filter((dep) => formData.departements.find((e) => e.id == dep.id))
-          .map((deps) =>
-            deps.groups.map((group) => (
-              <option value={group.id}>{group.name}</option>
-            ))
-          )}
-        <option value="all">toutes</option>
-        <option value="none">aucun</option>
       </select>
 
       <label style={styles.label}>Description</label>
@@ -198,7 +193,7 @@ export default function () {
         style={styles.fileInput}
         multiple={true}
         onChange={(e) => {
-          setFormData({ ...formData, images: e.target.files });
+          setFormData({ ...formData, files: e.target.files });
         }}
       />
 
@@ -258,13 +253,13 @@ export default function () {
           formDataToSend.append("deadline", formData.deadline);
           formDataToSend.append("critical", formData.critical);
           formDataToSend.append("created_at", formData.created_at);
-          if (formData.images) {
-            Array.from(formData.images).forEach((image) => {
-              formDataToSend.append("files", image);
+          if (formData.files) {
+            Array.from(formData.files).forEach((file) => {
+              formDataToSend.append("files", file);
             });
           }
           console.log(formDataToSend);
-          AddCourier(formDataToSend, formData.departements)
+          AddCourier(formDataToSend, formData.departements, formData.groups)
             .then((res) => {
               console.log(res);
             })

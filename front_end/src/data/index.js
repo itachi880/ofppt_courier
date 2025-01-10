@@ -16,8 +16,8 @@ export const User = createStore({
 export const departements_group_store = createStore({
   departements: [
     {
-      id: 1,
-      name: "departement 1",
+      department_id: 1,
+      department_name: "departement 1",
       groups: [
         {
           id: 1,

@@ -6,7 +6,8 @@ const fs = require("fs");
 router.use(auth_middleware);
 
 router.post("/add", fileSaver.array("files", 3), async (req, res) => {
-  if (req.user.role != Roles.admin) return res.status(401).end("Don't have access");
+  if (req.user.role != Roles.admin)
+    return res.status(401).end("Don't have access");
 
   const [err, response] = await Courier.insert({
     titel: req.body.titel,
@@ -24,9 +25,13 @@ router.post("/add", fileSaver.array("files", 3), async (req, res) => {
   if (req.files.length > 0) {
     const files = req.files.map((e, i) => {
       const fileName = `${i}_${Date.now()}.${e.originalname.split(".")[1]}`;
-      fs.writeFile(path.join(__dirname, "..", "..", "data", fileName), e.buffer, (writeErr) => {
-        if (writeErr) console.error(writeErr);
-      });
+      fs.writeFile(
+        path.join(__dirname, "..", "..", "data", fileName),
+        e.buffer,
+        (writeErr) => {
+          if (writeErr) console.error(writeErr);
+        }
+      );
       e.path = fileName;
       return { path: e.path, courier_id: response.insertId };
     });
@@ -48,13 +53,16 @@ router.post("/add", fileSaver.array("files", 3), async (req, res) => {
 
   if (!assigneed_to) return res.status(205).end(response.insertId + "");
 
-  const [err2] = await CourierAssignee.insertMany(
-    assigneed_to.map((e) => ({
+  const [err2] = await CourierAssignee.insertMany([
+    ...assigneed_to.departments.map((e) => ({
       courier_id: response.insertId,
-      department_id: e.department_id,
-      group_id: e.group_id,
-    }))
-  );
+      department_id: e,
+    })),
+    ...assigneed_to.groups.map((grp) => ({
+      courier_id: response.insertId,
+      group_id: grp,
+    })),
+  ]);
 
   if (err2) {
     console.error(err2);
@@ -69,14 +77,19 @@ router.get("/all", async (req, res) => {
   if (req.user.role == Roles.admin) {
     [err, response] = await CourierAssignee.getCouriers();
   } else {
-    [err, response] = await CourierAssignee.getCouriers(req.user.depId, req.user.grpId);
+    [err, response] = await CourierAssignee.getCouriers(
+      req.user.depId,
+      req.user.grpId
+    );
   }
   if (err) return res.status(500).end("back end err") && console.log(err);
   return res.json(response);
 });
 
 router.get("/:id", async (req, res) => {
-  const [err, response] = await Courier.read({ and: [{ id: { value: req.params.id, operateur: "=" } }] });
+  const [err, response] = await Courier.read({
+    and: [{ id: { value: req.params.id, operateur: "=" } }],
+  });
   if (err) return res.status(500).end("back end err") && console.log(err);
   return res.json(response);
 });
@@ -86,13 +99,18 @@ router.get("/:id", async (req, res) => {
 // Route to update an existing assignment
 router.post("/update/assigne", async (req, res) => {
   // Check if the user is an admin
-  if (req.user.role !== Roles.admin) return res.status(401).end("Don't have access");
+  if (req.user.role !== Roles.admin)
+    return res.status(401).end("Don't have access");
 
   const { courierId, depId, grpId, userId } = req.body;
 
   // Check for required fields
   if (!courierId || !depId || !userId) {
-    return res.status(400).end("Courier ID, Department ID, Assignee Type, and User ID are required");
+    return res
+      .status(400)
+      .end(
+        "Courier ID, Department ID, Assignee Type, and User ID are required"
+      );
   }
 
   // Update the assignment in the database
@@ -119,10 +137,13 @@ router.get("/assigne/:courierId", async (req, res) => {
   if (!courierId) return res.status(400).end("Courier ID is required");
 
   // Retrieve the assignment from the database
-  const [err, response] = await CourierAssignee.getAssignmentByCourierId(courierId);
+  const [err, response] = await CourierAssignee.getAssignmentByCourierId(
+    courierId
+  );
   if (err) return console.error(err) && res.status(500).end("Backend error");
 
-  if (!response || response.length === 0) return res.status(404).end("Assignment not found");
+  if (!response || response.length === 0)
+    return res.status(404).end("Assignment not found");
 
   return res.json(response);
 });
@@ -136,12 +157,19 @@ router.post("/update/:courierId", async (req, res) => {
   const { title, description, deadline, critical } = req.body;
   // Validation des données
   if (!title || !description || !deadline) {
-    return res.status(400).send("Missing required fields: title, description, or deadline");
+    return res
+      .status(400)
+      .send("Missing required fields: title, description, or deadline");
   }
 
   try {
     // Rechercher le courrier dans la base de données
-    const courier = await Courier.updateByID(courierId, { title, description, deadline, critical });
+    const courier = await Courier.updateByID(courierId, {
+      title,
+      description,
+      deadline,
+      critical,
+    });
     if (!courier) {
       return res.status(404).send("Courier not found");
     }

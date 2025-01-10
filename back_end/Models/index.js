@@ -327,12 +327,14 @@ module.exports.Departement = {
             department_id: row.department_id,
             department_name: row.department_name,
             department_parent_id: row.department_parent_id,
-            group: [
-              {
-                id: row.group_id,
-                name: row.group_name,
-              },
-            ],
+            groups: row.group_id
+              ? [
+                  {
+                    id: row.group_id,
+                    name: row.group_name,
+                  },
+                ]
+              : [],
           });
         }
       });
@@ -350,7 +352,7 @@ module.exports.Departement = {
    */
   async update(id, by) {
     try {
-      console.log(by)
+      console.log(by);
       const data = Object.entries(by);
       if (!id || data.length == 0) return ["data required", null];
       const sql = [];
@@ -564,7 +566,7 @@ module.exports.Courier = {
    */
   async read(by = {}) {
     try {
-      const query = `SELECT ${TablesNames.courier}.id ,
+      const query = `SELECT id ,
       description,
       deadline,
       state,
@@ -814,19 +816,25 @@ module.exports.CourierAssignee = {
    */
   async getCouriers(dep_id, grp_id) {
     try {
-      let query = `SELECT ${TablesNames.courier}.id, 
-      ${TablesNames.courier}.titel, 
-      ${TablesNames.courier}.description, 
-      ${TablesNames.courier}.deadline, 
-      ${TablesNames.courier}.state,  
-      ${TablesNames.courier_assigne}.group_id,  
-      ${TablesNames.courier_assigne}.department_id,  
-      ${TablesNames.courier}.created_at, 
-      ${TablesNames.courier}.updated_at
-      FROM ${TablesNames.courier_assigne}
-      JOIN ${TablesNames.courier} ON ${TablesNames.courier_assigne}.courier_id = ${TablesNames.courier}.id
-      `;
+      let query = `SELECT 
+        ${TablesNames.courier}.id, 
+        ${TablesNames.courier}.titel, 
+        ${TablesNames.courier}.description, 
+        ${TablesNames.courier}.deadline, 
+        ${TablesNames.courier}.state, 
+        ${TablesNames.courier_assigne}.group_id, 
+        ${TablesNames.courier_assigne}.department_id, 
+        ${TablesNames.courier}.created_at, 
+        ${TablesNames.courier}.updated_at, 
+        ${TablesNames.courier_files}.path 
+        FROM ${TablesNames.courier_assigne} 
+        JOIN ${TablesNames.courier} 
+        ON ${TablesNames.courier_assigne}.courier_id = ${TablesNames.courier}.id 
+        LEFT JOIN ${TablesNames.courier_files} 
+        ON ${TablesNames.courier_files}.courier_id = ${TablesNames.courier}.id`;
+
       const values = [];
+
       if (dep_id && grp_id) {
         query += ` WHERE ${TablesNames.courier_assigne}.department_id = ? AND ${TablesNames.courier_assigne}.group_id = ?`;
         values.push(dep_id, grp_id);
@@ -839,7 +847,44 @@ module.exports.CourierAssignee = {
       }
 
       const [rows] = await db.query(query, values);
-      return [null, rows];
+
+      const result = [];
+      const insertedIds = new Map();
+
+      rows.forEach((row) => {
+        const courierId = row[`id`];
+        if (!insertedIds.has(courierId)) {
+          result.push({
+            id: courierId,
+            titel: row[`titel`],
+            description: row[`description`],
+            deadline: row[`deadline`],
+            state: row[`state`],
+            created_at: row[`created_at`],
+            updated_at: row[`updated_at`],
+            departements: [],
+            groups: [],
+            imgs: [],
+          });
+          insertedIds.set(courierId, result.length - 1);
+        }
+
+        const index = insertedIds.get(courierId);
+        if (
+          row.department_id &&
+          !result[index].departements.includes(row.department_id)
+        ) {
+          result[index].departements.push(row.department_id);
+        }
+        if (row.group_id && !result[index].groups.includes(row.group_id)) {
+          result[index].groups.push(row.group_id);
+        }
+        if (row.path && !result[index].imgs.includes(row.path)) {
+          result[index].imgs.push(row.path);
+        }
+      });
+
+      return [null, result];
     } catch (e) {
       console.error(e);
       return [e, null];

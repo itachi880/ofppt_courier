@@ -797,13 +797,18 @@ module.exports.CourierAssignee = {
    */
   async updateAssignment(assignment, id) {
     try {
+      const [resDel] = await db.query(
+        `DELETE FROM ${TablesNames.courier_assigne} WHERE courier_id=${id};`
+      );
+      if (!assignment.groups) assignment.groups = [];
+      if (!assignment.departements) assignment.departements = [];
       const [res] = await db.query(`
-      DELET FROM ${TablesNames.courier_assigne} WHERE courier_id=${id};
-      INSERT INTO ${TablesNames.courier_assigne} values (${
-        assignment.departements ? assignment.departements.join(" ,") : ""
-      }) 
-      (${assignment.groups ? assignment.groups.join(" ,") : ""});
-      `);
+      INSERT INTO ${
+        TablesNames.courier_assigne
+      } (courier_id,group_id,department_id) values ${[
+        ...assignment.departements.map((dep) => `(${id},NULL,${dep})`),
+        ...assignment.groups.map((grp) => `(${id},NULL,${grp})`),
+      ].join(",")}`);
       return [null, res];
     } catch (e) {
       console.error(e);
@@ -855,6 +860,9 @@ module.exports.CourierAssignee = {
       rows.forEach((row) => {
         const courierId = row[`id`];
         if (!insertedIds.has(courierId)) {
+          row[`deadline`].setHours(24);
+          //2024-09-11
+
           result.push({
             id: courierId,
             title: row[`title`],

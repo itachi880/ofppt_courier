@@ -83,6 +83,7 @@ router.get("/all", async (req, res) => {
     );
   }
   if (err) return res.status(500).end("back end err") && console.log(err);
+  console.log(response);
   return res.json(response);
 });
 
@@ -94,68 +95,13 @@ router.get("/:id", async (req, res) => {
   return res.json(response);
 });
 
-//!  L jadiiiid
-
-// Route to update an existing assignment
-router.post("/update/assigne", async (req, res) => {
-  // Check if the user is an admin
-  if (req.user.role !== Roles.admin)
-    return res.status(401).end("Don't have access");
-
-  const { courierId, depId, grpId, userId } = req.body;
-
-  // Check for required fields
-  if (!courierId || !depId || !userId) {
-    return res
-      .status(400)
-      .end(
-        "Courier ID, Department ID, Assignee Type, and User ID are required"
-      );
-  }
-
-  // Update the assignment in the database
-  const [err] = await CourierAssignee.updateAssignment({
-    courier_id: courierId,
-    department_id: depId,
-    group_id: grpId,
-    user_id: userId,
-  });
-
-  if (err) return console.error(err) && res.status(500).end("Backend error");
-
-  return res.end("Done");
-});
-
-// Route to get an assignment by courierId
-
-//? momkin t7ayd o tb9a ghi get courrier by id li lfo9
-
-router.get("/assigne/:courierId", async (req, res) => {
-  // Get the courierId from the request parameters
-  const courierId = req.params.courierId;
-
-  if (!courierId) return res.status(400).end("Courier ID is required");
-
-  // Retrieve the assignment from the database
-  const [err, response] = await CourierAssignee.getAssignmentByCourierId(
-    courierId
-  );
-  if (err) return console.error(err) && res.status(500).end("Backend error");
-
-  if (!response || response.length === 0)
-    return res.status(404).end("Assignment not found");
-
-  return res.json(response);
-});
 router.post(
   "/update/:courierId",
   fileSaver.array("files", 3),
   async (req, res) => {
     const courierId = req.params.courierId;
 
-    if (!courierId) {
-      return res.status(400).send("Courier ID is required");
-    }
+    if (!courierId) return res.status(400).send("Courier ID is required");
 
     try {
       // Rechercher le courrier dans la base de données
@@ -167,13 +113,14 @@ router.post(
         created_at: req.body.created_at,
         state: req.body.state,
       });
-      if (updateError) {
-        return res.status(404).send("Courier not found");
-      }
-      const [assigneError] = CourierAssignee.updateAssignment(
-        JSON.parse(req.body.assigneed_to)
+      if (updateError) return res.status(404).send("Courier not found");
+
+      const [assigneError] = await CourierAssignee.updateAssignment(
+        JSON.parse(req.body.assigneed_to),
+        courierId
       );
-      res.status(200).end("Courier updated successfully");
+      if (assigneError) return res.status(500).end("");
+      return res.end("Courier updated successfully");
     } catch (error) {
       console.error("Error updating courier:", error);
       res.status(500).send("Server error");

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { departements_group_store, events, User } from "../../../data";
 import { BASE_URL, UpdateCourier } from "../../../api";
 import { useParams } from "react-router-dom";
-import { GreenBox, RedBox } from "../../../utils";
+import { GreenBox, ImgsWithCancelIcon, RedBox } from "../../../utils";
 import { Store } from "react-data-stores";
 /**
  * @type {Record<string,import("react").CSSProperties>}
@@ -328,33 +328,3 @@ export default function () {
     </div>
   );
 }
-const ImgsWithCancelIcon = ({
-  imgClick = (e) => {},
-  Xclick = (e) => {},
-  imgStyle = { width: 50, height: 50, cursor: "pointer" },
-  containerClick = (e) => {},
-  src = "",
-}) => {
-  return (
-    <div
-      onClick={containerClick}
-      style={{
-        position: "relative",
-        width: imgStyle.width,
-      }}
-    >
-      <img src={src} onClick={imgClick} style={imgStyle} />
-      <i
-        className="fa-solid fa-ban"
-        onClick={Xclick}
-        style={{
-          position: "absolute",
-          top: "5px",
-          left: imgStyle.width - 20,
-          color: "red",
-          cursor: "pointer",
-        }}
-      ></i>
-    </div>
-  );
-};

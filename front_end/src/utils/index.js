@@ -90,3 +90,33 @@ export const RedBox = ({ children, onClick = () => {} }) => (
     {children}
   </span>
 );
+export const ImgsWithCancelIcon = ({
+  imgClick = (e) => {},
+  Xclick = (e) => {},
+  imgStyle = { width: 50, height: 50, cursor: "pointer" },
+  containerClick = (e) => {},
+  src = "",
+}) => {
+  return (
+    <div
+      onClick={containerClick}
+      style={{
+        position: "relative",
+        width: imgStyle.width,
+      }}
+    >
+      <img src={src} onClick={imgClick} style={imgStyle} />
+      <i
+        className="fa-solid fa-ban"
+        onClick={Xclick}
+        style={{
+          position: "absolute",
+          top: "5px",
+          left: imgStyle.width - 20,
+          color: "red",
+          cursor: "pointer",
+        }}
+      ></i>
+    </div>
+  );
+};

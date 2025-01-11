@@ -66,73 +66,62 @@ export default function AddGroup() {
   }, [formData]);
 
   return (
-    <div style={styles.container}>
-      <label style={styles.label}>Group Name</label>
-      <input
-        style={styles.input}
-        placeholder="Enter Department Name"
-        onChange={(e) => {
-          setFormData({ ...formData, name: e.target.value });
-        }}
-        value={formData.name}
-      />
-            <select onChange={(e)=>{
-                 setFormData({ ...formData,  DepartementAssign: e.target.value});
-
-                  // index=e.target.selectedIndex
-
-            }} style={styles.select}>
-              <option selected>Select Department</option>
-        {departementsGroups.departements.map((e,i)=>{
-            return <option key={i} value={e.department_id} onClick={()=>{
-              setFormData({ ...formData,  id:e.department_id });
-            }}>{e.department_name}</option>
-        })}
-   
-
-      </select>
-      {/* <ul>
-          {departementsGroups.departements.map((e,i)=>{
-            return <li key={i}>{e.department_id
-}</li>
-          })}
-        </ul> */}
-      {/* <select onChange={(e)=>{
-                  setFormData({ ...formData,  DepartementAssign: e.target.value });
-      }}>
-        <option selected>Select Department</option>
-        <option>1</option>
-        <option>2</option>
-        <option>3</option>
-
-      </select> */}
-      {/* <button onClick={()=>{
-          console.log(formData.token);
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+  <div className="p-6 w-full max-w-md bg-white shadow-md rounded-md">
+    <label className="block text-sm font-semibold text-gray-700 mb-2">Group Name</label>
+    <input
+      type="text"
+      placeholder="Enter Group Name"
+      onChange={(e) => {
+        setFormData({ ...formData, name: e.target.value });
       }}
-      >to</button> */}
-   
+      value={formData.name}
+      className="w-full p-2 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
 
-      <input
-        type="submit"
-        value="Add group"
-        style={styles.submitButton}
-        onClick={() => {
-          const departmentData = {
-            name: formData.name,
-            department_id:formData.DepartementAssign,
-            token: formData.token,
-  
-          };
+    <label className="block text-sm font-semibold text-gray-700 mb-2">Assign Department</label>
+    <select
+      onChange={(e) => {
+        setFormData({ ...formData, DepartementAssign: e.target.value });
+      }}
+      className="w-full p-2 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+    >
+      <option>Select Department</option>
+      {departementsGroups.departements.map((e, i) => (
+        <option
+          key={i}
+          value={e.department_id}
+          onClick={() => {
+            setFormData({ ...formData, id: e.department_id });
+          }}
+        >
+          {e.department_name}
+        </option>
+      ))}
+    </select>
 
-          AddGroupApi(departmentData)
-            .then((res) => {
-              console.log("Group added successfully:", res);
-            })
-            .catch((err) => {
-              console.error("Failed to add department:", err);
-            });
-        }}
-      />
-    </div>
+    <input
+      type="submit"
+      value="Add Group"
+      onClick={() => {
+        const departmentData = {
+          name: formData.name,
+          department_id: formData.DepartementAssign,
+          token: formData.token,
+        };
+
+        AddGroupApi(departmentData)
+          .then((res) => {
+            console.log("Group added successfully:", res);
+          })
+          .catch((err) => {
+            console.error("Failed to add department:", err);
+          });
+      }}
+      className="w-full py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+  </div>
+</div>
+
   );
 }

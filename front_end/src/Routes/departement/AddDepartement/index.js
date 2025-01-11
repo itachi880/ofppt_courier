@@ -62,36 +62,40 @@ export default function AddDepartmentComponent() {
   }, [formData]);
 
   return (
-    <div style={styles.container}>
-      <label style={styles.label}>Department Name</label>
-      <input
-        style={styles.input}
-        placeholder="Enter Department Name"
-        onChange={(e) => {
-          setFormData({ ...formData, name: e.target.value });
-        }}
-        value={formData.name}
-      />
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+  <div className="p-6 w-full max-w-md bg-white shadow-md rounded-md">
+    <label className="block text-sm font-semibold text-gray-700 mb-2">Department Name</label>
+    <input
+      type="text"
+      placeholder="Enter Department Name"
+      onChange={(e) => {
+        setFormData({ ...formData, name: e.target.value });
+      }}
+      value={formData.name}
+      className="w-full p-2 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
 
-      <input
-        type="submit"
-        value="Add Department"
-        style={styles.submitButton}
-        onClick={() => {
-          const departmentData = {
-            name: formData.name,
-            token: userData.token,
-          };
+    <input
+      type="submit"
+      value="Add Department"
+      onClick={() => {
+        const departmentData = {
+          name: formData.name,
+          token: userData.token,
+        };
 
-          AddDepartment(departmentData)
-            .then((res) => {
-              console.log("Department added successfully:", res);
-            })
-            .catch((err) => {
-              console.error("Failed to add department:", err);
-            });
-        }}
-      />
-    </div>
+        AddDepartment(departmentData)
+          .then((res) => {
+            console.log("Department added successfully:", res);
+          })
+          .catch((err) => {
+            console.error("Failed to add department:", err);
+          });
+      }}
+      className="w-full py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+  </div>
+</div>
+
   );
 }

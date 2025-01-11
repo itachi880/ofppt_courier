@@ -59,7 +59,6 @@ const styles = {
 export default function () {
   const [eventsStore, setEventsStore] = events.useStore();
   const id = useParams().id;
-
   const [formData, setFormData] = useState({
     id: undefined,
     title: "",
@@ -224,21 +223,32 @@ export default function () {
             setFormData({ ...formData, files: e.target.files });
           }}
         />
-        {formData.imgs.map((img) => (
-          <ImgsWithCancelIcon
-            src={BASE_URL + "/" + img}
-            imgClick={() => {
-              const link = document.createElement("a");
-              link.href = BASE_URL + "/" + img;
-              link.target = "_blank";
-              link.click();
-            }}
-            Xclick={() => {
-              formData.imgs = formData.imgs.filter((formImg) => formImg != img);
-              setFormData({ ...formData });
-            }}
-          />
-        ))}
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            width: "100%",
+            gap: "10px",
+          }}
+        >
+          {formData.imgs.map((img) => (
+            <ImgsWithCancelIcon
+              src={BASE_URL + "/" + img}
+              imgClick={() => {
+                const link = document.createElement("a");
+                link.href = BASE_URL + "/" + img;
+                link.target = "_blank";
+                link.click();
+              }}
+              Xclick={() => {
+                formData.imgs = formData.imgs.filter(
+                  (formImg) => formImg != img
+                );
+                setFormData({ ...formData });
+              }}
+            />
+          ))}
+        </div>
       </div>
       <label style={styles.label}>Deadline</label>
       <input
@@ -298,6 +308,14 @@ export default function () {
           formDataToSend.append("deadline", formData.deadline);
           formDataToSend.append("critical", formData.critical);
           formDataToSend.append("token", userData.token);
+          formDataToSend.append(
+            "deleted_imgs",
+            JSON.stringify({
+              imgs: eventsStore.data
+                .find((event) => event.id == formData.id)
+                .imgs.filter((img) => !formData.imgs.includes(img)),
+            })
+          );
           if (formData.files.length > 0)
             Array.from(formData.files).forEach((file) => {
               formDataToSend.append("files", file);
@@ -318,9 +336,25 @@ const ImgsWithCancelIcon = ({
   src = "",
 }) => {
   return (
-    <div onClick={containerClick}>
+    <div
+      onClick={containerClick}
+      style={{
+        position: "relative",
+        width: imgStyle.width,
+      }}
+    >
       <img src={src} onClick={imgClick} style={imgStyle} />
-      <span onClick={Xclick}>X</span>
+      <i
+        className="fa-solid fa-ban"
+        onClick={Xclick}
+        style={{
+          position: "absolute",
+          top: "5px",
+          left: imgStyle.width - 20,
+          color: "red",
+          cursor: "pointer",
+        }}
+      ></i>
     </div>
   );
 };

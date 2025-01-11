@@ -119,11 +119,10 @@ router.post(
         courierId
       );
       if (assigneError) return res.status(500).end("");
-      const [errDelete] = await Courier.deleteFiles(
-        req.body.deleted_imgs || []
-      );
+      const deleted_imgs = JSON.parse(req.body.deleted_imgs).imgs || [];
+      const [errDelete] = await Courier.deleteFiles(deleted_imgs);
       if (!errDelete)
-        req.body.deleted_imgs.forEach((file) => {
+        deleted_imgs.forEach((file) => {
           fs.unlink(path.join(__dirname, "..", "..", "data", file), (err) => {
             if (err) console.error(`Error deleting file ${file}:`, err);
           });

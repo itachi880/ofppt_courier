@@ -303,9 +303,7 @@ export default function () {
               formDataToSend.append("files", file);
             });
           UpdateCourier(formDataToSend, formData.departements, formData.groups)
-            .then((res) => {
-              console.log(res);
-            })
+            .then(console.log)
             .catch(console.log);
         }}
       />

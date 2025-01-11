@@ -1,5 +1,5 @@
 const { db } = require("../database");
-const { mailer, parse_condition } = require("../utils");
+const { mailer, parse_condition, escapeChar } = require("../utils");
 
 //!tables schema types
 const TablesNames = {
@@ -61,7 +61,7 @@ const TablesNames = {
 /**
  * @typedef {object} Courier - table database COURIER
  * @property {number} id - id de Courier
- * @property {string} titel
+ * @property {string} title
  * @property {string} description
  * @property {string} deadline
  * @property {"normal"|"urgent"|"tres urgent"} state
@@ -327,12 +327,14 @@ module.exports.Departement = {
             department_id: row.department_id,
             department_name: row.department_name,
             department_parent_id: row.department_parent_id,
-            group: [
-              {
-                id: row.group_id,
-                name: row.group_name,
-              },
-            ],
+            groups: row.group_id
+              ? [
+                  {
+                    id: row.group_id,
+                    name: row.group_name,
+                  },
+                ]
+              : [],
           });
         }
       });
@@ -350,7 +352,7 @@ module.exports.Departement = {
    */
   async update(id, by) {
     try {
-      console.log(by)
+      console.log(by);
       const data = Object.entries(by);
       if (!id || data.length == 0) return ["data required", null];
       const sql = [];
@@ -564,8 +566,9 @@ module.exports.Courier = {
    */
   async read(by = {}) {
     try {
-      const query = `SELECT ${TablesNames.courier}.id ,
+      const query = `SELECT id ,
       description,
+      title,
       deadline,
       state,
       create_by,
@@ -608,15 +611,31 @@ module.exports.Courier = {
       return [e, null];
     }
   },
-  async insertFiles(files) {
+  async insertFiles(files, id) {
     try {
       const query = `INSERT INTO courier_files (path, courier_id) VALUES ${files
         .map(() => "(?, ?)")
         .join(", ")}`;
-      const values = files.flatMap((file) => [file.path, file.courier_id]);
+      const values = files.flatMap((file) => [file, id]);
       return [null, (await db.query(query, values))[0]];
     } catch (e) {
       console.error(e);
+      return [e, null];
+    }
+  },
+  /**
+   *
+   * @param {string[]} files
+   * @returns {Promise<[(null| import("mysql2").QueryError),(null | string | deleteResult)]>}
+   */
+  async deleteFiles(files) {
+    if (!files || files.length == 0) return ["no files", null];
+    try {
+      const query = `DELETE FROM courier_files WHERE ${files
+        .map((file) => `path='${escapeChar(file)}'`)
+        .join(" OR ")}`;
+      return [null, (await db.query(query))[0]];
+    } catch (e) {
       return [e, null];
     }
   },
@@ -789,18 +808,24 @@ module.exports.CourierAssignee = {
   },
   /**
    * Update an existing assignment
-   * @param {Partial<CourierAssignee>} assignment
-   * @returns {Promise<[(import("mysql2").QueryError | string | null ),(updateResult | null)]>}
+   * @param {Partial<{departements:number[],groups:number[]}>} assignment
+   * @returns {Promise<[(import("mysql2").QueryError | string | null ),(insertResult | null)]>}
    */
-  async updateAssignment(assignment) {
+  async updateAssignment(assignment, id) {
     try {
-      const columns = Object.keys(assignment);
-      if (columns.length == 0) return ["Fields required", null];
-      const query = `UPDATE ${TablesNames.courier_assigne} SET ${columns
-        .map((col) => `${col} = ?`)
-        .join(", ")} WHERE courier_id = ?`;
-      const values = [...Object.values(assignment), assignment.courier_id];
-      return [null, (await db.query(query, values))[0]];
+      const [resDel] = await db.query(
+        `DELETE FROM ${TablesNames.courier_assigne} WHERE courier_id=${id};`
+      );
+      if (!assignment.groups) assignment.groups = [];
+      if (!assignment.departements) assignment.departements = [];
+      const [res] = await db.query(`
+      INSERT INTO ${
+        TablesNames.courier_assigne
+      } (courier_id,group_id,department_id) values ${[
+        ...assignment.departements.map((dep) => `(${id},NULL,${dep})`),
+        ...assignment.groups.map((grp) => `(${id},NULL,${grp})`),
+      ].join(",")}`);
+      return [null, res];
     } catch (e) {
       console.error(e);
       return [e, null];
@@ -814,32 +839,74 @@ module.exports.CourierAssignee = {
    */
   async getCouriers(dep_id, grp_id) {
     try {
-      let query = `SELECT ${TablesNames.courier}.id, 
-      ${TablesNames.courier}.titel, 
-      ${TablesNames.courier}.description, 
-      ${TablesNames.courier}.deadline, 
-      ${TablesNames.courier}.state,  
-      ${TablesNames.courier_assigne}.group_id,  
-      ${TablesNames.courier_assigne}.department_id,  
-      ${TablesNames.courier}.created_at, 
-      ${TablesNames.courier}.updated_at
-      FROM ${TablesNames.courier_assigne}
-      JOIN ${TablesNames.courier} ON ${TablesNames.courier_assigne}.courier_id = ${TablesNames.courier}.id
-      `;
+      let query = `SELECT 
+        ${TablesNames.courier}.id, 
+        ${TablesNames.courier}.title, 
+        ${TablesNames.courier}.description, 
+        ${TablesNames.courier}.deadline, 
+        ${TablesNames.courier}.state, 
+        ${TablesNames.courier_assigne}.group_id, 
+        ${TablesNames.courier_assigne}.department_id, 
+        ${TablesNames.courier}.created_at, 
+        ${TablesNames.courier}.updated_at, 
+        ${TablesNames.courier_files}.path 
+        FROM ${TablesNames.courier_assigne} 
+        JOIN ${TablesNames.courier} 
+        ON ${TablesNames.courier_assigne}.courier_id = ${TablesNames.courier}.id 
+        LEFT JOIN ${TablesNames.courier_files} 
+        ON ${TablesNames.courier_files}.courier_id = ${TablesNames.courier}.id`;
+
       const values = [];
-      if (dep_id && grp_id) {
-        query += ` WHERE ${TablesNames.courier_assigne}.department_id = ? AND ${TablesNames.courier_assigne}.group_id = ?`;
-        values.push(dep_id, grp_id);
-      } else if (dep_id) {
+
+      if (dep_id) {
         query += ` WHERE ${TablesNames.courier_assigne}.department_id = ?`;
         values.push(dep_id);
       } else if (grp_id) {
         query += ` WHERE ${TablesNames.courier_assigne}.group_id = ?`;
         values.push(grp_id);
       }
-
       const [rows] = await db.query(query, values);
-      return [null, rows];
+
+      const result = [];
+      const insertedIds = new Map();
+
+      rows.forEach((row) => {
+        const courierId = row[`id`];
+        if (!insertedIds.has(courierId)) {
+          row[`deadline`].setHours(24);
+          //2024-09-11
+
+          result.push({
+            id: courierId,
+            title: row[`title`],
+            description: row[`description`],
+            deadline: row[`deadline`],
+            state: row[`state`],
+            created_at: row[`created_at`],
+            updated_at: row[`updated_at`],
+            departements: [],
+            groups: [],
+            imgs: [],
+          });
+          insertedIds.set(courierId, result.length - 1);
+        }
+
+        const index = insertedIds.get(courierId);
+        if (
+          row.department_id &&
+          !result[index].departements.includes(row.department_id)
+        ) {
+          result[index].departements.push(row.department_id);
+        }
+        if (row.group_id && !result[index].groups.includes(row.group_id)) {
+          result[index].groups.push(row.group_id);
+        }
+        if (row.path && !result[index].imgs.includes(row.path)) {
+          result[index].imgs.push(row.path);
+        }
+      });
+
+      return [null, result];
     } catch (e) {
       console.error(e);
       return [e, null];

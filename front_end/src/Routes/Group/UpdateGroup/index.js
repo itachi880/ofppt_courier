@@ -1,12 +1,12 @@
-import { useEffect, useState,useRef } from "react";
-import { tokenAuthApi,UpdateGrouptApi } from "../../../api"; // Assurez-vous que cette fonction existe dans vos APIs.
+import { useEffect, useState, useRef } from "react";
+import { UpdateGrouptApi } from "../../../api"; // Assurez-vous que cette fonction existe dans vos APIs.
 import { User } from "../../../data";
 import { useParams } from "react-router-dom";
 
 export default function UpdateGroup() {
-  const {id}= useParams();
+  const { id } = useParams();
   const [userData, setUserData] = User.useStore();
-  const in1=useRef()
+  const in1 = useRef();
   const styles = {
     container: {
       display: "flex",
@@ -44,25 +44,35 @@ export default function UpdateGroup() {
       cursor: "pointer",
       transition: "background-color 0.3s, transform 0.2s",
     },
- 
   };
   useEffect(() => {
     console.log(id);
     console.log(userData.token);
   }, []);
 
-
-  return     <div style={styles.container}>
-  <input style={styles.input} placeholder="Enter new name Of group"  ref={in1}/>
-  <button style={styles.button} onClick={()=>{
-    UpdateGrouptApi(userData.token, id, in1.current.value).then((response) => {
-      if (response[0]) {
-        console.log("Error updating group:", response[0]);
-        return;
-      }
-      console.log("group updated successfully");
-    });
-  }}>Update</button>
-</div>
-
+  return (
+    <div style={styles.container}>
+      <input
+        style={styles.input}
+        placeholder="Enter new name Of group"
+        ref={in1}
+      />
+      <button
+        style={styles.button}
+        onClick={() => {
+          UpdateGrouptApi(userData.token, id, in1.current.value).then(
+            (response) => {
+              if (response[0]) {
+                console.log("Error updating group:", response[0]);
+                return;
+              }
+              console.log("group updated successfully");
+            }
+          );
+        }}
+      >
+        Update
+      </button>
+    </div>
+  );
 }

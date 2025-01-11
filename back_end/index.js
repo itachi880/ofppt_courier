@@ -22,6 +22,7 @@ app.use("/departement", DepartementRoute);
 app.use("/login", LoginRoute);
 app.use("/groups", GroupRoute);
 app.use("/register", inscription);
+app.use(express.static(__dirname + "/data"));
 app.listen(process.env.APP_PORT, () => {
   console.log("serveur running at port " + process.env.APP_PORT);
 });

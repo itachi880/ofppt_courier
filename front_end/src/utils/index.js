@@ -22,7 +22,9 @@ export function Calendar({
 /*************  ✨ Codeium Command ⭐  *************/
 /******  d4135cc0-9de7-4828-90a4-f632ca30e963  *******/
           event: ({ event }) => (
-            <div onClick={() => Store.navigateTo(`/courrier/update/${event.id}`)}>
+            <div
+              onClick={() => Store.navigateTo(`/courrier/update/${event.id}`)}
+            >
               <h4 style={{ margin: "0" }}>{event.title}</h4>
               <p style={{ margin: "0" }}>{event.description}</p>
             </div>
@@ -32,7 +34,16 @@ export function Calendar({
 
         month: {
           event: ({ event }) => (
-            <div style={{ backgroundColor: event.backgroundColor, borderRadius: "5px", margin: "5px 0" }}>
+            <div
+              style={{
+                backgroundColor: event.backgroundColor,
+                borderRadius: "5px",
+                margin: "2px 0",
+              }}
+              onClick={() => {
+                Store.navigateTo("/courrier/update/" + event.id);
+              }}
+            >
               <strong>{event.title}</strong>
             </div>
           ),
@@ -53,8 +64,9 @@ export function Calendar({
     />
   );
 }
-export const GreenBox = ({ children }) => (
+export const GreenBox = ({ children, onClick = () => {} }) => (
   <span
+    onClick={onClick}
     style={{
       padding: "5px 10px",
       background: "rgba(130, 255, 213, 0.48)",
@@ -66,8 +78,9 @@ export const GreenBox = ({ children }) => (
     {children}
   </span>
 );
-export const RedBox = ({ children }) => (
+export const RedBox = ({ children, onClick = () => {} }) => (
   <span
+    onClick={onClick}
     style={{
       padding: "5px 10px",
       background: "rgba(255, 156, 156, 0.48)",
@@ -79,3 +92,33 @@ export const RedBox = ({ children }) => (
     {children}
   </span>
 );
+export const ImgsWithCancelIcon = ({
+  imgClick = (e) => {},
+  Xclick = (e) => {},
+  imgStyle = { width: 50, height: 50, cursor: "pointer" },
+  containerClick = (e) => {},
+  src = "",
+}) => {
+  return (
+    <div
+      onClick={containerClick}
+      style={{
+        position: "relative",
+        width: imgStyle.width,
+      }}
+    >
+      <img src={src} onClick={imgClick} style={imgStyle} />
+      <i
+        className="fa-solid fa-ban"
+        onClick={Xclick}
+        style={{
+          position: "absolute",
+          top: "5px",
+          left: imgStyle.width - 20,
+          color: "red",
+          cursor: "pointer",
+        }}
+      ></i>
+    </div>
+  );
+};

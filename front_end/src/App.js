@@ -20,15 +20,16 @@ function App() {
       return Store.navigateTo(
         "/login" + "?redirect=" + window.location.pathname
       );
+    if (Object.keys(userData.data).length > 0) return;
     tokenAuthApi(userData.token).then((response) => {
       if (response[0])
         return Store.navigateTo(
           "/login" + "?redirect=" + window.location.pathname
         );
-      setUserData(response.data);
+      setUserData(response[1], true);
       Store.navigateTo("/");
     });
-  }, []);
+  }, [userData.token]);
 
   useEffect(() => {
     console.log(departements_group);

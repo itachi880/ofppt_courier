@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { departements_group_store, User } from "../../../data";
 import { AddCourier } from "../../../api";
-import { GreenBox, RedBox } from "../../../utils";
+import { GreenBox, ImgsWithCancelIcon, RedBox } from "../../../utils";
 /**
  * @type {Record<string,import("react").CSSProperties>}
  */
@@ -188,15 +188,74 @@ export default function () {
       />
 
       <label style={styles.label}>Upload Images</label>
-      <input
-        type="file"
-        style={styles.fileInput}
-        multiple={true}
-        onChange={(e) => {
-          setFormData({ ...formData, files: e.target.files });
-        }}
-      />
 
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          width: "100%",
+          gap: "10px",
+          margin: "10px 0px",
+        }}
+      >
+        <div
+          style={{
+            background: "#a3ffc688",
+            border: "1px solid #a3ffc688",
+            color: "#00b345",
+            borderRadius: "20px",
+            padding: "5px 10px",
+            display: "flex",
+            gap: "10px",
+            alignItems: "center",
+          }}
+        >
+          {formData.files.length} imgs selected
+          <button
+            style={{
+              background: "#00b345",
+              border: "1px solid #00b345",
+              color: "white",
+              fontSize: "18px",
+              borderRadius: "50%",
+              cursor: "pointer",
+            }}
+            onClick={() => {
+              const fileInput = document.createElement("input");
+              fileInput.type = "file";
+              fileInput.multiple = true;
+              fileInput.onchange = (e) => {
+                setFormData({ ...formData, files: e.target.files });
+              };
+              fileInput.click();
+            }}
+          >
+            +
+          </button>
+        </div>
+        {Array.from(formData.files).map((file, fileIndex) => {
+          const src = URL.createObjectURL(file);
+          return (
+            <ImgsWithCancelIcon
+              src={src}
+              imgClick={() => {
+                const link = document.createElement("a");
+                link.href = src;
+                link.target = "_blank";
+                link.click();
+              }}
+              Xclick={() => {
+                const dataTransfer = new DataTransfer();
+                // Keep all files except the second one (index 1)
+                Array.from(formData.files).forEach((file, index) => {
+                  if (index !== fileIndex) dataTransfer.items.add(file);
+                });
+                setFormData({ ...formData, files: dataTransfer.files });
+              }}
+            />
+          );
+        })}
+      </div>
       <label style={styles.label}>Deadline</label>
       <input
         style={styles.input}

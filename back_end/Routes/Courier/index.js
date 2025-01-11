@@ -32,11 +32,10 @@ router.post("/add", fileSaver.array("files", 3), async (req, res) => {
           if (writeErr) console.error(writeErr);
         }
       );
-      e.path = fileName;
-      return { path: e.path, courier_id: response.insertId };
+      return fileName;
     });
 
-    const [err1] = await Courier.insertFiles(files);
+    const [err1] = await Courier.insertFiles(files, response.insertId);
     if (err1) {
       console.error(err1);
       return res.status(500).end("Backend error");
@@ -120,6 +119,28 @@ router.post(
         courierId
       );
       if (assigneError) return res.status(500).end("");
+      const [errDelete] = await Courier.deleteFiles(
+        req.body.deleted_imgs || []
+      );
+      if (!errDelete)
+        req.body.deleted_imgs.forEach((file) => {
+          fs.unlink(path.join(__dirname, "..", "..", "data", file), (err) => {
+            if (err) console.error(`Error deleting file ${file}:`, err);
+          });
+        });
+      if (!req.files || req.files.length === 0)
+        return res.end("Courier updated successfully");
+      const files = req.files.map((file, i) => {
+        const name = `${i}_${Date.now()}.${file.originalname.split(".")[1]}`;
+        fs.writeFile(
+          path.join(__dirname, "..", "..", "data", name),
+          file.buffer,
+          () => {}
+        );
+        return name;
+      });
+      const [errInsert] = await Courier.insertFiles(files, courierId);
+      if (errInsert) return res.status(500).end("new imgs not inserted");
       return res.end("Courier updated successfully");
     } catch (error) {
       console.error("Error updating courier:", error);

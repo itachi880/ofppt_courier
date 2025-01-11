@@ -220,21 +220,23 @@ export default function () {
           style={styles.fileInput}
           multiple={true}
           onChange={(e) => {
+            console.log("files", e.target.files);
             setFormData({ ...formData, files: e.target.files });
           }}
         />
         {formData.imgs.map((img) => (
-          <img
-            width={50}
-            height={50}
+          <ImgsWithCancelIcon
             src={BASE_URL + "/" + img}
-            onClick={() => {
+            imgClick={() => {
               const link = document.createElement("a");
               link.href = BASE_URL + "/" + img;
               link.target = "_blank";
               link.click();
             }}
-            style={{ cursor: "pointer" }}
+            Xclick={() => {
+              formData.imgs = formData.imgs.filter((formImg) => formImg != img);
+              setFormData({ ...formData });
+            }}
           />
         ))}
       </div>
@@ -296,9 +298,10 @@ export default function () {
           formDataToSend.append("deadline", formData.deadline);
           formDataToSend.append("critical", formData.critical);
           formDataToSend.append("token", userData.token);
-          formData.files.forEach((file) => {
-            formDataToSend.append("files", file);
-          });
+          if (formData.files.length > 0)
+            Array.from(formData.files).forEach((file) => {
+              formDataToSend.append("files", file);
+            });
           UpdateCourier(formDataToSend, formData.departements, formData.groups)
             .then((res) => {
               console.log(res);
@@ -309,3 +312,17 @@ export default function () {
     </div>
   );
 }
+const ImgsWithCancelIcon = ({
+  imgClick = (e) => {},
+  Xclick = (e) => {},
+  imgStyle = { width: 50, height: 50, cursor: "pointer" },
+  containerClick = (e) => {},
+  src = "",
+}) => {
+  return (
+    <div onClick={containerClick}>
+      <img src={src} onClick={imgClick} style={imgStyle} />
+      <span onClick={Xclick}>X</span>
+    </div>
+  );
+};

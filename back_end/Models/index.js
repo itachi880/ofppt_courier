@@ -1,5 +1,5 @@
 const { db } = require("../database");
-const { mailer, parse_condition } = require("../utils");
+const { mailer, parse_condition, escapeChar } = require("../utils");
 
 //!tables schema types
 const TablesNames = {
@@ -611,15 +611,31 @@ module.exports.Courier = {
       return [e, null];
     }
   },
-  async insertFiles(files) {
+  async insertFiles(files, id) {
     try {
       const query = `INSERT INTO courier_files (path, courier_id) VALUES ${files
         .map(() => "(?, ?)")
         .join(", ")}`;
-      const values = files.flatMap((file) => [file.path, file.courier_id]);
+      const values = files.flatMap((file) => [file, id]);
       return [null, (await db.query(query, values))[0]];
     } catch (e) {
       console.error(e);
+      return [e, null];
+    }
+  },
+  /**
+   *
+   * @param {string[]} files
+   * @returns {Promise<[(null| import("mysql2").QueryError),(null | string | deleteResult)]>}
+   */
+  async deleteFiles(files) {
+    if (!files || files.length == 0) return ["no files", null];
+    try {
+      const query = `DELETE FROM courier_files WHERE ${files
+        .map((file) => `path='${escapeChar(file)}'`)
+        .join(" OR ")}`;
+      return [null, (await db.query(query))[0]];
+    } catch (e) {
       return [e, null];
     }
   },
@@ -842,10 +858,7 @@ module.exports.CourierAssignee = {
 
       const values = [];
 
-      if (dep_id && grp_id) {
-        query += ` WHERE ${TablesNames.courier_assigne}.department_id = ? AND ${TablesNames.courier_assigne}.group_id = ?`;
-        values.push(dep_id, grp_id);
-      } else if (dep_id) {
+      if (dep_id) {
         query += ` WHERE ${TablesNames.courier_assigne}.department_id = ?`;
         values.push(dep_id);
       } else if (grp_id) {

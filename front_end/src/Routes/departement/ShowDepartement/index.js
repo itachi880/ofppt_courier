@@ -17,6 +17,7 @@ export default function ShowDepartments() {
   useEffect(() => {
     if (!userData.token) return;
     console.log("hhhhhhhh")
+    console.log("hhhhhhhh")
     console.log(departementsGroups);
     getDepartements(userData.token)
       .then((response) => {

@@ -9,6 +9,8 @@ import Courier from "./Routes/Courier";
 import Departement from "./Routes/departement";
 import NavBar from "./NavBar";
 import Group from "./Routes/Group";
+import Home from "./Routes/home";
+import Footer from "./Footer/Footer";
 
 function App() {
   Store.navigateTo = useNavigate();
@@ -54,13 +56,16 @@ function App() {
     <>
       <NavBar />
       <Routes>
-        <Route index element={<>index</>} />
+        <Route index element={<Home />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/courrier/*" element={<Courier />} />
         <Route path="/departement/*" element={<Departement />} />
         <Route path="/group/*" element={<Group />} />
         <Route path="*" element={<>404</>} />
       </Routes>
+      <footer className="bg-gray-800 text-white py-4 text-center">
+        <p>&copy; 2025 OFPPT. Tous droits réservés.</p>
+      </footer>
     </>
   );
 }

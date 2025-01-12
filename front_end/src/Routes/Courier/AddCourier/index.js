@@ -187,6 +187,11 @@ export default function () {
           <option value="" hidden>
             Select Group
           </option>
+          {departementsGroup.departements
+            .map((dep) => dep.groups)
+            .flatMap((grps) =>
+              grps.map((grp) => <option value={grp.id}>{grp.name}</option>)
+            )}
         </select>
 
         <label style={styles.label}>Description</label>

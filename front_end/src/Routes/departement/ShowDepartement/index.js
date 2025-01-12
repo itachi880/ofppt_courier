@@ -16,8 +16,8 @@ export default function ShowDepartments() {
 
   useEffect(() => {
     if (!userData.token) return;
-    console.log("hhhhhhhh")
-    console.log("hhhhhhhh")
+    console.log("hhhhhhhh");
+    console.log("hhhhhhhh");
     console.log(departementsGroups);
     getDepartements(userData.token)
       .then((response) => {
@@ -61,9 +61,7 @@ export default function ShowDepartments() {
                 <th className="text-sm text-gray-600 font-medium py-2 px-3 border-b">
                   Name
                 </th>
-                <th className="text-sm text-gray-600 font-medium py-2 px-3 border-b">
-                  Created At
-                </th>
+
                 <th className="text-sm text-gray-600 font-medium py-2 px-3 border-b">
                   Option
                 </th>
@@ -75,9 +73,7 @@ export default function ShowDepartments() {
                   <td className="text-sm text-gray-700 py-2 px-3 border-b">
                     {e.department_name}
                   </td>
-                  <td className="text-sm text-gray-700 py-2 px-3 border-b">
-                    {e.department_created_at}
-                  </td>
+
                   <td className="py-2 px-3 border-b">
                     <button
                       onClick={() => handleDelete(e.department_id)}

@@ -78,7 +78,7 @@ export default () => {
               localStorage.removeItem("token");
               Store.navigateTo("/login");
             }}
-            className="bg-red-600 text-white p-2 rounded-full hover:bg-red-700 transition duration-200 ease-in-out flex items-center justify-center"
+            className="bg-red-600 text-white p-2 rounded-full hover:bg-white hover:text-red-700 transition duration-200 ease-in-out flex items-center justify-center w-9 h-9 "
           >
             <i className="fa-solid fa-arrow-right-from-bracket text-xl"></i>
           </button>

@@ -56,19 +56,27 @@ const styles = {
     marginBottom: "5px",
     display: "block",
   },
+  section: {
+    width: "350px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "stretch",
+    justifyContent: "center",
+  },
 };
 export default function () {
+  const today = new Date();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    deadline: "",
+    deadline: today.toISOString().split("T")[0],
     state: "",
     critical: false,
     departements: [
       // { id: 1, name: "departement 1", groups: [{ id: 1, name: "group 1" }] },
       // { id: 2, name: "departement 2", groups: [{ id: 2, name: "group 2" }] },
     ],
-    created_at: "",
+    created_at: today.toISOString().split("T")[0],
     departements: [],
     imgs: [],
     groups: [],
@@ -83,7 +91,7 @@ export default function () {
   }, [formData]);
   return (
     <div style={styles.container}>
-      <div>
+      <div style={styles.section}>
         <label style={styles.label}>Object Title</label>
         <input
           style={styles.input}
@@ -191,7 +199,7 @@ export default function () {
           placeholder="Description"
         />
       </div>
-      <div>
+      <div style={styles.section}>
         <label style={styles.label}>Upload Images</label>
 
         <div
@@ -224,6 +232,8 @@ export default function () {
                 fontSize: "18px",
                 borderRadius: "50%",
                 cursor: "pointer",
+                aspectRatio: "1",
+                width: "28px",
               }}
               onClick={() => {
                 const fileInput = document.createElement("input");

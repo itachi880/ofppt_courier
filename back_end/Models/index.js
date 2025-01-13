@@ -788,7 +788,9 @@ module.exports.CourierAssignee = {
    *
    * @param {import("../utils").Condition<CourierAssignee>} by
    * @returns {Promise<[(import("mysql2").QueryError | string | null ),( CourierAssignee[] | null)]>}
+   *
    */
+
   async read(by) {
     try {
       const query = `SELECT * FROM ${

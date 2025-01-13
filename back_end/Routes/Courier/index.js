@@ -10,7 +10,7 @@ router.post("/add", fileSaver.array("files", 3), async (req, res) => {
     return res.status(401).end("Don't have access");
 
   const [err, response] = await Courier.insert({
-    titel: req.body.titel,
+    title: req.body.titel,
     deadline: req.body.deadline,
     state: req.body.state,
     description: req.body.description,
@@ -51,9 +51,9 @@ router.post("/add", fileSaver.array("files", 3), async (req, res) => {
   }
 
   if (!assigneed_to) return res.status(205).end(response.insertId + "");
-
+  console.log(assigneed_to);
   const [err2] = await CourierAssignee.insertMany([
-    ...assigneed_to.departments.map((e) => ({
+    ...assigneed_to.departements.map((e) => ({
       courier_id: response.insertId,
       department_id: e,
     })),

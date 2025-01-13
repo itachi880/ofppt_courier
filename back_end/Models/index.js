@@ -311,34 +311,30 @@ module.exports.Departement = {
       const rows = [];
       const idsIndexes = {};
       const queryResult = await db.query(query);
+      console.log(queryResult[0]);
       queryResult[0].forEach((row) => {
-        const index =
-          idsIndexes[row.department_id] ??
-          rows.findIndex((r) => r.department_id == row.department_id);
-        if (!idsIndexes[row.department_id])
-          idsIndexes[row.department_id] = index;
+        const index = idsIndexes[row.department_id];
+        console.log(idsIndexes);
         if (index >= 0) {
-          rows[index].groups.push({
+          if (!row.group_id) return;
+          rows[index].groups.push({ id: row.group_id, name: row.group_name });
+        } else {
+          idsIndexes[row.department_id] =
+            rows.push({
+              department_id: row.department_id,
+              department_name: row.department_name,
+              parent_department_id: row.parent_department_id,
+              groups: [],
+            }) - 1;
+          if (!row.group_id) return;
+          rows[idsIndexes[row.department_id]].groups.push({
             id: row.group_id,
             name: row.group_name,
           });
-        } else {
-          rows.push({
-            department_id: row.department_id,
-            department_name: row.department_name,
-            department_parent_id: row.department_parent_id,
-            groups: row.group_id
-              ? [
-                  {
-                    id: row.group_id,
-                    name: row.group_name,
-                  },
-                ]
-              : [],
-          });
         }
+        return;
       });
-
+      console.log(rows);
       return [null, rows];
     } catch (e) {
       console.error(e);
@@ -685,9 +681,9 @@ module.exports.Notifications = {
       try {
         let query = "SELECT email FROM users WHERE ";
         if (notif.dep_id && !notif.grp_id)
-          query += `departement_id=${notif.dep_id} AND group_id IS NULL`;
+          query += `department_id=${notif.dep_id} AND group_id IS NULL`;
         else if (notif.dep_id && notif.grp_id)
-          query += `group_id=${notif.grp_id} OR (departement_id=${notif.dep_id} AND group_id IS NULL)`;
+          query += `group_id=${notif.grp_id} OR (department_id=${notif.dep_id} AND group_id IS NULL)`;
 
         const [mailed_to] = await db.query(query);
         mailed_to.forEach((person) => {
@@ -747,29 +743,44 @@ module.exports.CourierAssignee = {
   },
   /**
    *
-   * @param {CourierAssignee[]} courier_assignee
+   * @param {{departments:number[],groups:number[]}} courier_assignee
+   * @param {number} id - courier id
    * @returns {Promise<[(import("mysql2").QueryError | string | null ),( insertResult | null)]>}
    */
-  async insertMany(courier_assignee) {
-    if (courier_assignee.length == 0) return ["no assinges", null];
-    try {
-      const columns = Object.keys(courier_assignee[0]);
-      if (columns.length == 0) return ["Fields required", null];
-      const query = `
-      INSERT INTO 
-      ${TablesNames.courier_assigne}
-      (${columns.join(", ")})
-      VALUES
-      ${courier_assignee
-        .map(() => `(${columns.map(() => "?").join(", ")})`)
-        .join(", ")}`;
+  // [{dep_id},{group_id}] ()
+  async insertMany(courier_assignee, id) {
+    const keys = Object.keys(courier_assignee);
 
-      const values = courier_assignee.flatMap((assigne) =>
-        Object.values(assigne)
-      ); //flate map to return 1 arry of all nested arrays like if [1,[2,3]].flatMap((num)=>num) => [1,2,3]
-      return [null, (await db.query(query, values))[0]];
+    // If no assignments are provided
+    if (keys.length === 0) return ["no assignees", null];
+
+    try {
+      // Construct the base query
+      const columns = `courier_id, ${keys.join(", ")}`;
+      let query = `
+        INSERT INTO ${TablesNames.courier_assigne}
+        (${columns})
+        VALUES `;
+
+      // Prepare values and placeholders
+      const placeholders = [];
+      const values = [];
+
+      keys.forEach((key, index) => {
+        courier_assignee[key].forEach((assignee) => {
+          const row = [id, null, null];
+          row[index + 1] = assignee; // Fill appropriate column
+          placeholders.push(`(?, ?, ?)`);
+          values.push(...row);
+        });
+      });
+
+      query += placeholders.join(", ");
+
+      // Execute the query
+      const [result] = await db.query(query, values);
+      return [null, result];
     } catch (e) {
-      console.error(e);
       return [e, null];
     }
   },
@@ -777,7 +788,9 @@ module.exports.CourierAssignee = {
    *
    * @param {import("../utils").Condition<CourierAssignee>} by
    * @returns {Promise<[(import("mysql2").QueryError | string | null ),( CourierAssignee[] | null)]>}
+   *
    */
+
   async read(by) {
     try {
       const query = `SELECT * FROM ${

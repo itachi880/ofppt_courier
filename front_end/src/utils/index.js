@@ -3,6 +3,86 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import moment from "moment";
 import { Store } from "react-data-stores";
 const localizer = momentLocalizer(moment);
+const CustomNextButton = ({ onClick }) => {
+  return (
+    <button className="custom-button next-button" onClick={onClick}>
+      Next <span>&#10095;</span>
+    </button>
+  );
+};
+
+const CustomBackButton = ({ onClick }) => {
+  return (
+    <button className="custom-button back-button" onClick={onClick}>
+      <span>&#10094;</span> Back
+    </button>
+  );
+};
+
+const CustomTodayButton = ({ onClick }) => {
+  return (
+    <button className="custom-button today-button" onClick={onClick}>
+      Today
+    </button>
+  );
+};
+
+const ViewToggleButton = ({ onClick, view, text }) => {
+  return (
+    <button
+      style={{
+        textTransform: "capitalize",
+      }}
+      className={`custom-button ${view === text ? "active" : ""}`}
+      onClick={() => onClick(text)}
+    >
+      {text}
+    </button>
+  );
+};
+
+const CustomToolbar = ({ onNavigate, label, onView, view }) => {
+  console.log({ onNavigate, label, onView, view });
+  return (
+    <div className="custom-toolbar">
+      <div className="navigation-buttons">
+        <CustomBackButton onClick={() => onNavigate("PREV")} />
+        <CustomTodayButton onClick={() => onNavigate("TODAY")} />
+        <CustomNextButton onClick={() => onNavigate("NEXT")} />
+      </div>
+
+      <div className="date-indicator">
+        <span>{label}</span>
+      </div>
+
+      <div className="view-toggle-buttons">
+        <ViewToggleButton onClick={onView} view={view} text="month" />
+        <ViewToggleButton onClick={onView} view={view} text="agenda" />
+      </div>
+    </div>
+  );
+};
+const CustomAgenda = ({ events }) => {
+  return (
+    <div className="custom-agenda">
+      {events.length > 0 ? (
+        events.map((event, index) => (
+          <div key={index} className="custom-agenda-item">
+            <div className="agenda-time">
+              {moment(event.start).format("hh:mm A")}
+            </div>
+            <div className="agenda-event">{event.title}</div>
+            <div className="agenda-description">
+              {event.description || "No description"}
+            </div>
+          </div>
+        ))
+      ) : (
+        <div className="no-events">No events for today</div>
+      )}
+    </div>
+  );
+};
 
 export function Calendar({
   events = [
@@ -18,36 +98,21 @@ export function Calendar({
   return (
     <BigCalendar
       components={{
-        agenda: {
-/*************  ✨ Codeium Command ⭐  *************/
-/******  d4135cc0-9de7-4828-90a4-f632ca30e963  *******/
-          event: ({ event }) => (
-            <div
-              onClick={() => Store.navigateTo(`/courrier/update/${event.id}`)}
-            >
-              <h4 style={{ margin: "0" }}>{event.title}</h4>
-              <p style={{ margin: "0" }}>{event.description}</p>
-            </div>
-          ),
-          time: () => null,
-        },
+        agenda: CustomAgenda, // Custom agenda component
 
         month: {
           event: ({ event }) => (
             <div
-              style={{
-                backgroundColor: event.backgroundColor,
-                borderRadius: "5px",
-                margin: "2px 0",
-              }}
+              className="event-month"
               onClick={() => {
                 Store.navigateTo("/courrier/update/" + event.id);
               }}
             >
-              <strong>{event.title}</strong>
+              <span>{event.title}</span>
             </div>
           ),
         },
+        toolbar: CustomToolbar,
       }}
       messages={{ time: "" }}
       defaultView="month"

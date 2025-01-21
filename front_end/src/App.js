@@ -63,7 +63,7 @@ function App() {
         <Route path="/group/*" element={<Group />} />
         <Route path="*" element={<>404</>} />
       </Routes>
-      <footer className="bg-gray-800 text-white py-4 text-center">
+      <footer className="bg-gray-800 text-white py-4 text-center fixed bottom-0 w-full z-50">
         <p>&copy; 2025 OFPPT. Tous droits réservés.</p>
       </footer>
     </>

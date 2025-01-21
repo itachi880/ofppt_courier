@@ -9,7 +9,7 @@ export function LoginForm() {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [userData, setUserData] = User.useStore();
-  const [showPass,setShowPass]=useState(true);
+  const [showPass, setShowPass] = useState(true);
 
   useEffect(() => {
     if (!userData.token) return;
@@ -105,19 +105,27 @@ export function LoginForm() {
           <label htmlFor="password" style={styles.label}>
             Password:
           </label>
-          <i    style={{cursor:"pointer"}} className={"fa-solid fa-eye"+(showPass?"-slash":'')} onClick={()=>setShowPass(prev=>!prev)} ></i>
-          <input
-            type={showPass?"password":'text'}
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={styles.input}
-            required
-          />
+          <div style={styles.input}>
+            <input
+              type={showPass ? "password" : "text"}
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              style={{
+                background: "transparent",
+                outline: "none",
+                width: "92%",
+              }}
+              required
+            />
+            <i
+              style={{ cursor: "pointer" }}
+              className={"fa-solid fa-eye" + (showPass ? "-slash" : "")}
+              onClick={() => setShowPass((prev) => !prev)}
+            ></i>
+          </div>
         </div>
-        <input type="submit" style={styles.button} value={"Login"}/>
-          
-        
+        <input type="submit" style={styles.button} value={"Login"} />
       </form>
       {error && <p style={styles.error}>{error}</p>}
       {success && <p style={styles.success}>{success}</p>}

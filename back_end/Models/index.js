@@ -755,24 +755,28 @@ module.exports.CourierAssignee = {
     if (keys.length === 0) return ["no assignees", null];
 
     try {
-      // Construct the base query
-      const columns = `courier_id, ${keys.join(", ")}`;
+      // Fixed columns order
+      const columns = `courier_id, group_id, department_id`;
       let query = `
         INSERT INTO ${TablesNames.courier_assigne}
         (${columns})
         VALUES `;
 
-      // Prepare values and placeholders
+      // Prepare placeholders and values
       const placeholders = [];
       const values = [];
 
-      keys.forEach((key, index) => {
-        courier_assignee[key].forEach((assignee) => {
-          const row = [id, null, null];
-          row[index + 1] = assignee; // Fill appropriate column
-          placeholders.push(`(?, ?, ?)`);
-          values.push(...row);
-        });
+      keys.forEach((key) => {
+        if (!courier_assignee[key]) return;
+        console.log(courier_assignee[key]);
+        const row = [
+          id ?? courier_assignee[key].courier_id,
+          courier_assignee[key].group_id ?? null,
+          courier_assignee[key].department_id ?? null,
+        ];
+
+        placeholders.push(`(?, ?, ?)`);
+        values.push(...row);
       });
 
       query += placeholders.join(", ");

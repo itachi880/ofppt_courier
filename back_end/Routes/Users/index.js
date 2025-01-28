@@ -22,14 +22,18 @@ router.put("/:id", async (req, res) => {
   const updateData = req.body;
 
   try {
-    if (req.user.role != Roles.admin) return res.status(401).end("you don't have access");
+    if (req.user.role != Roles.admin)
+      return res.status(401).end("you don't have access");
     const [errUpdate] = await Users.updateByID(userId, updateData);
-    if (errUpdate) return res.status(500).end("server error") && console.log(errUpdate);
+    if (errUpdate)
+      return res.status(500).end("server error") && console.log(errUpdate);
     res.end("done");
   } catch (e) {
     console.log(e);
     res.status(500).end("server error");
   }
+
+
 });
 
 module.exports = router;

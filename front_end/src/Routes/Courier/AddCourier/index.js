@@ -90,7 +90,7 @@ export default function () {
     console.log(formData);
   }, [formData]);
   return (
-    <div style={styles.container}>
+    <div style={styles.container} >
       <div style={styles.section}>
         <label style={styles.label}>Object Title</label>
         <input

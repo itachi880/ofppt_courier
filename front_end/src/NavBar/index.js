@@ -1,86 +1,158 @@
 import { Store } from "react-data-stores";
 import "./index.css";
 import { User } from "../data";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default () => {
   const [userData, setUserData] = User.useStore();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(null);
+
   useEffect(() => {
     console.log(userData);
   }, [userData]);
-  if (!userData.token || Object.keys(userData.data).length == 0) return null;
+
+  if (!userData.token || Object.keys(userData.data).length === 0) return null;
+
+  const handleDropdown = (dropdown) => {
+    setOpenDropdown(openDropdown === dropdown ? null : dropdown);
+  };
+
   return (
-    <div className="navbar-holder fixed top-0 left-0 w-full bg-gray-800 shadow-md z-10">
-      <nav className="flex items-center justify-between p-4 mx-auto max-w-7xl">
+    <div className="navbar-holder">
+      <nav className="navbar">
         {/* Profile Section (Left) */}
-        <div className="flex items-center space-x-4">
+        <div className="profile">
           <img
-            className="w-14 h-14 rounded-full border-2 border-indigo-500 shadow-md"
-            src="https://i0.wp.com/digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png?fit=500%2C500&ssl=1"
+            src="https://seeklogo.com/images/O/ofppt-logo-B2CAD4E136-seeklogo.com.png"
             alt="profile"
           />
-          <span className="text-white text-lg font-semibold tracking-wide">
+          <span className="name text-gray-600">
             {userData.data.first_name + " " + userData.data.last_name}
           </span>
         </div>
 
-        {/* Navigation Buttons (Center) */}
-        <div className="flex space-x-4">
-          <button
-            onClick={() => Store.navigateTo("/courrier")}
-            className="bg-indigo-600 text-white py-1.5 px-3 rounded-md text-sm hover:bg-indigo-700 flex items-center space-x-2"
-          >
-            <i className="fa-solid fa-calendar-day"></i>
-            <span>Show Events</span>
-          </button>
-          <button
-            onClick={() => Store.navigateTo("/courrier/add")}
-            className="bg-indigo-600 text-white py-1.5 px-3 rounded-md text-sm hover:bg-indigo-700 flex items-center space-x-2"
-          >
-            <i className="fa-solid fa-plus"></i>
-            <span>Add Courier</span>
-          </button>
-          <button
-            onClick={() => Store.navigateTo("/departement")}
-            className="bg-indigo-600 text-white py-1.5 px-3 rounded-md text-sm hover:bg-indigo-700 flex items-center space-x-2"
-          >
-            <i className="fa-solid fa-building"></i>
-            <span>Show Department</span>
-          </button>
-          <button
-            onClick={() => Store.navigateTo("/departement/add")}
-            className="bg-indigo-600 text-white py-1.5 px-3 rounded-md text-sm hover:bg-indigo-700 flex items-center space-x-2"
-          >
-            <i className="fa-solid fa-plus-circle"></i>
-            <span>Add Department</span>
-          </button>
-          <button
-            onClick={() => Store.navigateTo("/Group")}
-            className="bg-indigo-600 text-white py-1.5 px-3 rounded-md text-sm hover:bg-indigo-700 flex items-center space-x-2"
-          >
-            <i className="fa-solid fa-users"></i>
-            <span>Show Group</span>
-          </button>
-          <button
-            onClick={() => Store.navigateTo("/Group/add")}
-            className="bg-indigo-600 text-white py-1.5 px-3 rounded-md text-sm hover:bg-indigo-700 flex items-center space-x-2"
-          >
-            <i className="fa-solid fa-user-plus"></i>
-            <span>Add Group</span>
-          </button>
+        {/* Hamburger Menu Icon for Mobile */}
+        <div
+          className="mobile-menu-icon"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+        >
+          <i className="fa-solid fa-bars"></i>
         </div>
 
-        {/* Logout Button (Right) */}
-        <div className="flex items-center space-x-4">
-          <button
-            onClick={() => {
-              setUserData({ token: undefined });
-              localStorage.removeItem("token");
-              Store.navigateTo("/login");
-            }}
-            className="bg-red-600 text-white p-2 rounded-full hover:bg-white hover:text-red-700 transition duration-200 ease-in-out flex items-center justify-center w-9 h-9 "
+        {/* Menu Items (Center) */}
+        <div className={`options ${isMenuOpen ? "open" : ""}`}>
+          <button onClick={() => Store.navigateTo("/")}>
+            <i className="fa-solid fa-calendar-day"></i>
+            <span>Accueil</span>
+          </button>
+
+          {/* Départements Dropdown */}
+          <div
+            className={`dropdown ${
+              openDropdown === "departement" ? "open" : ""
+            }`}
+            onMouseEnter={() => handleDropdown("departement")}
+            onMouseLeave={() => handleDropdown(null)}
           >
-            <i className="fa-solid fa-arrow-right-from-bracket text-xl"></i>
+            <button>
+              <i className="fa-solid fa-building"></i>
+              <span>Départements</span>
+            </button>
+            <div className="dropdown-content">
+              <button onClick={() => Store.navigateTo("/departement")}>
+                <i className="fa-solid fa-list"></i>
+                <span>Afficher Départements</span>
+              </button>
+              <button onClick={() => Store.navigateTo("/departement/add")}>
+                <i className="fa-solid fa-plus"></i>
+                <span>Ajouter Département</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Groupes Dropdown */}
+          <div
+            className={`dropdown ${openDropdown === "group" ? "open" : ""}`}
+            onMouseEnter={() => handleDropdown("group")}
+            onMouseLeave={() => handleDropdown(null)}
+          >
+            <button>
+              <i className="fa-solid fa-users"></i>
+              <span>Groupes</span>
+            </button>
+            <div className="dropdown-content">
+              <button onClick={() => Store.navigateTo("/Group")}>
+                <i className="fa-solid fa-list"></i>
+                <span>Afficher Groupes</span>
+              </button>
+              <button onClick={() => Store.navigateTo("/Group/add")}>
+                <i className="fa-solid fa-plus"></i>
+                <span>Ajouter Groupe</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Courriers Dropdown */}
+          <div
+            className={`dropdown ${openDropdown === "courrier" ? "open" : ""}`}
+            onMouseEnter={() => handleDropdown("courrier")}
+            onMouseLeave={() => handleDropdown(null)}
+          >
+            <button>
+              <i className="fa-solid fa-envelope"></i>
+              <span>Courriers</span>
+            </button>
+            <div className="dropdown-content">
+              <button onClick={() => Store.navigateTo("/courrier")}>
+                <i className="fa-solid fa-list"></i>
+                <span>Afficher Courriers</span>
+              </button>
+              <button onClick={() => Store.navigateTo("/courrier/add")}>
+                <i className="fa-solid fa-plus"></i>
+                <span>Ajouter Courrier</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Utilisateur Dropdown */}
+          <div
+            className={`dropdown ${
+              openDropdown === "utilisateur" ? "open" : ""
+            }`}
+            onMouseEnter={() => handleDropdown("utilisateur")}
+            onMouseLeave={() => handleDropdown(null)}
+          >
+            <button>
+              <i className="fa-solid fa-user"></i>
+              <span>Utilisateur</span>
+            </button>
+            <div className="dropdown-content">
+              <button onClick={() => Store.navigateTo("/utilisateur")}>
+                <i className="fa-solid fa-list"></i>
+                <span>Afficher Utilisateurs</span>
+              </button>
+              <button onClick={() => Store.navigateTo("/utilisateur/add")}>
+                <i className="fa-solid fa-plus"></i>
+                <span>Ajouter Utilisateur</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Logout Section (Right) */}
+        <div className="logout">
+          <button>
+            <span
+              className="logout text-2xl"
+              onClick={() => {
+                setUserData({ token: undefined });
+                localStorage.removeItem("token");
+                Store.navigateTo("/login");
+              }}
+            >
+              <i className="fa-solid fa-arrow-right-from-bracket"></i>
+            </span>
           </button>
         </div>
       </nav>

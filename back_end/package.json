@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "migrate": "node ./database/migrate.js"
+    "migrate": "node ./database/migrate.js",
+    "start": "nodemon index.js"
   },
   "author": "",
   "license": "ISC",
@@ -17,6 +18,7 @@
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.11.5",
-    "node-cron": "^3.0.3"
+    "node-cron": "^3.0.3",
+    "nodemon": "^3.1.9"
   }
 }

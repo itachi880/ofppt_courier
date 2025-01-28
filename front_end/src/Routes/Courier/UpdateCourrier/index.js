@@ -223,7 +223,7 @@ export default function () {
         />
       </div>
       <div style={styles.section}>
-        <label style={styles.label}>Upload Images</label>
+        <label style={styles.label}>Upload Fichiers</label>
         <div
           style={{
             display: "flex",
@@ -245,7 +245,7 @@ export default function () {
               alignItems: "center",
             }}
           >
-            {formData.files.length} imgs selected
+            {formData.files.length} Fichiers selected
             <button
               style={{
                 background: "#00b345",

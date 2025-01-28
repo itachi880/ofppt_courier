@@ -1,76 +1,13 @@
-/* .navbar-holder {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  position: fixed;
-  top: 20px;
-}
-.navbar {
-  background-color: #343434;
-  display: flex;
-  width: 80%;
-  justify-self: center;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px;
-  border-radius: 50px;
-}
-.navbar .profile {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background-color: #ffff;
-  padding: 5px 20px 5px 5px;
-  border-radius: 50px;
-}
-.navbar .profile i.logout {
-  visibility: hidden;
-  opacity: 0;
-  background-color: red;
-  border: none;
-  color: white;
-  border-radius: 3px;
-  padding: 5px;
-  font-weight: bold;
-  margin: 0 0 0 5px;
-  cursor: pointer;
-  text-transform: capitalize;
-}
-.navbar .profile:hover i.logout {
-  opacity: 1;
-  visibility: visible;
-}
-.navbar .profile img {
-  width: 40px;
-  aspect-ratio: 1;
-  border-radius: 50%;
-}
-.navbar .options {
-  display: flex;
-  gap: 10px;
-}
-.navbar .options button {
-  background-color: #e48c26;
-  border: none;
-  border-radius: 50px;
-  padding: 10px 20px;
-  cursor: pointer;
-  text-transform: capitalize;
-}
-
-.navbar .options button:hover {
-  background-color: #29adb2;
-  color: white;
-} */
-/* Style moderne pour la barre de navigation  by haidi iliass */
-
-/* Conteneur principal de la barre de navigation */
 .navbar-holder {
   width: 100%;
-  background-color: #1e293b; /* Bleu foncé moderne */
+  background-color: #19212C; /* Bleu foncé moderne */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   position: fixed;
-  top: 0px;
+  top: 0;
+  z-index: 1000;
+}
+.profile .name{
+  color: #E48C26;
 }
 
 /* Navigation principale */
@@ -102,14 +39,15 @@
   font-weight: 500;
   color: #f3f4f6; /* Couleur claire pour le texte */
 }
-.profile .logout {
+
+ .logout {
   margin-left: 1rem;
   color: #f87171; /* Rouge doux */
   cursor: pointer;
-  transition: color 0.3s ease;
+  transition: color 0.2s ease;
 }
 
-.profile .logout:hover {
+ .logout:hover {
   color: #ef4444; /* Rouge vif */
 }
 
@@ -118,8 +56,9 @@
   display: flex;
   gap: 1rem;
 }
+
 .options button {
-  background-color: #3b82f6; /* Couleur bleue claire */
+  background-color: #00A3A6; /* Couleur bleue claire */
   color: #ffffff;
   border: none;
   border-radius: 5px;
@@ -128,10 +67,14 @@
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* Space between icon and text */
+  position: relative;
 }
 
 .options button:hover {
-  background-color: #2563eb; /* Bleu plus foncé */
+  background-color: #00a3a69e; /* Bleu plus foncé */
   transform: translateY(-2px);
 }
 
@@ -139,20 +82,100 @@
   transform: translateY(0);
 }
 
+/* Dropdown Menu */
+.dropdown {
+  position: relative;
+  display: inline-block;
+  margin-left: 1rem;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #1e293b;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+  min-width: 160px;
+}
+
+.dropdown-content button {
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem 1rem;
+  background-color: #00A3A6;
+  border: none;
+  border-radius: 0;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dropdown-content button:hover {
+  background-color: #04a8abb8;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+  margin-top: 0.25rem;
+}
+
+/* Hamburger Menu Icon for Mobile */
+.mobile-menu-icon {
+  display: none;
+  color: #f3f4f6;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
 /* Résponsive pour petits écrans */
 @media (max-width: 768px) {
   .navbar {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    align-items: center;
+    padding: 1rem;
   }
 
   .options {
-    flex-wrap: wrap;
+    display: none; /* Hide options by default on mobile */
+    flex-direction: column;
     gap: 0.5rem;
+    width: 100%;
+    background-color: #1e293b;
+    padding: 1rem;
+    position: absolute;
+    top: 80px; /* Adjust based on navbar height */
+    left: 0;
+    z-index: 999;
+  }
+
+  .options.open {
+    display: flex; /* Show options when menu is open */
   }
 
   .profile {
     justify-content: space-between;
     width: 100%;
+  }
+
+  .mobile-menu-icon {
+    display: block; /* Show hamburger icon on mobile */
+  }
+
+  .dropdown-content {
+    position: static;
+    display: none;
+  }
+
+  .dropdown:hover .dropdown-content {
+    display: none;
+  }
+
+  .dropdown.open .dropdown-content {
+    display: block;
   }
 }

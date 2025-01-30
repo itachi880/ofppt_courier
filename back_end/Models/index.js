@@ -67,6 +67,7 @@ const TablesNames = {
  * @property {"normal"|"urgent"|"tres urgent"} state
  * @property {number} create_by - id de createur
  * @property {string} created_at
+ * @property {string} expiditeur
  * @property {string} updated_at
  */
 //! CourierAssignee
@@ -566,6 +567,7 @@ module.exports.Courier = {
       description,
       title,
       deadline,
+      expititeur,
       state,
       create_by,
       created_at,

@@ -1,12 +1,17 @@
 import { Store } from "react-data-stores";
 import "./index.css";
-import { User } from "../data";
+import { User,events } from "../data";
 import { useEffect, useState } from "react";
 
 export default () => {
   const [userData, setUserData] = User.useStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [eventsData,setEventsData]=events.useStore()
+  const [alertEvents, setAlertEvents] = useState([
+    { id: 1, title: "Courrier 123", deadline: "Demain" },
+    { id: 2, title: "Courrier 456", deadline: "Aujourd'hui" },
+  ]); // ⚠️ Replace with real API data
 
   useEffect(() => {
     console.log(userData);
@@ -138,6 +143,47 @@ export default () => {
               </button>
             </div>
           </div>
+        </div>
+
+        {/* Notifications Dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => handleDropdown("notifications")}
+            className="relative p-2"
+          >
+            <i className="fa-solid fa-bell text-xl text-white"></i>
+            {alertEvents.length > 0 && (
+              <span className="absolute top-0 right-0 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                {
+                  eventsData.data.filter(event=>{
+                    if(new Date(event.deadline).getTime()<=(Date.now()+48*60*60*1000))return true 
+                    return false
+                  }).length
+                }
+              </span>
+            )}
+          </button>
+
+          {openDropdown === "notifications" && (
+            <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-300 shadow-lg rounded-lg">
+              <div className="p-4 font-bold border-b">Notifications</div>
+              <ul className="max-h-60 overflow-y-auto">
+                {alertEvents.length > 0 ? (
+                  alertEvents.map((event) => (
+                    <li
+                      key={event.id}
+                      className="p-3 hover:bg-gray-100 border-b"
+                    >
+                      <span className="font-semibold">{event.title}</span> -{" "}
+                      {event.deadline}
+                    </li>
+                  ))
+                ) : (
+                  <li className="p-3 text-gray-500">Aucune notification</li>
+                )}
+              </ul>
+            </div>
+          )}
         </div>
 
         {/* Logout Section (Right) */}

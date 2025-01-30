@@ -6,19 +6,6 @@ import "./index.css";
 export default () => {
   const [CalendarEvents, setCalendarEvents] = events.useStore();
   const [userData, setUserData] = User.useStore();
-
-  useEffect(() => {
-    if (!userData.token) return;
-    GetEvents(userData.token).then((response) => {
-      if (response[0]) return console.log("Error getting events", response[0]);
-      console.log(response);
-      setCalendarEvents({ data: response[1].data });
-    });
-  }, []);
-  useEffect(() => {
-    console.log(CalendarEvents);
-  }, [CalendarEvents]);
-
   return (
     <div
       className="show-courier"

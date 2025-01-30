@@ -69,6 +69,7 @@ export default function () {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
+    expiditeur:"",
     deadline: today.toISOString().split("T")[0],
     state: "",
     critical: false,
@@ -80,6 +81,7 @@ export default function () {
     departements: [],
     imgs: [],
     groups: [],
+    type:'courrier',
     files: [],
   });
   const [userData, setUserData] = User.useStore();
@@ -167,7 +169,7 @@ export default function () {
           }}
         >
           <option value="" hidden>
-            Select Departement
+            Select entité
           </option>
 
           {departementsGroup.departements.map((dep) => (
@@ -193,7 +195,27 @@ export default function () {
               grps.map((grp) => <option value={grp.id}>{grp.name}</option>)
             )}
         </select>
-
+        <label style={styles.label}>type</label>
+        <select
+          style={styles.select}
+          onChange={(e) => {
+            setFormData({...formData,type:e.target.value})
+          }}
+        >
+          <option value="" hidden>
+            Select type
+          </option>
+          <option>courrier</option>
+          <option>evenement</option>
+        </select>
+        <label style={styles.label}>Expiditeur</label>
+        <input
+           style={styles.input}
+           onChange={(e) => {
+             setFormData({ ...formData, expiditeur: e.target.value });
+           }}
+           value={formData.expiditeur}
+        placeholder="Expiditeur"/>
         <label style={styles.label}>Description</label>
         <input
           style={styles.input}
@@ -328,10 +350,12 @@ export default function () {
             formDataToSend.append("token", userData.token);
             formDataToSend.append("titel", formData.title);
             formDataToSend.append("description", formData.description);
+            formDataToSend.append("expiditeur", formData.expiditeur);
             formDataToSend.append("state", formData.state);
             formDataToSend.append("deadline", formData.deadline);
             formDataToSend.append("critical", formData.critical);
             formDataToSend.append("created_at", formData.created_at);
+       
             if (formData.files) {
               Array.from(formData.files).forEach((file) => {
                 formDataToSend.append("files", file);
@@ -351,4 +375,3 @@ export default function () {
     </div>
   );
 }
-// feha moxkel

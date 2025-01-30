@@ -57,7 +57,7 @@ export const getGroups = async (token) => {
   if (!token) return ["token is empty", null];
   const result = [null, null];
   await axios
-    .get(`${BASE_URL}/groups/all`, { headers: { Authorization: token } })
+    .get(`${BASE_URL}/groups/all`, { headers: { Authorization: token }})
     .then((res) => {
       result[1] = res.data;
     })

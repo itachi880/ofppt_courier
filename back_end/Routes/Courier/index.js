@@ -14,6 +14,7 @@ router.post("/add", fileSaver.array("files", 3), async (req, res) => {
     deadline: req.body.deadline,
     state: req.body.state,
     description: req.body.description,
+    expiditeur:req.body.expiditeur,
     create_by: req.user.id,
   });
 
@@ -51,7 +52,6 @@ router.post("/add", fileSaver.array("files", 3), async (req, res) => {
   }
 
   if (!assigneed_to) return res.status(205).end(response.insertId + "");
-  console.log(assigneed_to);
   const [err2] = await CourierAssignee.insertMany([
     ...assigneed_to.departements.map((e) => ({
       courier_id: response.insertId,
@@ -111,6 +111,7 @@ router.post(
         critical: req.body.critical,
         created_at: req.body.created_at,
         state: req.body.state,
+        expiditeur:req.body.expiditeur
       });
       if (updateError) return res.status(404).send("Courier not found");
 

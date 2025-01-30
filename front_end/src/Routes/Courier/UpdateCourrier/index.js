@@ -75,6 +75,7 @@ export default function () {
     id: undefined,
     title: "",
     description: "",
+    expiditeur:"",
     deadline: "",
     state: "",
     critical: false,
@@ -222,6 +223,14 @@ export default function () {
           placeholder="Description"
         />
       </div>
+      <label style={styles.label}>Expiditeur</label>
+        <input
+           style={styles.input}
+           onChange={(e) => {
+             setFormData({ ...formData, expiditeur: e.target.value });
+           }}
+           value={formData.expiditeur}
+        placeholder="Expiditeur"/>
       <div style={styles.section}>
         <label style={styles.label}>Upload Fichiers</label>
         <div
@@ -347,6 +356,7 @@ export default function () {
             formDataToSend.append("created_at", formData.created_at);
             formDataToSend.append("deadline", formData.deadline);
             formDataToSend.append("critical", formData.critical);
+            formDataToSend.append("expiditeur", formData.expiditeur);
             formDataToSend.append("token", userData.token);
             formDataToSend.append(
               "deleted_imgs",

@@ -1,7 +1,38 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { events, User } from "../../../data";
+import { GetEvents } from "../../../api";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("courrier");
+  const [userData, setUserData] = User.useStore();
+  const [eventsData, setEventData] = events.useStore();
+  const [hasUpcomingDeadline, setHasUpcomingDeadline] = useState(false);
+  const [alertEvents, setAlertEvents] = useState([]);
+
+  useEffect(() => {
+    if (!userData.token) return;
+    GetEvents(userData.token).then((res) => {
+      if (res[0]) return;
+      const formattedEvents = res[1].data.map((e) => ({
+        deadline: e.deadline.split("T")[0],
+        expiditeur: e.expiditeur||"unknown",
+        title: e.title,
+        id: e.id,
+      }));
+      setEventData({ data: formattedEvents });
+    });
+  }, []);
+
+  useEffect(() => {
+    const today = new Date();
+    today.setDate(today.getDate() + 1);
+    const tomorrowStr = today.toISOString().split("T")[0];
+    const upcoming = eventsData.data.some((e) => e.deadline === tomorrowStr);
+    setHasUpcomingDeadline(upcoming);
+
+    const alerts = eventsData.data.filter((e) => e.deadline === tomorrowStr);
+    setAlertEvents(alerts);
+  }, [eventsData]);
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
@@ -16,7 +47,8 @@ export default function Home() {
               }`}
               onClick={() => setActiveTab("courrier")}
             >
-              Courrier
+              Courrier{" "}
+              
             </button>
             <button
               className={`px-4 py-2 rounded ${
@@ -25,6 +57,16 @@ export default function Home() {
               onClick={() => setActiveTab("evenements")}
             >
               Événements
+            </button>
+            <button
+              className={`px-4 py-2 rounded ${
+                activeTab === "alerts" ? "bg-blue-800" : "hover:bg-blue-700"
+              }`}
+              onClick={() => setActiveTab("alerts")}
+            >
+              Alerts {hasUpcomingDeadline && (
+                <span className="ml-2 text-red-500">🚨</span>
+              )}
             </button>
           </nav>
         </div>
@@ -39,7 +81,6 @@ export default function Home() {
               <p className="text-gray-600">
                 Ici, vous pouvez gérer et consulter vos courriers.
               </p>
-              {/* Example Table */}
               <table className="w-full mt-4 border-collapse border border-gray-300">
                 <thead>
                   <tr className="bg-gray-200">
@@ -49,50 +90,56 @@ export default function Home() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td className="border border-gray-300 p-2">2025-01-01</td>
-                    <td className="border border-gray-300 p-2">Service A</td>
-                    <td className="border border-gray-300 p-2">
-                      Demande de document
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="border border-gray-300 p-2">2025-01-10</td>
-                    <td className="border border-gray-300 p-2">Service B</td>
-                    <td className="border border-gray-300 p-2">Invitation</td>
-                  </tr>
+                  {eventsData.data.map((e) => (
+                    <tr key={e.id}>
+                      <td className="border border-gray-300 p-2">
+                        {e?.deadline}
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        {e?.expiditeur}
+                      </td>
+                      <td className="border border-gray-300 p-2">{e?.title}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
           </section>
         )}
 
-        {activeTab === "evenements" && (
+        {activeTab === "alerts" && (
           <section>
-            <h2 className="text-xl font-semibold mb-4">Événements</h2>
+            <h2 className="text-xl font-semibold mb-4">Alerts</h2>
             <div className="bg-white shadow-md rounded-md p-6">
               <p className="text-gray-600">
-                Consultez les événements à venir et leurs détails.
+                Courriers avec deadline imminente.
               </p>
-              {/* Example Event List */}
-              <ul className="mt-4">
-                <li className="mb-3">
-                  <h3 className="text-lg font-bold">Formation React</h3>
-                  <p className="text-gray-500">Date : 2025-02-15</p>
-                  <p className="text-gray-500">Lieu : Centre OFPPT</p>
-                </li>
-                <li className="mb-3">
-                  <h3 className="text-lg font-bold">Atelier Java</h3>
-                  <p className="text-gray-500">Date : 2025-03-01</p>
-                  <p className="text-gray-500">Lieu : Centre OFPPT</p>
-                </li>
-              </ul>
+              <table className="w-full mt-4 border-collapse border border-gray-300">
+                <thead>
+                  <tr className="bg-gray-200">
+                    <th className="border border-gray-300 p-2">Date</th>
+                    <th className="border border-gray-300 p-2">Expéditeur</th>
+                    <th className="border border-gray-300 p-2">Objet</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {alertEvents.map((e) => (
+                    <tr key={e.id}>
+                      <td className="border border-gray-300 p-2">
+                        {e?.deadline}
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        {e?.expiditeur}
+                      </td>
+                      <td className="border border-gray-300 p-2">{e?.title}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </section>
         )}
       </main>
-
-      {/* Footer */}
     </div>
   );
 }

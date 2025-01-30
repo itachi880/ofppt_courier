@@ -14,7 +14,7 @@ router.post("/add", fileSaver.array("files", 3), async (req, res) => {
     deadline: req.body.deadline,
     state: req.body.state,
     description: req.body.description,
-    expiditeur:req.body.expiditeur,
+    expiditeur: req.body.expiditeur,
     create_by: req.user.id,
   });
 
@@ -111,7 +111,7 @@ router.post(
         critical: req.body.critical,
         created_at: req.body.created_at,
         state: req.body.state,
-        expiditeur:req.body.expiditeur
+        expiditeur: req.body.expiditeur,
       });
       if (updateError) return res.status(404).send("Courier not found");
 
@@ -148,6 +148,40 @@ router.post(
     }
   }
 );
+router.get("/bettwen", async (req, res) => {
+  const { startDate, endDate } = req.query;
 
-//!
+  if (!startDate || !endDate) {
+    return res.status(400).send("Start date and end date are required");
+  }
+
+  try {
+    let [err, response] = [null, null];
+    if (req.user.role == Roles.admin) {
+      [err, response] = await CourierAssignee.getCouriers(
+        undefined,
+        undefined,
+        "WHERE deadline >= ? AND deadline <= ? ",
+        [startDate, endDate]
+      );
+    } else {
+      [err, response] = await CourierAssignee.getCouriers(
+        req.user.depId,
+        req.user.grpId,
+        "WHERE deadline >= ? AND deadline <= ? ",
+        [startDate, endDate]
+      );
+    }
+    if (err) {
+      console.error(err);
+      return res.status(500).send("Backend error");
+    }
+
+    return res.json(response);
+  } catch (error) {
+    console.error("Error fetching couriers:", error);
+    return res.status(500).send("Server error");
+  }
+});
+
 module.exports = router;

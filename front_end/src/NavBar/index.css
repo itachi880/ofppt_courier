@@ -1,13 +1,13 @@
 .navbar-holder {
   width: 100%;
-  background-color: #19212C; /* Bleu foncé moderne */
+  background-color: #19212c; /* Bleu foncé moderne */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   position: fixed;
   top: 0;
   z-index: 1000;
 }
-.profile .name{
-  color: #E48C26;
+.profile .name {
+  color: #e48c26;
 }
 
 /* Navigation principale */
@@ -15,7 +15,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
+  padding: 1rem 1.2rem;
 }
 
 /* Profil utilisateur */
@@ -40,14 +40,14 @@
   color: #f3f4f6; /* Couleur claire pour le texte */
 }
 
- .logout {
+.logout {
   margin-left: 1rem;
   color: #f87171; /* Rouge doux */
   cursor: pointer;
   transition: color 0.2s ease;
 }
 
- .logout:hover {
+.logout:hover {
   color: #ef4444; /* Rouge vif */
 }
 
@@ -58,7 +58,7 @@
 }
 
 .options button {
-  background-color: #00A3A6; /* Couleur bleue claire */
+  background-color: #00a3a6; /* Couleur bleue claire */
   color: #ffffff;
   border: none;
   border-radius: 5px;
@@ -99,15 +99,16 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   z-index: 1;
   min-width: 160px;
+  padding: 5px;
 }
 
 .dropdown-content button {
   width: 100%;
   text-align: left;
   padding: 0.5rem 1rem;
-  background-color: #00A3A6;
+  background-color: #00a3a6;
   border: none;
-  border-radius: 5px;  /* border  */
+  border-radius: 5px; /* border  */
   color: #ffffff;
   font-size: 0.9rem;
   font-weight: 500;
@@ -118,7 +119,6 @@
 
 .dropdown-content button:hover {
   background-color: #04a8abb8;
-  
 }
 
 .dropdown:hover .dropdown-content {

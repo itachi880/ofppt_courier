@@ -187,3 +187,4 @@ export const ImgsWithCancelIcon = ({
     </div>
   );
 };
+export const AppFirstLancheJobs = ({ user, events }) => {};

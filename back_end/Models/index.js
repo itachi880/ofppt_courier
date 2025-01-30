@@ -856,7 +856,7 @@ module.exports.CourierAssignee = {
    * @param {number} grp_id - Group ID
    * @returns {Promise<[(import("mysql2").QueryError | string | null ),(Array<Courier> | null)]>}
    */
-  async getCouriers(dep_id, grp_id) {
+  async getCouriers(dep_id, grp_id, condition, conditionValue) {
     try {
       let query = `SELECT 
         ${TablesNames.courier}.id, 
@@ -867,6 +867,7 @@ module.exports.CourierAssignee = {
         ${TablesNames.courier_assigne}.group_id, 
         ${TablesNames.courier_assigne}.department_id, 
         ${TablesNames.courier}.created_at, 
+        ${TablesNames.courier}.is_courier, 
         ${TablesNames.courier}.updated_at, 
         ${TablesNames.courier_files}.path 
         FROM ${TablesNames.courier_assigne} 
@@ -883,6 +884,10 @@ module.exports.CourierAssignee = {
       } else if (grp_id) {
         query += ` WHERE ${TablesNames.courier_assigne}.group_id = ?`;
         values.push(grp_id);
+      }
+      if (condition) {
+        query += condition;
+        values.push(...conditionValue);
       }
       const [rows] = await db.query(query, values);
 
@@ -903,6 +908,7 @@ module.exports.CourierAssignee = {
             state: row[`state`],
             created_at: row[`created_at`],
             updated_at: row[`updated_at`],
+            is_courier: row[`is_courier`],
             departements: [],
             groups: [],
             imgs: [],

@@ -82,7 +82,6 @@ router.get("/all", async (req, res) => {
     );
   }
   if (err) return res.status(500).end("back end err") && console.log(err);
-  console.log(response);
   return res.json(response);
 });
 
@@ -149,27 +148,31 @@ router.post(
   }
 );
 router.get("/bettwen", async (req, res) => {
-  const { startDate, endDate } = req.query;
+  console.log("bettwen");
+  const { startDate, endDate = null } = req.query;
 
-  if (!startDate || !endDate) {
+  if (!startDate && !endDate) {
     return res.status(400).send("Start date and end date are required");
   }
-
   try {
     let [err, response] = [null, null];
     if (req.user.role == Roles.admin) {
       [err, response] = await CourierAssignee.getCouriers(
         undefined,
         undefined,
-        "WHERE deadline >= ? AND deadline <= ? ",
-        [startDate, endDate]
+        endDate
+          ? "WHERE deadline >= ? AND deadline <= ? "
+          : "WHERE deadline >= ?",
+        endDate ? [startDate, endDate] : [startDate]
       );
     } else {
       [err, response] = await CourierAssignee.getCouriers(
         req.user.depId,
         req.user.grpId,
-        "WHERE deadline >= ? AND deadline <= ? ",
-        [startDate, endDate]
+        endDate
+          ? "WHERE deadline >= ? AND deadline <= ? "
+          : "WHERE deadline >= ?",
+        endDate ? [startDate, endDate] : [startDate]
       );
     }
     if (err) {

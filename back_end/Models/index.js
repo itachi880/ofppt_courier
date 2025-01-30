@@ -228,7 +228,6 @@ module.exports.Users = {
       const query = `SELECT * FROM ${TablesNames.users} WHERE ${parse_condition(
         by
       )}`;
-      console.log(query);
       const [rows] = await db.query(query);
       return [null, rows];
     } catch (e) {
@@ -312,10 +311,8 @@ module.exports.Departement = {
       const rows = [];
       const idsIndexes = {};
       const queryResult = await db.query(query);
-      console.log(queryResult[0]);
       queryResult[0].forEach((row) => {
         const index = idsIndexes[row.department_id];
-        console.log(idsIndexes);
         if (index >= 0) {
           if (!row.group_id) return;
           rows[index].groups.push({ id: row.group_id, name: row.group_name });
@@ -335,7 +332,6 @@ module.exports.Departement = {
         }
         return;
       });
-      console.log(rows);
       return [null, rows];
     } catch (e) {
       console.error(e);
@@ -349,7 +345,6 @@ module.exports.Departement = {
    */
   async update(id, by) {
     try {
-      console.log(by);
       const data = Object.entries(by);
       if (!id || data.length == 0) return ["data required", null];
       const sql = [];
@@ -563,20 +558,21 @@ module.exports.Courier = {
    */
   async read(by = {}) {
     try {
-      const query = `SELECT id ,
-      description,
-      title,
-      deadline,
-      expititeur,
-      state,
-      create_by,
-      created_at,
-      updated_at,
+      const query = `SELECT ${TablesNames.courier}.id, 
+      ${TablesNames.courier}.title, 
+      ${TablesNames.courier}.description, 
+      ${TablesNames.courier}.deadline, 
+      ${TablesNames.courier}.state, 
+      ${TablesNames.courier}.created_at, 
+      ${TablesNames.courier}.is_courier, 
+      ${TablesNames.courier}.updated_at,
       ${TablesNames.courier_files}.id as img_id,
       path FROM ${TablesNames.courier} JOIN ${TablesNames.courier_files} on ${TablesNames.courier}.id=${TablesNames.courier_files}.courier_id WHERE 1;`;
 
       const rows = [];
-      await db.query(query)[0].forEach((courier) => {
+
+      const res = await db.query(query);
+      res[0].forEach((courier) => {
         const index = rows.findIndex((row) => row.id == courier.id);
         if (index >= 0) return rows[index].path.push(courier.path);
         courier.path = [courier.path];
@@ -770,7 +766,6 @@ module.exports.CourierAssignee = {
 
       keys.forEach((key) => {
         if (!courier_assignee[key]) return;
-        console.log(courier_assignee[key]);
         const row = [
           id ?? courier_assignee[key].courier_id,
           courier_assignee[key].group_id ?? null,
@@ -802,7 +797,6 @@ module.exports.CourierAssignee = {
       const query = `SELECT * FROM ${
         TablesNames.courier_assigne
       } WHERE ${parse_condition(by)}`;
-      console.log(query);
       const [rows] = await db.query(query);
       return [null, rows];
     } catch (e) {
@@ -859,22 +853,22 @@ module.exports.CourierAssignee = {
   async getCouriers(dep_id, grp_id, condition, conditionValue) {
     try {
       let query = `SELECT 
-        ${TablesNames.courier}.id, 
-        ${TablesNames.courier}.title, 
-        ${TablesNames.courier}.description, 
-        ${TablesNames.courier}.deadline, 
-        ${TablesNames.courier}.state, 
-        ${TablesNames.courier_assigne}.group_id, 
-        ${TablesNames.courier_assigne}.department_id, 
-        ${TablesNames.courier}.created_at, 
-        ${TablesNames.courier}.is_courier, 
-        ${TablesNames.courier}.updated_at, 
-        ${TablesNames.courier_files}.path 
-        FROM ${TablesNames.courier_assigne} 
-        JOIN ${TablesNames.courier} 
-        ON ${TablesNames.courier_assigne}.courier_id = ${TablesNames.courier}.id 
-        LEFT JOIN ${TablesNames.courier_files} 
-        ON ${TablesNames.courier_files}.courier_id = ${TablesNames.courier}.id`;
+      ${TablesNames.courier}.id, 
+      ${TablesNames.courier}.title, 
+      ${TablesNames.courier}.description, 
+      ${TablesNames.courier}.deadline, 
+      ${TablesNames.courier}.state, 
+      ${TablesNames.courier_assigne}.group_id, 
+      ${TablesNames.courier_assigne}.department_id, 
+      ${TablesNames.courier}.created_at, 
+      ${TablesNames.courier}.is_courier, 
+      ${TablesNames.courier}.updated_at, 
+      ${TablesNames.courier_files}.path 
+      FROM ${TablesNames.courier_assigne} 
+      JOIN ${TablesNames.courier} 
+      ON ${TablesNames.courier_assigne}.courier_id = ${TablesNames.courier}.id 
+      LEFT JOIN ${TablesNames.courier_files} 
+      ON ${TablesNames.courier_files}.courier_id = ${TablesNames.courier}.id`;
 
       const values = [];
 

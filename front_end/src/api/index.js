@@ -26,7 +26,11 @@ export const tokenAuthApi = async (Token = "") => {
 export const GetEvents = async (Token = "") => {
   if (!Token) return ["token is empty", null];
   const result = [null, null];
-
+  console.log(
+    `${BASE_URL}/courier/bettwen?startDate=${
+      new Date().toISOString().split("T")[0]
+    }`
+  );
   await axios
     .get(
       `${BASE_URL}/courier/bettwen?startDate=${

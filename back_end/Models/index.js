@@ -567,7 +567,9 @@ module.exports.Courier = {
       ${TablesNames.courier}.is_courier, 
       ${TablesNames.courier}.updated_at,
       ${TablesNames.courier_files}.id as img_id,
-      path FROM ${TablesNames.courier} JOIN ${TablesNames.courier_files} on ${TablesNames.courier}.id=${TablesNames.courier_files}.courier_id WHERE 1;`;
+      path FROM ${TablesNames.courier} JOIN ${TablesNames.courier_files} on ${
+        TablesNames.courier
+      }.id=${TablesNames.courier_files}.courier_id ${parse_condition(by)}`;
 
       const rows = [];
 

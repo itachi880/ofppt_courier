@@ -46,7 +46,6 @@ export default () => {
         <i className="fa fa-search"></i>
         <button type="submit">Search</button>
       </form>
-
       <Calendar
         events={CalendarEvents.data.map((e) => ({
           id: e.id,

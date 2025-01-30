@@ -205,7 +205,7 @@ export default function () {
         />
       </div>
       <div style={styles.section}>
-        <label style={styles.label}>Upload Images</label>
+        <label style={styles.label}>upload fichiers</label>
 
         <div
           style={{
@@ -228,7 +228,7 @@ export default function () {
               alignItems: "center",
             }}
           >
-            {formData.files.length} imgs selected
+            {formData.files.length} fichier  selected
             <button
               style={{
                 background: "#00b345",
@@ -285,9 +285,9 @@ export default function () {
           }}
           value={formData.deadline}
         />
-        <label style={styles.label}>State</label>
+        <label style={styles.label}>Etat</label>
         <div>
-          {["normal", "urgent", "tres urgent"].map((state) => (
+          {["normal", "tres important", "tres urgent"].map((state) => (
             <div key={state} style={{ marginBottom: "10px" }}>
               <input
                 type="checkbox"

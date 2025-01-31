@@ -22,16 +22,10 @@ function App() {
   const [departements_group, setDepartementsGroup] =
     departements_group_store.useStore();
   useEffect(() => {
-    if (!userData.token)
-      return Store.navigateTo(
-        "/login" + "?redirect=" + window.location.pathname
-      );
+    if (!userData.token) return Store.navigateTo("/login");
     if (Object.keys(userData.data).length > 0) return;
     tokenAuthApi(userData.token).then((response) => {
-      if (response[0])
-        return Store.navigateTo(
-          "/login" + "?redirect=" + window.location.pathname
-        );
+      if (response[0]) return Store.navigateTo("/login");
       setUserData(response[1], true);
       Store.navigateTo("/");
     });

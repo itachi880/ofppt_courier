@@ -288,7 +288,10 @@ export const AddUserApi = async (formData) => {
     !formData.email ||
     !formData.password
   ) {
-    return ["All parameters (token, nom, prenom, email, password) are required", null];
+    return [
+      "All parameters (token, nom, prenom, email, password) are required",
+      null,
+    ];
   }
 
   const result = [null, null];
@@ -300,8 +303,8 @@ export const AddUserApi = async (formData) => {
         last_name: formData.prenom,
         email: formData.email,
         password: formData.password,
-        departement_id:+formData.departement_id,
-        group_id:+formData.group_id 
+        departement_id: +formData.departement_id,
+        group_id: +formData.group_id,
       },
       {
         headers: {
@@ -314,4 +317,22 @@ export const AddUserApi = async (formData) => {
     result[0] = err.response?.data || err.message;
   }
   return result;
+};
+export const GetUsersApi = async (token) => {
+  if (!token) return ["no token", null];
+  try {
+    const response = await axios.get(
+      `${BASE_URL}/users/`,
+
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+
+    return [null, response.data];
+  } catch (err) {
+    return [err.response?.data || err.message, null];
+  }
 };

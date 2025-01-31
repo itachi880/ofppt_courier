@@ -10,7 +10,6 @@ import Departement from "./Routes/departement";
 import NavBar from "./NavBar";
 import Group from "./Routes/Group";
 import Home from "./Routes/home";
-import Footer from "./Footer/Footer";
 import Utilisateur from "./Routes/Utilisateur";
 
 function App() {

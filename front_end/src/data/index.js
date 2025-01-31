@@ -3,7 +3,6 @@ export const events = createStore({
   data: [],
 });
 
-
 export const User = createStore({
   token: localStorage.getItem("token") || undefined,
   data: {},
@@ -25,6 +24,19 @@ export const departements_group_store = createStore({
     {
       id: 1,
       name: "group 1",
+    },
+  ],
+});
+export const usersStore = createStore({
+  data: [
+    {
+      id: 0,
+      first_name: "",
+      last_name: "",
+      departement: 0,
+      group: 0,
+      email: "",
+      role: "",
     },
   ],
 });

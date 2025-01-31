@@ -188,3 +188,7 @@ export const ImgsWithCancelIcon = ({
   );
 };
 export const AppFirstLancheJobs = ({ user, events }) => {};
+export const roles = {
+  admin: "admin",
+  user: "user",
+};

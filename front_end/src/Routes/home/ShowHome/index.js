@@ -12,10 +12,11 @@ export default function Home() {
   useEffect(() => {
     if (!userData.token) return;
     GetEvents(userData.token).then((res) => {
+      console.log(res);
       if (res[0]) return;
       const formattedEvents = res[1].data.map((e) => ({
         deadline: e.deadline.split("T")[0],
-        expiditeur: e.expiditeur||"unknown",
+        expiditeur: e.expiditeur || "unknown",
         title: e.title,
         id: e.id,
       }));
@@ -48,7 +49,6 @@ export default function Home() {
               onClick={() => setActiveTab("courrier")}
             >
               Courrier{" "}
-              
             </button>
             <button
               className={`px-4 py-2 rounded ${
@@ -64,7 +64,8 @@ export default function Home() {
               }`}
               onClick={() => setActiveTab("alerts")}
             >
-              Alerts {hasUpcomingDeadline && (
+              Alerts{" "}
+              {hasUpcomingDeadline && (
                 <span className="ml-2 text-red-500">🚨</span>
               )}
             </button>

@@ -1,4 +1,4 @@
-import { useEffect,useState } from "react";
+import { useEffect, useState } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import "./App.css";
 import { departements_group_store, User } from "./data";
@@ -16,9 +16,11 @@ import Utilisateur from "./Routes/Utilisateur";
 function App() {
   Store.navigateTo = useNavigate();
   const [userData, setUserData] = User.useStore();
-  const [width,setWidth]=useState(window.innerWidth)
-  window.addEventListener("resize",e=>{setWidth(window.innerWidth)})
-  
+  const [width, setWidth] = useState(window.innerWidth);
+  window.addEventListener("resize", (e) => {
+    setWidth(window.innerWidth);
+  });
+
   const [departements_group, setDepartementsGroup] =
     departements_group_store.useStore();
   useEffect(() => {
@@ -35,7 +37,6 @@ function App() {
       setUserData(response[1], true);
       Store.navigateTo("/");
     });
-    
   }, [userData.token]);
 
   useEffect(() => {
@@ -57,11 +58,12 @@ function App() {
       });
     });
   }, [userData.token]);
-  if(width<1000)return (
-    <p className="text-center text-2xl mt-20 text-red-600">
-      you don't have acces in your mobil phone!! 🧐
-    </p>
-  );
+  if (width < 1000)
+    return (
+      <p className="text-center text-2xl mt-20 text-red-600">
+        you don't have acces in your mobil phone!! 🧐
+      </p>
+    );
   return (
     <>
       <NavBar />

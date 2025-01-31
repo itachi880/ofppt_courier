@@ -85,14 +85,6 @@ router.get("/all", async (req, res) => {
   return res.json(response);
 });
 
-// router.get("/:id", async (req, res) => {
-//   const [err, response] = await Courier.read({
-//     and: [{ id: { value: req.params.id, operateur: "=" } }],
-//   });
-//   if (err) return res.status(500).end("back end err") && console.log(err);
-//   return res.json(response);
-// });
-
 router.post(
   "/update/:courierId",
   fileSaver.array("files", 3),

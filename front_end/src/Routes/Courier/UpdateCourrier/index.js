@@ -75,7 +75,7 @@ export default function () {
     id: undefined,
     title: "",
     description: "",
-    expiditeur:"",
+    expiditeur: "",
     deadline: "",
     state: "",
     critical: false,
@@ -92,17 +92,18 @@ export default function () {
   useEffect(() => {
     const event = eventsStore.data.find((event) => event.id == id);
     if (!event) return Store.navigateTo("/");
+    console.log(event);
     setFormData({
       id: id,
       title: event.title,
       description: event.description,
-      deadline: event.deadline,
+      deadline: event.deadline || "",
       state: event.state,
-      critical: event.critical,
-      created_at: event.created_at,
-      departements: event.departements,
+      critical: event.critical || "",
+      created_at: event.created_at || "",
+      departements: event.departements || [],
       imgs: event.imgs,
-      groups: event.groups,
+      groups: event.groups || [],
       files: [],
     });
   }, []);
@@ -223,162 +224,165 @@ export default function () {
           placeholder="Description"
         />
       </div>
-      <label style={styles.label}>Expiditeur</label>
-        <input
-           style={styles.input}
-           onChange={(e) => {
-             setFormData({ ...formData, expiditeur: e.target.value });
-           }}
-           value={formData.expiditeur}
-        placeholder="Expiditeur"/>
       <div style={styles.section}>
-        <label style={styles.label}>Upload Fichiers</label>
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            width: "100%",
-            gap: "10px",
-            margin: "10px 0px",
+        <label style={styles.label}>Expiditeur</label>
+        <input
+          style={styles.input}
+          onChange={(e) => {
+            setFormData({ ...formData, expiditeur: e.target.value });
           }}
-        >
+          value={formData.expiditeur}
+          placeholder="Expiditeur"
+        />
+        <div style={styles.section}>
+          <label style={styles.label}>Upload Fichiers</label>
           <div
             style={{
-              background: "#a3ffc688",
-              border: "1px solid #a3ffc688",
-              color: "#00b345",
-              borderRadius: "20px",
-              padding: "5px 10px",
               display: "flex",
+              flexWrap: "wrap",
+              width: "100%",
               gap: "10px",
-              alignItems: "center",
+              margin: "10px 0px",
             }}
           >
-            {formData.files.length} Fichiers selected
-            <button
+            <div
               style={{
-                background: "#00b345",
-                border: "1px solid #00b345",
-                color: "white",
-                fontSize: "18px",
-                borderRadius: "50%",
-                cursor: "pointer",
-                aspectRatio: "1",
-                width: "28px",
-              }}
-              onClick={() => {
-                const fileInput = document.createElement("input");
-                fileInput.type = "file";
-                fileInput.multiple = true;
-                fileInput.onchange = (e) => {
-                  setFormData({ ...formData, files: e.target.files });
-                };
-                fileInput.click();
+                background: "#a3ffc688",
+                border: "1px solid #a3ffc688",
+                color: "#00b345",
+                borderRadius: "20px",
+                padding: "5px 10px",
+                display: "flex",
+                gap: "10px",
+                alignItems: "center",
               }}
             >
-              +
-            </button>
-          </div>
-          {Array.from(formData.files).map((file, fileIndex) => {
-            const src = URL.createObjectURL(file);
-            return (
-              <ImgsWithCancelIcon
-                src={src}
-                imgClick={() => {
-                  const link = document.createElement("a");
-                  link.href = src;
-                  link.target = "_blank";
-                  link.click();
+              {formData.files.length} Fichiers selected
+              <button
+                style={{
+                  background: "#00b345",
+                  border: "1px solid #00b345",
+                  color: "white",
+                  fontSize: "18px",
+                  borderRadius: "50%",
+                  cursor: "pointer",
+                  aspectRatio: "1",
+                  width: "28px",
                 }}
-                Xclick={() => {
-                  const dataTransfer = new DataTransfer();
-                  Array.from(formData.files).forEach((file, index) => {
-                    if (index !== fileIndex) dataTransfer.items.add(file);
-                  });
-                  setFormData({ ...formData, files: dataTransfer.files });
+                onClick={() => {
+                  const fileInput = document.createElement("input");
+                  fileInput.type = "file";
+                  fileInput.multiple = true;
+                  fileInput.onchange = (e) => {
+                    setFormData({ ...formData, files: e.target.files });
+                  };
+                  fileInput.click();
                 }}
-              />
-            );
-          })}
-        </div>
-        <label style={styles.label}>Deadline</label>
-        <input
-          style={styles.input}
-          type="date"
-          onChange={(e) => {
-            setFormData({ ...formData, deadline: e.target.value });
-          }}
-          value={formData.deadline.split("T")[0]}
-        />
-        <label style={styles.label}>State</label>
-        <div>
-          {["normal", "urgent", "tres urgent"].map((state) => (
-            <div key={state} style={{ marginBottom: "10px" }}>
-              <input
-                type="checkbox"
-                value={state}
-                checked={formData.state === state}
-                onChange={(e) => {
-                  if (e.target.checked) {
-                    setFormData({ ...formData, state: e.target.value });
-                  } else {
-                    setFormData({ ...formData, state: "" });
-                  }
-                }}
-              />
-              <label htmlFor={state} style={{ marginLeft: "10px" }}>
-                {state.charAt(0).toUpperCase() + state.slice(1)}{" "}
-              </label>
+              >
+                +
+              </button>
             </div>
-          ))}
+            {Array.from(formData.files).map((file, fileIndex) => {
+              const src = URL.createObjectURL(file);
+              return (
+                <ImgsWithCancelIcon
+                  src={src}
+                  imgClick={() => {
+                    const link = document.createElement("a");
+                    link.href = src;
+                    link.target = "_blank";
+                    link.click();
+                  }}
+                  Xclick={() => {
+                    const dataTransfer = new DataTransfer();
+                    Array.from(formData.files).forEach((file, index) => {
+                      if (index !== fileIndex) dataTransfer.items.add(file);
+                    });
+                    setFormData({ ...formData, files: dataTransfer.files });
+                  }}
+                />
+              );
+            })}
+          </div>
+          <label style={styles.label}>Deadline</label>
+          <input
+            style={styles.input}
+            type="date"
+            onChange={(e) => {
+              setFormData({ ...formData, deadline: e.target.value });
+            }}
+            value={formData.deadline}
+          />
+          <label style={styles.label}>State</label>
+          <div>
+            {["normal", "urgent", "tres urgent"].map((state) => (
+              <div key={state} style={{ marginBottom: "10px" }}>
+                <input
+                  type="checkbox"
+                  value={state}
+                  checked={formData.state === state}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setFormData({ ...formData, state: e.target.value });
+                    } else {
+                      setFormData({ ...formData, state: "" });
+                    }
+                  }}
+                />
+                <label htmlFor={state} style={{ marginLeft: "10px" }}>
+                  {state.charAt(0).toUpperCase() + state.slice(1)}{" "}
+                </label>
+              </div>
+            ))}
+          </div>
+
+          <label style={styles.label}>Created At</label>
+          <input
+            style={styles.input}
+            type="date"
+            onChange={(e) => {
+              setFormData({ ...formData, created_at: e.target.value });
+            }}
+            value={formData.created_at.split("T")[0]}
+          />
+
+          <input
+            type="submit"
+            value="Update"
+            style={styles.submitButton}
+            onClick={() => {
+              const formDataToSend = new FormData();
+              formDataToSend.append("title", formData.title);
+              formDataToSend.append("description", formData.description);
+              formDataToSend.append("id", formData.id);
+              formDataToSend.append("state", formData.state);
+              formDataToSend.append("created_at", formData.created_at);
+              formDataToSend.append("deadline", formData.deadline);
+              formDataToSend.append("critical", formData.critical);
+              formDataToSend.append("expiditeur", formData.expiditeur);
+              formDataToSend.append("token", userData.token);
+              formDataToSend.append(
+                "deleted_imgs",
+                JSON.stringify({
+                  imgs: eventsStore.data
+                    .find((event) => event.id == formData.id)
+                    .imgs.filter((img) => !formData.imgs.includes(img)),
+                })
+              );
+              if (formData.files.length > 0)
+                Array.from(formData.files).forEach((file) => {
+                  formDataToSend.append("files", file);
+                });
+              UpdateCourier(
+                formDataToSend,
+                formData.departements,
+                formData.groups
+              )
+                .then(console.log)
+                .catch(console.log);
+            }}
+          />
         </div>
-
-        <label style={styles.label}>Created At</label>
-        <input
-          style={styles.input}
-          type="date"
-          onChange={(e) => {
-            setFormData({ ...formData, created_at: e.target.value });
-          }}
-          value={formData.created_at.split("T")[0]}
-        />
-
-        <input
-          type="submit"
-          value="Update"
-          style={styles.submitButton}
-          onClick={() => {
-            const formDataToSend = new FormData();
-            formDataToSend.append("title", formData.title);
-            formDataToSend.append("description", formData.description);
-            formDataToSend.append("id", formData.id);
-            formDataToSend.append("state", formData.state);
-            formDataToSend.append("created_at", formData.created_at);
-            formDataToSend.append("deadline", formData.deadline);
-            formDataToSend.append("critical", formData.critical);
-            formDataToSend.append("expiditeur", formData.expiditeur);
-            formDataToSend.append("token", userData.token);
-            formDataToSend.append(
-              "deleted_imgs",
-              JSON.stringify({
-                imgs: eventsStore.data
-                  .find((event) => event.id == formData.id)
-                  .imgs.filter((img) => !formData.imgs.includes(img)),
-              })
-            );
-            if (formData.files.length > 0)
-              Array.from(formData.files).forEach((file) => {
-                formDataToSend.append("files", file);
-              });
-            UpdateCourier(
-              formDataToSend,
-              formData.departements,
-              formData.groups
-            )
-              .then(console.log)
-              .catch(console.log);
-          }}
-        />
       </div>
     </div>
   );

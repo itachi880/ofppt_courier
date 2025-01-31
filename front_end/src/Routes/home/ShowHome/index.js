@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { events, User } from "../../../data";
 import { GetEvents } from "../../../api";
+import { Store } from "react-data-stores";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("courrier");
@@ -15,6 +16,7 @@ export default function Home() {
       console.log(res);
       if (res[0]) return;
       const formattedEvents = res[1].data.map((e) => ({
+        ...e,
         deadline: e.deadline.split("T")[0],
         expiditeur: e.expiditeur || "unknown",
         title: e.title,
@@ -92,7 +94,12 @@ export default function Home() {
                 </thead>
                 <tbody>
                   {eventsData.data.map((e) => (
-                    <tr key={e.id}>
+                    <tr
+                      key={e.id}
+                      onClick={() => {
+                        Store.navigateTo("/courrier/update/" + e.id);
+                      }}
+                    >
                       <td className="border border-gray-300 p-2">
                         {e?.deadline}
                       </td>

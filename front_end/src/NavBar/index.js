@@ -133,7 +133,7 @@ export default () => {
               <span>Utilisateur</span>
             </button>
             <div className="dropdown-content">
-              <button onClick={() => Store.navigateTo("/utilisateur")}>
+              <button onClick={() => Store.navigateTo("/utilisateur/afficheUsers")}>
                 <i className="fa-solid fa-list"></i>
                 <span>Afficher Utilisateurs</span>
               </button>

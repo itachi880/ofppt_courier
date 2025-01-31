@@ -11,6 +11,7 @@ import NavBar from "./NavBar";
 import Group from "./Routes/Group";
 import Home from "./Routes/home";
 import Footer from "./Footer/Footer";
+import Utilisateur from "./Routes/Utilisateur";
 
 function App() {
   Store.navigateTo = useNavigate();
@@ -70,6 +71,7 @@ function App() {
         <Route path="/courrier/*" element={<Courier />} />
         <Route path="/departement/*" element={<Departement />} />
         <Route path="/group/*" element={<Group />} />
+        <Route path="/utilisateur/*" element={<Utilisateur />} />
         <Route path="*" element={<>404</>} />
       </Routes>
       <footer className="bg-gray-800 text-white py-4 text-center fixed bottom-0 w-full z-50">

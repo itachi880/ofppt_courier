@@ -268,3 +268,39 @@ export const UpdateGrouptApi = async (token, id, updatedName) => {
 
   return result;
 };
+export const AddUserApi = async (formData) => {
+  if (
+    !formData ||
+    !formData.token ||
+    !formData.nom ||
+    !formData.prenom ||
+    !formData.email ||
+    !formData.password
+  ) {
+    return ["All parameters (token, nom, prenom, email, password) are required", null];
+  }
+
+  const result = [null, null];
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/users/add`,
+      {
+        first_name: formData.nom,
+        last_name: formData.prenom,
+        email: formData.email,
+        password: formData.password,
+        departement_id:+formData.departement_id,
+        group_id:+formData.group_id 
+      },
+      {
+        headers: {
+          Authorization: formData.token,
+        },
+      }
+    );
+    result[1] = response.data;
+  } catch (err) {
+    result[0] = err.response?.data || err.message;
+  }
+  return result;
+};

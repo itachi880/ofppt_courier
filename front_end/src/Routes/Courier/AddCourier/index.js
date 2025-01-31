@@ -355,7 +355,6 @@ export default function () {
             formDataToSend.append("deadline", formData.deadline);
             formDataToSend.append("critical", formData.critical);
             formDataToSend.append("created_at", formData.created_at);
-       
             if (formData.files) {
               Array.from(formData.files).forEach((file) => {
                 formDataToSend.append("files", file);

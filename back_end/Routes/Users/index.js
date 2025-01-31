@@ -1,6 +1,6 @@
 const { auth_middleware } = require("../../utils");
 const { Users } = require("../../Models");
-const { Roles } = require("../../utils");
+const { Roles,hashPass } = require("../../utils");
 const router = require("express").Router();
 router.use(auth_middleware);
 router.delete("/:id", async (req, res) => {
@@ -32,8 +32,21 @@ router.put("/:id", async (req, res) => {
     console.log(e);
     res.status(500).end("server error");
   }
-
-
 });
+router.post("/add", async (req, res) => {
+  console.log(req.body)
+  const userData = req.body;
+  userData.password = hashPass(userData.password);
+  try {
+    if (req.user.role != Roles.admin)
+      return res.status(401).end("you don't have access");
+    const [errAdd] = await Users.insert(userData);
+    if (errAdd) return res.status(500).end("server error") && console.log(errAdd);
+    res.end("done");
+  } catch (e) {
+    console.log(e);
+    res.status(500).end("server error");
+  }
 
+})
 module.exports = router;

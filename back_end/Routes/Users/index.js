@@ -12,6 +12,19 @@ router.get("/", async (req, res) => {
     res.status(500).end("back end error");
   }
 });
+router.get("/:id", async (req, res) => {
+  const userId = req.params.id;
+  try {
+    if (req.user.role != Roles.admin)
+      return res.status(401).end("you don't have access");
+    const [err, user] = await Users.readById(userId);
+    if (err) return res.status(500).end("server error") && console.log(err);
+    res.json(user);
+  } catch (e) {
+    console.log(e);
+    res.status(500).end("server error");
+  }
+})
 router.delete("/:id", async (req, res) => {
   const userId = req.params.id;
 

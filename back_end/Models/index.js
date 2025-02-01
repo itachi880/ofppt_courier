@@ -135,7 +135,6 @@ module.exports.Users = {
       return [e, null]; // Returning the error message in case of failure
     }
   },
-
   /**
    * Update user information in the database by ID
    * @param {Partial<User>} data
@@ -153,7 +152,6 @@ module.exports.Users = {
     if (setFields.length === 0) {
       return ["No fields to update", null];
     }
-
     const query = `
       UPDATE ${TablesNames.users} 
       SET ${setFields.join(", ")} 
@@ -230,6 +228,25 @@ module.exports.Users = {
       )}`;
       const [rows] = await db.query(query);
       return [null, rows];
+    } catch (e) {
+      console.error(e);
+      return [e, null];
+    }
+  },
+  /**
+ * Read a single user by ID from the database
+ * @param {number} id - The ID of the user to retrieve
+ * @returns {Promise<[(import("mysql2").QueryError | string | null ),(User | null)]>}
+ */
+  async readById(id) {
+    try {
+      const query = `SELECT * FROM ${TablesNames.users} WHERE id = ? LIMIT 1`;
+      const [rows] = await db.query(query, [id]);
+      if (rows.length === 0) {
+        return ["User not found", null]; // Retourne une erreur si l'utilisateur n'existe pas
+      }
+  
+      return [null, rows[0]]; // Retourne l'utilisateur trouvé
     } catch (e) {
       console.error(e);
       return [e, null];

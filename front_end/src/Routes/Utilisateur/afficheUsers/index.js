@@ -3,10 +3,12 @@ import { User, usersStore } from "../../../data";
 import { GetUsersApi } from "../../../api";
 import { roles } from "../../../utils";
 import { Store } from "react-data-stores";
+import { useNavigate } from "react-router-dom";
 
 export function AfficheUsers() {
   const [users, setUsers] = usersStore.useStore();
   const [userData, setUserData] = User.useStore();
+  const navigate = useNavigate();
   useEffect(() => {
     if (!userData.token) return;
     if (userData.data.role != roles.admin) Store.navigateTo("/");
@@ -39,10 +41,11 @@ export function AfficheUsers() {
                   key={user.id}
                   className="border-b border-gray-200 hover:bg-gray-50"
                 >
-                  <td className="py-3 px-6">{user.last_name || ""}</td>
-                  <td className="py-3 px-6">{user.first_name || ""}</td>
-                  <td className="py-3 px-6">{user.email}</td>
-                  <td className="py-3 px-6">{user.role || "uknown"}</td>
+                  <td className="py-3 px-6" onClick={()=>{ console.log(user.id);  navigate(`/utilisateur/detailUsers/${user.id}`); }}>{user.last_name || ""}</td>
+                  <td className="py-3 px-6" onClick={()=>{console.log(user.id);navigate(`/utilisateur/detailUsers/${user.id}`)}}>{user.first_name || ""}</td>
+                  <td className="py-3 px-6" onClick={()=>{console.log(user.id);navigate(`/utilisateur/detailUsers/${user.id}`)}} >{user.email}</td>
+                  <td className="py-3 px-6" onClick={()=>{console.log(user.id);navigate(`/utilisateur/detailUsers/${user.id}`)}}>{user.role || "uknown"}</td>
+                  {/* <td className="py-3 px-6">{user.id || "uknown"}</td> */}
                 </tr>
               );
             })

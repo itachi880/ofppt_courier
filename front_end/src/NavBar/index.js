@@ -9,8 +9,7 @@ export default () => {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [eventsData, setEventsData] = events.useStore();
   const [alertEvents, setAlertEvents] = useState([
-    { id: 1, title: "Courrier 123", deadline: "Demain" },
-    { id: 2, title: "Courrier 456", deadline: "Aujourd'hui" },
+
   ]); // ⚠️ Replace with real API data
 
   useEffect(() => {

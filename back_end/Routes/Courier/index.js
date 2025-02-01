@@ -8,6 +8,7 @@ router.use(auth_middleware);
 router.post("/add", fileSaver.array("files", 3), async (req, res) => {
   if (req.user.role != Roles.admin)
     return res.status(401).end("Don't have access");
+  console.log(req.body);
 
   const [err, response] = await Courier.insert({
     title: req.body.titel,
@@ -17,7 +18,6 @@ router.post("/add", fileSaver.array("files", 3), async (req, res) => {
     expiditeur: req.body.expiditeur,
     create_by: req.user.id,
   });
-
   if (err) {
     console.error(err);
     return res.status(500).end("Backend error");

@@ -336,3 +336,20 @@ export const GetUsersApi = async (token) => {
     return [err.response?.data || err.message, null];
   }
 };
+export const GetUsersById = async (token,id) => {
+  if (!token) return ["no token", null];
+  try {
+    const response = await axios.get(
+      `${BASE_URL}/users/${id}`,
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+
+    return [null, response.data];
+  } catch (err) {
+    return [err.response?.data || err.message, null];
+  }
+};

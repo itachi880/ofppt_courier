@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { departements_group_store, User } from "../../../data";
 import { AddCourier } from "../../../api";
 import { GreenBox, ImgsWithCancelIcon, RedBox } from "../../../utils";
+import { useSearchParams } from "react-router-dom";
+
+
 /**
  * @type {Record<string,import("react").CSSProperties>}
  */
@@ -45,6 +48,7 @@ const styles = {
     borderRadius: "5px",
     cursor: "pointer",
     fontSize: "16px",
+    marginBottom: "16px",
   },
   hr: {
     border: "none",
@@ -65,23 +69,23 @@ const styles = {
   },
 };
 export default function () {
+
+  // const is_event = useSearchParams();
+  // console.log(is_event);
+
   const today = new Date();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    expiditeur:"",
+    expiditeur: "",
     deadline: today.toISOString().split("T")[0],
     state: "",
     critical: false,
-    departements: [
-      // { id: 1, name: "departement 1", groups: [{ id: 1, name: "group 1" }] },
-      // { id: 2, name: "departement 2", groups: [{ id: 2, name: "group 2" }] },
-    ],
-    created_at: today.toISOString().split("T")[0],
     departements: [],
+    created_at: today.toISOString().split("T")[0],
     imgs: [],
     groups: [],
-    type:'courrier',
+    type: "courrier",
     files: [],
   });
   const [userData, setUserData] = User.useStore();
@@ -91,8 +95,9 @@ export default function () {
   useEffect(() => {
     console.log(formData);
   }, [formData]);
+
   return (
-    <div style={styles.container} >
+    <div style={styles.container} className="container mx-auto pb-32">
       <div style={styles.section}>
         <label style={styles.label}>Object Title</label>
         <input
@@ -199,7 +204,7 @@ export default function () {
         <select
           style={styles.select}
           onChange={(e) => {
-            setFormData({...formData,type:e.target.value})
+            setFormData({ ...formData, type: e.target.value });
           }}
         >
           <option value="" hidden>
@@ -210,12 +215,13 @@ export default function () {
         </select>
         <label style={styles.label}>Expiditeur</label>
         <input
-           style={styles.input}
-           onChange={(e) => {
-             setFormData({ ...formData, expiditeur: e.target.value });
-           }}
-           value={formData.expiditeur}
-        placeholder="Expiditeur"/>
+          style={styles.input}
+          onChange={(e) => {
+            setFormData({ ...formData, expiditeur: e.target.value });
+          }}
+          value={formData.expiditeur}
+          placeholder="Expiditeur"
+        />
         <label style={styles.label}>Description</label>
         <input
           style={styles.input}
@@ -363,9 +369,11 @@ export default function () {
             console.log(formDataToSend);
             AddCourier(formDataToSend, formData.departements, formData.groups)
               .then((res) => {
-                console.log(res);
+                alert("Courier added successfully!");
+                window.location.href = "/";
               })
               .catch((err) => {
+                alert("Failed to add courier. Please try again.");
                 console.error("Upload failed:", err);
               });
           }}

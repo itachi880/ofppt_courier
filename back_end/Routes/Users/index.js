@@ -60,6 +60,7 @@ router.post("/add", async (req, res) => {
   console.log(req.body);
   const userData = req.body;
   userData.password = hashPass(userData.password);
+ 
   try {
     if (req.user.role != Roles.admin)
       return res.status(401).end("you don't have access");

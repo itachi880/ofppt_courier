@@ -1,4 +1,5 @@
 import axios from "axios";
+import { roles } from "../utils";
 export const BASE_URL = "http://localhost:4000";
 export const LoginApi = async (email, password) => {
   if (!email || !password) return ["email or password is empty", null];
@@ -286,7 +287,8 @@ export const AddUserApi = async (formData) => {
     !formData.nom ||
     !formData.prenom ||
     !formData.email ||
-    !formData.password
+    !formData.password ||
+    !formData.role
   ) {
     return [
       "All parameters (token, nom, prenom, email, password) are required",
@@ -305,6 +307,7 @@ export const AddUserApi = async (formData) => {
         password: formData.password,
         departement_id: +formData.departement_id,
         group_id: +formData.group_id,
+        role: formData.role,
       },
       {
         headers: {

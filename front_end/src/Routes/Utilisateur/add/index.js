@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { departements_group_store, User } from "../../../data";
 import { GreenBox, RedBox } from "../../../utils";
 import { AddUserApi } from "../../../api";
+// import { route } from "../../../../../back_end/Routes/Courier";
 /**
  * @type {Record<string,import("react").CSSProperties>}
  */
@@ -73,7 +74,8 @@ export  function AddUsers () {
     password:"",
     departement_id: 0,
     group_id: 0,
-    token:userData.token
+    token:userData.token,
+    role:"user"
   });
 // const [dept,setDept]=useState({ departements:[],groups: []})
   const [departementsGroup, setDepartementsGroup] =

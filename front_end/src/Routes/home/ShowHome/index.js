@@ -33,12 +33,14 @@ export default function Home() {
     const upcoming = eventsData.data.some((e) => e.deadline === tomorrowStr);
     setHasUpcomingDeadline(upcoming);
 
+    console.log(eventsData && "hada");
+
     const alerts = eventsData.data.filter((e) => e.deadline === tomorrowStr);
     setAlertEvents(alerts);
   }, [eventsData]);
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
+    <div className="min-h-screen bg-gray-100 flex flex-col pb-16">
       {/* Navbar */}
       <header className="bg-blue-600 text-white shadow-md py-4 px-8">
         <div className="container mx-auto flex justify-between items-center">

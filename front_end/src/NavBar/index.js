@@ -118,21 +118,39 @@ export default () => {
               </button>
             </div>
           </div>
-
+          {/* i5tra3 dyal */}
+          <div
+            className={`dropdown ${openDropdown === "events" ? "open" : ""}`}
+            onMouseEnter={() => handleDropdown("events")}
+            onMouseLeave={() => handleDropdown(null)}
+          >
+            <button>
+              <i className="fa-solid fa-envelope"></i>
+              <span>Events</span>
+            </button>
+            <div className="dropdown-content">
+              <button onClick={() => Store.navigateTo("/courrier")}>
+                <i className="fa-solid fa-list"></i>
+                <span>Afficher events</span>
+              </button>
+              <button onClick={() => Store.navigateTo("/courrier/add?event=true")}>
+                <i className="fa-solid fa-plus"></i>
+                <span>Ajouter events</span>
+              </button>
+            </div>
+          </div>
           {/* Utilisateur Dropdown */}
           <div
             className={`dropdown ${
               openDropdown === "utilisateur" ? "open" : ""
             }`}
             onMouseEnter={() => handleDropdown("utilisateur")}
-            onMouseLeave={() => handleDropdown(null)}
+            oton
           >
-            <button>
-              <i className="fa-solid fa-user"></i>
-              <span>Utilisateur</span>
-            </button>
             <div className="dropdown-content">
-              <button onClick={() => Store.navigateTo("/utilisateur/afficheUsers")}>
+              <button
+                onClick={() => Store.navigateTo("/utilisateur/afficheUsers")}
+              >
                 <i className="fa-solid fa-list"></i>
                 <span>Afficher Utilisateurs</span>
               </button>

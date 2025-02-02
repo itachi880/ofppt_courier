@@ -52,7 +52,11 @@ export function DetailUsers(){
                     <td className="py-3 px-6"  >{user.email}</td>
                     <td className="py-3 px-6" >{user.role || "uknown"}</td>
                     <td className="py-3 px-6">{departementsGroups.departements.find(e => e.department_id === user.departement_id)?.department_name || "Inconnu"}</td>
-                    <td className="py-3 px-6" >{user.group_id || "uknown"}</td>
+                    <td className="py-3 px-6">
+  {departementsGroups.departements
+    .map(departement => departement.groups.find(group => group.id === user.group_id)?.name)
+    .find(name => name) || "Inconnu"}
+</td>
                     <td className="py-3 px-6" ><button className="text-blue-500 hover:text-blue-700"
                     aria-label="Update Department" onClick={()=>{console.log(id)}}><FaEdit/></button></td>
                     <td className="py-3 px-6" ><button   className="text-red-500 hover:text-red-700 mr-2"   

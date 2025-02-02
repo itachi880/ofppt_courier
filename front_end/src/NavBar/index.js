@@ -141,27 +141,26 @@ export default () => {
           </div>
           {/* Utilisateur Dropdown */}
           <div
-            className={`dropdown ${
-              openDropdown === "utilisateur" ? "open" : ""
-            }`}
-            onMouseEnter={() => handleDropdown("utilisateur")}
-            oton
-          >
-            <div className="dropdown-content">
-              <button
-                onClick={() => Store.navigateTo("/utilisateur/afficheUsers")}
-              >
-                <i className="fa-solid fa-list"></i>
-                <span>Afficher Utilisateurs</span>
-              </button>
-              <button onClick={() => Store.navigateTo("/utilisateur/add")}>
-                <i className="fa-solid fa-plus"></i>
-                <span>Ajouter Utilisateur</span>
-              </button>
-            </div>
-          </div>
+  className={`dropdown ${openDropdown === "utilisateur" ? "open" : ""}`}
+  onMouseEnter={() => handleDropdown("utilisateur")}
+  onMouseLeave={() => handleDropdown(null)}
+>
+  <button>
+    <i className="fa-solid fa-user"></i>
+    <span>Utilisateurs</span>
+  </button>
+  <div className="dropdown-content">
+    <button onClick={() => Store.navigateTo("/utilisateur/afficheUsers")}>
+      <i className="fa-solid fa-list"></i>
+      <span>Afficher Utilisateurs</span>
+    </button>
+    <button onClick={() => Store.navigateTo("/utilisateur/add")}>
+      <i className="fa-solid fa-plus"></i>
+      <span>Ajouter Utilisateur</span>
+    </button>
+  </div>
+</div>
         </div>
-
         {/* Notifications Dropdown */}
         <div className="flex">
           <div className="relative">

@@ -27,7 +27,6 @@ router.get("/:id", async (req, res) => {
 })
 router.delete("/:id", async (req, res) => {
   const userId = req.params.id;
-
   try {
     if (req.user.role != Roles.admin)
       return res.status(401).end("you don't have access");

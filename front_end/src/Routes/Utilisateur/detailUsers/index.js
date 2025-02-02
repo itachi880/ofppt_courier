@@ -1,9 +1,13 @@
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { GetUsersById } from "../../../api";
-import { User, usersStore } from "../../../data";
+import {  useEffect, useState } from "react";
+import { DeleteUserApi, GetUsersById } from "../../../api";
+import { User, usersStore,departements_group_store } from "../../../data";
 import { FaTrashAlt, FaEdit } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+
 export function DetailUsers(){
+  const [departementsGroups, setDepartmentsGroups] =
+  departements_group_store.useStore();
     const [userData, setUserData] = User.useStore();
     const { id } = useParams();
     const [users, setUsers] = useState([]);
@@ -14,6 +18,8 @@ export function DetailUsers(){
             setUsers([...users,res[1]]);
 
         });
+        // console.log(departementsGroups)
+        
     }, []);
     return(
         <div className="overflow-x-auto p-6">
@@ -41,15 +47,19 @@ export function DetailUsers(){
                     key={user.id}
                     className="border-b border-gray-200 hover:bg-gray-50"
                   >
-                    <td className="py-3 px-6" >{user.last_name || ""}</td>
+                    <td className="py-3 px-6"  onClick={()=>{ }}>{user.last_name || ""}</td>
                     <td className="py-3 px-6">{user.first_name || ""}</td>
                     <td className="py-3 px-6"  >{user.email}</td>
                     <td className="py-3 px-6" >{user.role || "uknown"}</td>
-                    <td className="py-3 px-6" >{user.departement_id || "uknown"}</td>
+                    <td className="py-3 px-6">{departementsGroups.departements.find(e => e.department_id === user.departement_id)?.department_name || "Inconnu"}</td>
                     <td className="py-3 px-6" >{user.group_id || "uknown"}</td>
-                    <td className="py-3 px-6" ><button        className="text-blue-500 hover:text-blue-700"
+                    <td className="py-3 px-6" ><button className="text-blue-500 hover:text-blue-700"
                     aria-label="Update Department" onClick={()=>{console.log(id)}}><FaEdit/></button></td>
-                    <td className="py-3 px-6" ><button   className="text-red-500 hover:text-red-700 mr-2"
+                    <td className="py-3 px-6" ><button   className="text-red-500 hover:text-red-700 mr-2"   
+                      onClick={() => DeleteUserApi(user.id, userData.token).then((res) => {
+                        console.log(res);
+                      }).catch((err) => {
+                        console.log(err); })}
                     aria-label="Delete Department"><FaTrashAlt /></button></td>
                   </tr>
                 );

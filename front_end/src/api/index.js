@@ -356,3 +356,21 @@ export const GetUsersById = async (token,id) => {
     return [err.response?.data || err.message, null];
   }
 };
+export const DeleteUserApi = async (id, token) => {
+  if (!id) {
+    return ["User ID is required", null];
+  }
+  const result = [null, null];
+  try {
+    console.log("id", id);
+    const response = await axios.delete(`${BASE_URL}/users/${id}`, {
+      headers: {
+        Authorization: token,
+      },
+    });
+    result[1] = response.data; // Stocker le succès
+  } catch (err) {
+    result[0] = err.response?.data || err.message; // Stocker l'erreur
+  }
+  return result;
+};  

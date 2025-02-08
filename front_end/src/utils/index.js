@@ -138,7 +138,7 @@ export const GreenBox = ({ children, onClick = () => {} }) => (
       background: "rgba(130, 255, 213, 0.48)",
       color: "rgb(0, 255, 170)",
       borderRadius: "5px",
-      margin: "0 5px",
+      margin: "0 0",
     }}
   >
     {children}
@@ -148,11 +148,12 @@ export const RedBox = ({ children, onClick = () => {} }) => (
   <span
     onClick={onClick}
     style={{
-      padding: "5px 10px",
+      padding: "2px 8px",
       background: "rgba(255, 156, 156, 0.48)",
       color: "red",
       borderRadius: "5px",
-      margin: "0 5px",
+      margin: "0 0px",
+      overflow:"hidden"
     }}
   >
     {children}

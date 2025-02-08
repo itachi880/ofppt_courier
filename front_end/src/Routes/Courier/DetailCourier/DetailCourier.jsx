@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { departements_group_store, events } from "../../../data";
 import { useParams } from "react-router-dom";
 import { Store } from "react-data-stores";
 import { Loader2 } from "lucide-react";
 import { BASE_URL } from "../../../api";
+import {GreenBox,RedBox} from "../../../utils"
 
 const DetailCourier = () => {
   const [eventsStore] = events.useStore();
@@ -114,16 +115,16 @@ const DetailCourier = () => {
         <div className="bg-gray-50 p-4 rounded-xl">
           <h2 className="text-lg font-semibold">Entité :</h2>
           {formData.departements.length > 0 ? (
-            <ul className="list-disc pl-6">
+            <div className="list-disc p-2 flex flex-wrap gap-1">
               {formData.departements.map((departement) =>
                 departementsGroup.departements.map((dep, i) => {
                   if (dep.department_id === departement) {
-                    return <li key={i}>{dep.department_name}</li>;
+                    return <RedBox key={i}>{dep.department_name}</RedBox>;
                   }
                   return null;
                 })
               )}
-            </ul>
+            </div>
           ) : (
             <p className="text-gray-700">Aucun entité assigné.</p>
           )}
@@ -132,24 +133,25 @@ const DetailCourier = () => {
         <div className="bg-gray-50 p-4 rounded-xl">
           <h2 className="text-lg font-semibold">Groupes :</h2>
           {formData.groups.length > 0 ? (
-            <ul className="list-disc pl-6">
+            <div className="list-disc p-2 flex flex-wrap gap-1">
               {formData.groups.map((groupId) =>
                 departementsGroup.groups.map((grp, i) => {
                   if (grp.id === groupId) {
-                    return <li key={i}>{grp.name}</li>;
+                    return <GreenBox key={i}>{grp.name}</GreenBox>;
                   }
                   return null;
                 })
               )}
-            </ul>
+            </div>
           ) : (
             <p className="text-gray-700">Aucun groupe assigné.</p>
           )}
         </div>
 
         <div className="bg-gray-50 p-4 rounded-xl">
-          <h2 className="text-lg font-semibold">Créé le :</h2>
-          <p className="text-gray-700">{formData.created_at}</p>
+          <h2 className="text-lg font-semibold">Creé le :</h2>
+          {/* extacte la date et le temp negilgen le offset YYYY-MM-DDTHH:MM:SS.ofsset=> YYYY-MM-DD HH:MM:SS  */}
+          <p className="text-gray-700">{formData.created_at.split('T')[0]+' '+(formData.created_at.split('T')[1]??'').split('.')[0]}</p>
         </div>
 
         {formData.imgs.length > 0 && (

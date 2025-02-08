@@ -1,8 +1,9 @@
-import { events, User } from "../../../data";
-import { Calendar } from "../../../utils";
+import { events, User,documentType } from "../../../data";
+import { Calendar ,useQuery} from "../../../utils";
 import "./index.css";
 export default () => {
   const [CalendarEvents, setCalendarEvents] = events.useStore();
+  const afficheType=useQuery()(documentType.event)?documentType.event:documentType.courier
   return (
     <div
       className="show-courier"
@@ -31,8 +32,9 @@ export default () => {
         <button type="submit">Search</button>
       </form>
 
-      <Calendar
-        events={CalendarEvents.data.map((e) => ({
+      {
+        afficheType==documentType.courier?<Calendar
+        events={CalendarEvents.data.filter(event=> event.is_courier==1).map((e) => ({
           id: e.id,
           start: new Date(e.deadline.split("T")[0]),
           end: new Date(e.deadline.split("T")[0]),
@@ -40,7 +42,17 @@ export default () => {
           backgroundColor: "red",
           description: e.description,
         }))}
-      />
+      />:<Calendar
+      events={CalendarEvents.data.filter(event=> event.is_courier==0).map((e) => ({
+        id: e.id,
+        start: new Date(e.deadline.split("T")[0]),
+        end: new Date(e.deadline.split("T")[0]),
+        title: e.title,
+        backgroundColor: "red",
+        description: e.description,
+      }))}
+    />
+      }
     </div>
   );
 };

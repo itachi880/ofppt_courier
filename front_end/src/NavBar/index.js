@@ -145,7 +145,7 @@ export default () => {
               <span>Events</span>
             </button>
             <div className="dropdown-content">
-              <button onClick={() => Store.navigateTo("/courrier")}>
+              <button onClick={() => Store.navigateTo("/courrier?event=true")}>
                 <i className="fa-solid fa-list"></i>
                 <span>Afficher events</span>
               </button>

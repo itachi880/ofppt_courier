@@ -188,7 +188,12 @@ export default () => {
               </div>
             </div>
           )}
+          <button onClick={() => Store.navigateTo("/courrier/archive")}>
+            <i className="fa-solid fa-archive"></i>
+            <span>Archive</span>
+          </button>
         </div>
+
         {/* Notifications Dropdown */}
         <div className="flex">
           <div className="relative">
@@ -199,7 +204,7 @@ export default () => {
               <i className="fa-solid fa-bell text-xl text-white"></i>
               {alertEvents.length > 0 && (
                 <span className="absolute top-0 right-0 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                  {alertEvents.filter((alert) => alert.is_courier==1).length}
+                  {alertEvents.filter((alert) => alert.is_courier == 1).length}
                   {/* Show only the count */}
                 </span>
               )}

@@ -16,7 +16,7 @@ router.post("/", async (req, res) => {
     if (err) return res.status(500).end("server error") && console.log(err);
     if (data.length == 0) return res.status(404).end("not found");
     res.json({
-      token: jwt_signe({ id: data[0].id, role: data[0].role }),
+      token: jwt_signe({ id: data[0].id, role: data[0].role,depId:data[0].departement_id, grpId:data[0].group_id}),
       data: data[0],
     });
   } catch (e) {

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { departements_group_store, User } from "../../../data";
+import { departements_group_store, User ,documentType} from "../../../data";
 import { AddCourier } from "../../../api";
-import { GreenBox, ImgsWithCancelIcon, RedBox } from "../../../utils";
+import { GreenBox, ImgsWithCancelIcon, RedBox,useQuery } from "../../../utils";
 import { useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 
@@ -86,7 +86,7 @@ export default function () {
     created_at: today.toISOString().split("T")[0],
     imgs: [],
     groups: [],
-    type: "courrier",
+    type: useQuery()(documentType.event)?documentType.event:documentType.courier,
     files: [],
   });
   const [userData, setUserData] = User.useStore();
@@ -100,7 +100,7 @@ export default function () {
   return (
     <div style={styles.container} className="container mx-auto pb-32">
       <div style={styles.section}>
-        <label style={styles.label}>Object Title</label>
+        <label style={styles.label}>Object Titre</label>
         <input
           style={styles.input}
           placeholder="Object"
@@ -163,7 +163,7 @@ export default function () {
             })}
           </div>
         </div>
-        <label style={styles.label}>Departements</label>
+        <label style={styles.label}>Entité</label>
         <select
           style={styles.select}
           onChange={(e) => {
@@ -201,19 +201,7 @@ export default function () {
               grps.map((grp) => <option value={grp.id}>{grp.name}</option>)
             )}
         </select>
-        <label style={styles.label}>type</label>
-        <select
-          style={styles.select}
-          onChange={(e) => {
-            setFormData({ ...formData, type: e.target.value });
-          }}
-        >
-          <option value="" hidden>
-            Select type
-          </option>
-          <option>courrier</option>
-          <option>evenement</option>
-        </select>
+      
         <label style={styles.label}>Expiditeur</label>
         <input
           style={styles.input}
@@ -234,7 +222,7 @@ export default function () {
         />
       </div>
       <div style={styles.section}>
-        <label style={styles.label}>Upload Images</label>
+        <label style={styles.label}>Upload Fichiers</label>
 
         <div
           style={{
@@ -257,7 +245,7 @@ export default function () {
               alignItems: "center",
             }}
           >
-            {formData.files.length} imgs selected
+            {formData.files.length} images selectionner
             <button
               style={{
                 background: "#00b345",
@@ -360,6 +348,7 @@ export default function () {
             formDataToSend.append("expiditeur", formData.expiditeur);
             formDataToSend.append("state", formData.state);
             formDataToSend.append("deadline", formData.deadline);
+            formDataToSend.append("type", formData.type);
             formDataToSend.append("critical", formData.critical);
             formDataToSend.append("created_at", formData.created_at);
             if (formData.files) {

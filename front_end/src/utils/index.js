@@ -2,6 +2,7 @@ import { Calendar as BigCalendar, momentLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import moment from "moment";
 import { Store } from "react-data-stores";
+import {useSearchParams} from "react-router-dom"
 const localizer = momentLocalizer(moment);
 const CustomNextButton = ({ onClick }) => {
   return (
@@ -192,3 +193,9 @@ export const roles = {
   admin: "admin",
   user: "user",
 };
+
+export const useQuery=()=>{
+  const [searchParams] = useSearchParams();
+
+   return (parameter)=>searchParams.get(parameter);
+}

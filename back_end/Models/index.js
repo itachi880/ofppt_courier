@@ -899,8 +899,15 @@ module.exports.CourierAssignee = {
         query += ` WHERE ${TablesNames.courier_assigne}.group_id = ?`;
         values.push(grp_id);
       }
+    
+    
       if (condition) {
-        query += condition;
+        if(dep_id || grp_id)  query += " AND "
+        else{
+          query += ' WHERE '
+        }
+        query+=condition
+       
         values.push(...conditionValue);
       }
       const [rows] = await db.query(query, values);
@@ -912,8 +919,7 @@ module.exports.CourierAssignee = {
         const courierId = row[`id`];
         if (!insertedIds.has(courierId)) {
           row[`deadline`].setHours(24);
-          //2024-09-11
-
+    
           result.push({
             id: courierId,
             title: row[`title`],

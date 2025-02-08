@@ -1,6 +1,6 @@
 const path = require("path");
 const { Courier, CourierAssignee } = require("../../Models");
-const { auth_middleware, Roles, fileSaver } = require("../../utils");
+const { auth_middleware, Roles, fileSaver,documentType } = require("../../utils");
 const router = require("express").Router();
 const fs = require("fs");
 router.use(auth_middleware);
@@ -17,6 +17,7 @@ router.post("/add", fileSaver.array("files", 3), async (req, res) => {
     description: req.body.description,
     expiditeur: req.body.expiditeur,
     create_by: req.user.id,
+    is_courier:+(req.body.type==documentType.courier)
   });
   if (err) {
     console.error(err);
@@ -153,17 +154,17 @@ router.get("/bettwen", async (req, res) => {
         undefined,
         undefined,
         endDate
-          ? " WHERE deadline >= ? AND deadline <= ? "
-          : " WHERE deadline >= ?",
+          ? "  deadline >= ? AND deadline <= ? "
+          : "  deadline >= ?",
         endDate ? [startDate, endDate] : [startDate]
       );
     } else {
-      [err, response] = await CourierAssignee.getCouriers(
+      [err , response] = await CourierAssignee.getCouriers(
         req.user.depId,
         req.user.grpId,
         endDate
-          ? " WHERE deadline >= ? AND deadline <= ? "
-          : " WHERE deadline >= ? ",
+          ? "  deadline >= ? AND deadline <= ? "
+          : "  deadline >= ? ",
         endDate ? [startDate, endDate] : [startDate]
       );
     }

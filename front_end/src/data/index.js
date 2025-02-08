@@ -40,3 +40,7 @@ export const usersStore = createStore({
     },
   ],
 });
+export const documentType={
+  courier:'courier',
+  event:'event'
+}

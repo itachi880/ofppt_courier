@@ -1,11 +1,8 @@
-import { useEffect } from "react";
 import { events, User } from "../../../data";
-import { GetEvents } from "../../../api";
 import { Calendar } from "../../../utils";
 import "./index.css";
 export default () => {
   const [CalendarEvents, setCalendarEvents] = events.useStore();
-  const [userData, setUserData] = User.useStore();
   return (
     <div
       className="show-courier"

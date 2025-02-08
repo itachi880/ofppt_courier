@@ -3,6 +3,7 @@ import { departements_group_store, User } from "../../../data";
 import { AddCourier } from "../../../api";
 import { GreenBox, ImgsWithCancelIcon, RedBox } from "../../../utils";
 import { useSearchParams } from "react-router-dom";
+import Swal from "sweetalert2";
 
 
 /**
@@ -366,14 +367,25 @@ export default function () {
                 formDataToSend.append("files", file);
               });
             }
-            console.log(formDataToSend);
+
             AddCourier(formDataToSend, formData.departements, formData.groups)
               .then((res) => {
-                alert("Courier added successfully!");
-                window.location.href = "/";
+                Swal.fire({
+                  icon: "success",
+                  title: "Success!",
+                  text: "Courier added successfully!",
+                  showConfirmButton: false,
+                  timer: 2000,
+                }).then(() => {
+                  window.location.href = "/";
+                });
               })
               .catch((err) => {
-                alert("Failed to add courier. Please try again.");
+                Swal.fire({
+                  icon: "error",
+                  title: "Error!",
+                  text: "Failed to add courier. Please try again.",
+                });
                 console.error("Upload failed:", err);
               });
           }}

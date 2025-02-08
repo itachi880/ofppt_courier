@@ -162,8 +162,8 @@ router.get("/bettwen", async (req, res) => {
         req.user.depId,
         req.user.grpId,
         endDate
-          ? "WHERE deadline >= '?' AND deadline <= '?' "
-          : "WHERE deadline >= '?'",
+          ? " WHERE deadline >= ? AND deadline <= ? "
+          : " WHERE deadline >= ? ",
         endDate ? [startDate, endDate] : [startDate]
       );
     }

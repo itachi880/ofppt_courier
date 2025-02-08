@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { departements_group_store, events, User } from "../../../data";
-import { UpdateCourier } from "../../../api";
+import { BASE_URL, UpdateCourier } from "../../../api";
 import { useParams } from "react-router-dom";
 import { GreenBox, ImgsWithCancelIcon, RedBox } from "../../../utils";
 import { Store } from "react-data-stores";
@@ -97,6 +97,7 @@ export default function () {
       id: id,
       title: event.title,
       description: event.description,
+      expiditeur: event.expiditeur,
       deadline: event.deadline || "",
       state: event.state,
       critical: event.critical || "",
@@ -281,6 +282,16 @@ export default function () {
               >
                 +
               </button>
+              {formData.imgs.map((img) => (
+                <img
+                  src={BASE_URL + "/" + img}
+                  style={{
+                    width: "100px",
+                    height: "100px",
+                    objectFit: "cover",
+                  }}
+                />
+              ))}
             </div>
             {Array.from(formData.files).map((file, fileIndex) => {
               const src = URL.createObjectURL(file);

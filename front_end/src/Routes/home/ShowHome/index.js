@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { events, User } from "../../../data";
 import { GetEvents } from "../../../api";
 import { Store } from "react-data-stores";
+import { roles } from "../../../utils";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("courrier");
@@ -33,7 +34,6 @@ export default function Home() {
     const upcoming = eventsData.data.some((e) => e.deadline === tomorrowStr);
     setHasUpcomingDeadline(upcoming);
 
-    console.log(eventsData && "hada");
 
     const alerts = eventsData.data.filter((e) => e.deadline === tomorrowStr);
     setAlertEvents(alerts);
@@ -99,7 +99,11 @@ export default function Home() {
                     <tr
                       key={e.id}
                       onClick={() => {
+                        if (userData.data.role == roles.admin) {
                         Store.navigateTo("/courrier/update/" + e.id);
+                      }else{
+                        Store.navigateTo("/courrier/detail/" + e.id);
+                      }
                       }}
                     >
                       <td className="border border-gray-300 p-2">

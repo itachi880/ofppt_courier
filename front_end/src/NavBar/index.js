@@ -9,8 +9,15 @@ export default () => {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [eventsData, setEventsData] = events.useStore();
   const [alertEvents, setAlertEvents] = useState([
+    useEffect(() => {
+    // Filter events that are within the next 48 hours
+    const upcomingEvents = eventsData.data.filter(
+      (event) => new Date(event.deadline).getTime() <= Date.now() + 48 * 60 * 60 * 1000
+    );
+    setAlertEvents(upcomingEvents);
+  }, [eventsData]),
 
-  ]); // ⚠️ Replace with real API data
+  ]); 
 
   useEffect(() => {
     console.log(userData);
@@ -52,7 +59,8 @@ export default () => {
           </button>
 
           {/* Départements Dropdown */}
-          <div
+          {userData.data.role === "admin" &&(
+            <div
             className={`dropdown ${
               openDropdown === "departement" ? "open" : ""
             }`}
@@ -74,9 +82,12 @@ export default () => {
               </button>
             </div>
           </div>
+          )}
+          
 
           {/* Groupes Dropdown */}
-          <div
+          {userData.data.role === "admin" &&(
+            <div
             className={`dropdown ${openDropdown === "group" ? "open" : ""}`}
             onMouseEnter={() => handleDropdown("group")}
             onMouseLeave={() => handleDropdown(null)}
@@ -96,8 +107,11 @@ export default () => {
               </button>
             </div>
           </div>
+          )
+          }
+          
 
-          {/* Courriers Dropdown */}
+          {/* Courriers Dropdown (Admin can add, all can view) */}
           <div
             className={`dropdown ${openDropdown === "courrier" ? "open" : ""}`}
             onMouseEnter={() => handleDropdown("courrier")}
@@ -112,10 +126,12 @@ export default () => {
                 <i className="fa-solid fa-list"></i>
                 <span>Afficher Courriers</span>
               </button>
-              <button onClick={() => Store.navigateTo("/courrier/add")}>
-                <i className="fa-solid fa-plus"></i>
-                <span>Ajouter Courrier</span>
-              </button>
+              {userData.data.role === "admin" && (
+                <button onClick={() => Store.navigateTo("/courrier/add")}>
+                  <i className="fa-solid fa-plus"></i>
+                  <span>Ajouter Courrier</span>
+                </button>
+              )}
             </div>
           </div>
           {/* i5tra3 dyal */}
@@ -133,33 +149,41 @@ export default () => {
                 <i className="fa-solid fa-list"></i>
                 <span>Afficher events</span>
               </button>
-              <button onClick={() => Store.navigateTo("/courrier/add?event=true")}>
+              <button
+                onClick={() => Store.navigateTo("/courrier/add?event=true")}
+              >
                 <i className="fa-solid fa-plus"></i>
                 <span>Ajouter events</span>
               </button>
             </div>
           </div>
-          {/* Utilisateur Dropdown */}
-          <div
-  className={`dropdown ${openDropdown === "utilisateur" ? "open" : ""}`}
-  onMouseEnter={() => handleDropdown("utilisateur")}
-  onMouseLeave={() => handleDropdown(null)}
->
-  <button>
-    <i className="fa-solid fa-user"></i>
-    <span>Utilisateurs</span>
-  </button>
-  <div className="dropdown-content">
-    <button onClick={() => Store.navigateTo("/utilisateur/afficheUsers")}>
-      <i className="fa-solid fa-list"></i>
-      <span>Afficher Utilisateurs</span>
-    </button>
-    <button onClick={() => Store.navigateTo("/utilisateur/add")}>
-      <i className="fa-solid fa-plus"></i>
-      <span>Ajouter Utilisateur</span>
-    </button>
-  </div>
-</div>
+
+          {userData.data.role === "admin" && (
+            <div
+              className={`dropdown ${
+                openDropdown === "utilisateur" ? "open" : ""
+              }`}
+              onMouseEnter={() => handleDropdown("utilisateur")}
+              onMouseLeave={() => handleDropdown(null)}
+            >
+              <button>
+                <i className="fa-solid fa-user"></i>
+                <span>Utilisateurs</span>
+              </button>
+              <div className="dropdown-content">
+                <button
+                  onClick={() => Store.navigateTo("/utilisateur/afficheUsers")}
+                >
+                  <i className="fa-solid fa-list"></i>
+                  <span>Afficher Utilisateurs</span>
+                </button>
+                <button onClick={() => Store.navigateTo("/utilisateur/add")}>
+                  <i className="fa-solid fa-plus"></i>
+                  <span>Ajouter Utilisateur</span>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
         {/* Notifications Dropdown */}
         <div className="flex">

@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { events, User,documentType } from "../../../data";
+import { events, User, documentType } from "../../../data";
 import { GetEvents } from "../../../api";
 import { Store } from "react-data-stores";
-import { roles ,useQuery} from "../../../utils";
+import { roles, useQuery } from "../../../utils";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("courrier");
@@ -66,18 +66,15 @@ export default function Home() {
       <main className="flex-grow container mx-auto py-8 px-4">
         {/* Common Section Styles */}
         <div className="bg-white shadow-md rounded-md p-6 mb-8">
-         
           {/* Added margin bottom */}
           {activeTab === "courrier" && (
             <CourrierTable
               eventsData={eventsData.data}
               userData={userData.data}
             />
-          )}  {activeTab === "evenements" && (
-            <EventTable
-              eventsData={eventsData.data}
-              userData={userData.data}
-            />
+          )}{" "}
+          {activeTab === "evenements" && (
+            <EventTable eventsData={eventsData.data} userData={userData.data} />
           )}
         </div>
       </main>
@@ -86,80 +83,123 @@ export default function Home() {
 }
 
 // Separate components for tables (cleaner code)
-const CourrierTable = ({ eventsData, userData }) => (
-  <section>
-    <h2 className="text-xl font-semibold mb-4">courrie</h2>
-    <p className="text-gray-600">Ici, vous pouvez gérer et consulter vos courries.</p>
-    <table className="w-full mt-4 border-collapse table-auto"> {/* table-auto for better responsiveness */}
-      <thead>
-        <tr className="bg-gray-200">
-          <th className="border border-gray-300 p-2 text-left">Date</th> {/* Text alignment */}
-          <th className="border border-gray-300 p-2 text-left">Expéditeur</th>
-          <th className="border border-gray-300 p-2 text-left">Objet</th>
-        </tr>
-      </thead>
-      <tbody>
-        {eventsData.filter(event=>{
-          return (event.is_courier==1 )
-        } ).map((e) => (
-          <tr
-            key={e.id}
-            className="hover:bg-gray-50 cursor-pointer transition duration-200" // Hover effect
-            onClick={() => {
-              if (userData.role == roles.admin) {
-                Store.navigateTo("/courrier/update/" + e.id);
-              } else {
-                Store.navigateTo("/courrier/detail/" + e.id);
-              }
-            }}
-          >
-            <td className="border border-gray-300 p-2">{e?.deadline}</td>
-            <td className="border border-gray-300 p-2">{e?.expiditeur}</td>
-            <td className="border border-gray-300 p-2">{e?.title}</td>
+const CourrierTable = ({ eventsData, userData }) => {
+  const renderArray = eventsData.filter((event) => {
+    return event.is_courier == 1;
+  });
+  return (
+    <section>
+      <h2 className="text-xl font-semibold mb-4">courrie</h2>
+      <p className="text-gray-600">
+        Ici, vous pouvez gérer et consulter vos courries.
+      </p>
+      <table className="w-full mt-4 border-collapse table-auto">
+        {" "}
+        {/* table-auto for better responsiveness */}
+        <thead>
+          <tr className="bg-gray-200">
+            <th className="border border-gray-300 p-2 text-center">Date</th>{" "}
+            <th className="border border-gray-300 p-2 text-center">
+              Expéditeur
+            </th>
+            <th className="border border-gray-300 p-2 text-center">Objet</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
-  </section>
-);
+        </thead>
+        <tbody>
+          {renderArray.length > 0 ? (
+            renderArray.map((e) => (
+              <tr
+                key={e.id}
+                className="hover:bg-gray-50 cursor-pointer transition duration-200" // Hover effect
+                onClick={() => {
+                  if (userData.role == roles.admin) {
+                    Store.navigateTo("/courrier/update/" + e.id);
+                  } else {
+                    Store.navigateTo("/courrier/detail/" + e.id);
+                  }
+                }}
+              >
+                <td className="border border-gray-300 p-2 text-center">
+                  {e?.deadline}
+                </td>
+                <td className="border border-gray-300 p-2 text-center">
+                  {e?.expiditeur}
+                </td>
+                <td className="border border-gray-300 p-2 text-center">
+                  {e?.title}
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={3} className="text-center">
+                no courier avilable
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </section>
+  );
+};
 
-
-
-
-
-const EventTable = ({ eventsData, userData }) => (
-  <section>
-    <h2 className="text-xl font-semibold mb-4">event</h2>
-    <p className="text-gray-600">Ici, vous pouvez gérer et consulter vos events.</p>
-    <table className="w-full mt-4 border-collapse table-auto"> {/* table-auto for better responsiveness */}
-      <thead>
-        <tr className="bg-gray-200">
-          <th className="border border-gray-300 p-2 text-left">Date</th> {/* Text alignment */}
-          <th className="border border-gray-300 p-2 text-left">Expéditeur</th>
-          <th className="border border-gray-300 p-2 text-left">Objet</th>
-        </tr>
-      </thead>
-      <tbody>
-        {eventsData.filter(event=>{
-          return (event.is_courier==0 )
-        } ).map((e) => (
-          <tr
-            key={e.id}
-            className="hover:bg-gray-50 cursor-pointer transition duration-200" // Hover effect
-            onClick={() => {
-              if (userData.role == roles.admin) {
-                Store.navigateTo("/courrier/update/" + e.id);
-              } else {
-                Store.navigateTo("/courrier/detail/" + e.id);
-              }
-            }}
-          >
-            <td className="border border-gray-300 p-2">{e?.deadline}</td>
-            <td className="border border-gray-300 p-2">{e?.expiditeur}</td>
-            <td className="border border-gray-300 p-2">{e?.title}</td>
+const EventTable = ({ eventsData, userData }) => {
+  const renderArray = eventsData.filter((event) => {
+    return event.is_courier == 0;
+  });
+  return (
+    <section>
+      <h2 className="text-xl font-semibold mb-4">event</h2>
+      <p className="text-gray-600">
+        Ici, vous pouvez gérer et consulter vos events.
+      </p>
+      <table className="w-full mt-4 border-collapse table-auto">
+        {" "}
+        {/* table-auto for better responsiveness */}
+        <thead>
+          <tr className="bg-gray-200">
+            <th className="border text-center border-gray-300 p-2">Date</th>{" "}
+            {/* Text alignment */}
+            <th className="border text-center border-gray-300 p-2">
+              Expéditeur
+            </th>
+            <th className="border text-center border-gray-300 p-2">Objet</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
-  </section>
-);
+        </thead>
+        <tbody>
+          {renderArray.length > 0 ? (
+            renderArray.map((e) => (
+              <tr
+                key={e.id}
+                className="hover:bg-gray-50 cursor-pointer transition duration-200" // Hover effect
+                onClick={() => {
+                  if (userData.role == roles.admin) {
+                    Store.navigateTo("/courrier/update/" + e.id);
+                  } else {
+                    Store.navigateTo("/courrier/detail/" + e.id);
+                  }
+                }}
+              >
+                <td className="border border-gray-300 p-2 text-center">
+                  {e?.deadline}
+                </td>
+                <td className="border border-gray-300 p-2 text-center">
+                  {e?.expiditeur}
+                </td>
+                <td className="border border-gray-300 p-2 text-center">
+                  {e?.title}
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr className="border border-gray-300 p-2">
+              <td colSpan={3} className="text-center p-2">
+                no event avilable
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </section>
+  );
+};

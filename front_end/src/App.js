@@ -54,7 +54,7 @@ function App() {
       });
     });
   }, [userData.token]);
-//! dyal simo mat9arbch liha
+  //! dyal simo mat9arbch liha
   const location = useLocation();
 
   // Animation variants (for more complex animations)
@@ -64,47 +64,45 @@ function App() {
     exit: { opacity: 0, y: -10, scale: 0.95 }, // Exit state
   };
 
-  if (width < 1000)
-    return (
-      <p className="text-center text-2xl mt-20 text-red-600">
-        you don't have acces in your mobil phone!! 🧐
-      </p>
-    );
+  // if (width < 1000)
+  //   return (
+  //     <p className="text-center text-2xl mt-20 text-red-600">
+  //       you don't have acces in your mobil phone!! 🧐
+  //     </p>
+  //   );
 
-   return (
-     <div className="min-h-screen flex flex-col">
-       <NavBar />
-       {/* Wrap Routes with AnimatePresence */}
-       <AnimatePresence mode="wait">
-         {" "}
-         {/* mode="wait" for smoother transitions */}
-         <motion.div
-           key={location.pathname}
-           variants={variants} // Use animation variants
-           initial="initial"
-           animate="animate"
-           exit="exit"
-           transition={{ duration: 0.3, type: "tween" }} // Add type for smoother scaling
-           className="flex-grow relative" // Added relative for absolute positioning of loading overlay (if needed)
-         >
-          <NavBar />
-           <Routes>
-             <Route index element={<Home />} />
-             <Route path="/login" element={<LoginForm />} />
-             <Route path="/courrier/*" element={<Courier />} />
-             <Route path="/departement/*" element={<Departement />} />
-             <Route path="/group/*" element={<Group />} />
-             <Route path="/utilisateur/*" element={<Utilisateur />} />
-             <Route path="*" element={<>404</>} />
-           </Routes>
-         </motion.div>
-       </AnimatePresence>
-       <footer className="bg-gray-800 text-white py-4 text-center mt-auto w-full">
-         <p>&copy; 2025 OFPPT. Tous droits réservés.</p>
-       </footer>
-     </div>
-   );
+  return (
+    <div className="min-h-screen flex flex-col mb-5">
+      <NavBar />
+      {/* Wrap Routes with AnimatePresence */}
+      <AnimatePresence mode="wait">
+        {" "}
+        {/* mode="wait" for smoother transitions */}
+        <motion.div
+          key={location.pathname}
+          variants={variants} // Use animation variants
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          transition={{ duration: 0.3, type: "tween" }} // Add type for smoother scaling
+          className="flex-grow relative" // Added relative for absolute positioning of loading overlay (if needed)
+        >
+          <Routes>
+            <Route index element={<Home />} />
+            <Route path="/login" element={<LoginForm />} />
+            <Route path="/courrier/*" element={<Courier />} />
+            <Route path="/departement/*" element={<Departement />} />
+            <Route path="/group/*" element={<Group />} />
+            <Route path="/utilisateur/*" element={<Utilisateur />} />
+            <Route path="*" element={<>404</>} />
+          </Routes>
+        </motion.div>
+      </AnimatePresence>
+      <footer className="bg-gray-800 text-white py-4 text-center mt-auto w-full fixed bottom-0">
+        <p>&copy; 2025 OFPPT. Tous droits réservés.</p>
+      </footer>
+    </div>
+  );
 }
-
 
 export default App;

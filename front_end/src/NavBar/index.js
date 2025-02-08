@@ -1,26 +1,23 @@
 import { Store } from "react-data-stores";
 import "./index.css";
-import { User, events,documentType } from "../data";
+import { User, events, documentType } from "../data";
 import { useEffect, useState } from "react";
-import { formatDistanceToNow } from 'date-fns'; // Import date-fns for relative time
+import { formatDistanceToNow } from "date-fns"; // Import date-fns for relative time
 export default () => {
   const [userData, setUserData] = User.useStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [eventsData, setEventsData] = events.useStore();
 
-  
-  const [alertEvents, setAlertEvents] = useState([
-
-
-  ]); 
-    useEffect(() => {
+  const [alertEvents, setAlertEvents] = useState([]);
+  useEffect(() => {
     // Filter events that are within the next 48 hours
     const upcomingEvents = eventsData.data.filter(
-      (event) => new Date(event.deadline).getTime() <= Date.now() + 48 * 60 * 60 * 1000
+      (event) =>
+        new Date(event.deadline).getTime() <= Date.now() + 48 * 60 * 60 * 1000
     );
     setAlertEvents(upcomingEvents);
-    console.log(alertEvents)
+    console.log(alertEvents);
   }, [eventsData]);
   useEffect(() => {
     console.log(userData);
@@ -190,7 +187,7 @@ export default () => {
           )}
         </div>
         {/* Notifications Dropdown */}
-        <div className="flex">
+        <div className="flex gap-3">
           <div className="relative">
             <button
               onClick={() => handleDropdown("notifications")}
@@ -199,7 +196,7 @@ export default () => {
               <i className="fa-solid fa-bell text-xl text-white"></i>
               {alertEvents.length > 0 && (
                 <span className="absolute top-0 right-0 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                  {alertEvents.filter((alert) => alert.is_courier==1).length}
+                  {alertEvents.filter((alert) => alert.is_courier == 1).length}
                   {/* Show only the count */}
                 </span>
               )}
@@ -263,7 +260,7 @@ export default () => {
           <div className="logout">
             <button>
               <span
-                className="logout text-2xl"
+                className="logout text-2xl m-0"
                 onClick={() => {
                   setUserData({ token: undefined });
                   localStorage.removeItem("token");

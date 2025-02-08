@@ -20,6 +20,7 @@ const styles = {
     display: "flex",
     flexWrap: "wrap",
     justifyContent: "space-between",
+    alignItems: "start",
   },
   input: {
     width: "100%",
@@ -48,6 +49,7 @@ const styles = {
     borderRadius: "5px",
     cursor: "pointer",
     fontSize: "16px",
+    width: "100%",
   },
   hr: {
     border: "none",
@@ -126,9 +128,11 @@ export default function () {
           value={formData.title}
         />
         <div style={{ margin: "10px 0" }}>
-          <RedBox>departements</RedBox>
-          <GreenBox>groups</GreenBox>
-          <hr />
+          <span style={{ display: "flex", gap: "5px" }}>
+            <RedBox>departements</RedBox>
+            <GreenBox>groups</GreenBox>
+          </span>
+          <hr style={{ margin: "5px 0" }} />
           <div
             style={{
               display: "flex",
@@ -179,7 +183,7 @@ export default function () {
             })}
           </div>
         </div>
-        <label style={styles.label}>Departements</label>
+        <label style={styles.label}>Entité</label>
         <select
           style={styles.select}
           onChange={(e) => {
@@ -189,7 +193,7 @@ export default function () {
           }}
         >
           <option value="" hidden>
-            Select Departement
+            Select Entité
           </option>
           {departementsGroup.departements.map((dep) => (
             <option value={dep.department_id}>{dep.department_name}</option>
@@ -244,6 +248,7 @@ export default function () {
               width: "100%",
               gap: "10px",
               margin: "10px 0px",
+              alignItems: "center",
             }}
           >
             <div
@@ -282,17 +287,18 @@ export default function () {
               >
                 +
               </button>
-              {formData.imgs.map((img) => (
-                <img
-                  src={BASE_URL + "/" + img}
-                  style={{
-                    width: "100px",
-                    height: "100px",
-                    objectFit: "cover",
-                  }}
-                />
-              ))}
             </div>
+            {formData.imgs.map((img) => (
+              <ImgsWithCancelIcon
+                src={BASE_URL + "/" + img}
+                Xclick={() => {
+                  formData.imgs = formData.imgs.filter(
+                    (imgItem) => imgItem == img
+                  );
+                }}
+                imgClick={() => window.open(BASE_URL + "/" + img)}
+              />
+            ))}
             {Array.from(formData.files).map((file, fileIndex) => {
               const src = URL.createObjectURL(file);
               return (
@@ -356,45 +362,40 @@ export default function () {
             }}
             value={formData.created_at.split("T")[0]}
           />
-
-          <input
-            type="submit"
-            value="Update"
-            style={styles.submitButton}
-            onClick={() => {
-              const formDataToSend = new FormData();
-              formDataToSend.append("title", formData.title);
-              formDataToSend.append("description", formData.description);
-              formDataToSend.append("id", formData.id);
-              formDataToSend.append("state", formData.state);
-              formDataToSend.append("created_at", formData.created_at);
-              formDataToSend.append("deadline", formData.deadline);
-              formDataToSend.append("critical", formData.critical);
-              formDataToSend.append("expiditeur", formData.expiditeur);
-              formDataToSend.append("token", userData.token);
-              formDataToSend.append(
-                "deleted_imgs",
-                JSON.stringify({
-                  imgs: eventsStore.data
-                    .find((event) => event.id == formData.id)
-                    .imgs.filter((img) => !formData.imgs.includes(img)),
-                })
-              );
-              if (formData.files.length > 0)
-                Array.from(formData.files).forEach((file) => {
-                  formDataToSend.append("files", file);
-                });
-              UpdateCourier(
-                formDataToSend,
-                formData.departements,
-                formData.groups
-              )
-                .then(console.log)
-                .catch(console.log);
-            }}
-          />
-        </div>
-      </div>
+        </div>{" "}
+      </div>{" "}
+      <input
+        type="submit"
+        value="Update"
+        style={styles.submitButton}
+        onClick={() => {
+          const formDataToSend = new FormData();
+          formDataToSend.append("title", formData.title);
+          formDataToSend.append("description", formData.description);
+          formDataToSend.append("id", formData.id);
+          formDataToSend.append("state", formData.state);
+          formDataToSend.append("created_at", formData.created_at);
+          formDataToSend.append("deadline", formData.deadline);
+          formDataToSend.append("critical", formData.critical);
+          formDataToSend.append("expiditeur", formData.expiditeur);
+          formDataToSend.append("token", userData.token);
+          formDataToSend.append(
+            "deleted_imgs",
+            JSON.stringify({
+              imgs: eventsStore.data
+                .find((event) => event.id == formData.id)
+                .imgs.filter((img) => !formData.imgs.includes(img)),
+            })
+          );
+          if (formData.files.length > 0)
+            Array.from(formData.files).forEach((file) => {
+              formDataToSend.append("files", file);
+            });
+          UpdateCourier(formDataToSend, formData.departements, formData.groups)
+            .then(console.log)
+            .catch(console.log);
+        }}
+      />
     </div>
   );
 }

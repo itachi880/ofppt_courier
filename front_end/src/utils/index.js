@@ -95,6 +95,7 @@ export function Calendar({
       backgroundColor: "lightgreen",
     },
   ],
+  onDateRangeChange = ({ start, end }) => {},
 }) {
   return (
     <BigCalendar
@@ -113,8 +114,10 @@ export function Calendar({
             </div>
           ),
         },
+
         toolbar: CustomToolbar,
       }}
+      onRangeChange={onDateRangeChange}
       messages={{ time: "" }}
       defaultView="month"
       eventPropGetter={(event) => {
@@ -189,7 +192,6 @@ export const ImgsWithCancelIcon = ({
     </div>
   );
 };
-export const AppFirstLancheJobs = ({ user, events }) => {};
 export const roles = {
   admin: "admin",
   user: "user",

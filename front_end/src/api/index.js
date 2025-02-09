@@ -24,18 +24,15 @@ export const tokenAuthApi = async (Token = "") => {
     return [error, null];
   }
 };
-export const GetEvents = async (Token = "") => {
+export const GetEvents = async (Token = "", dates) => {
   if (!Token) return ["token is empty", null];
   const result = [null, null];
-  console.log(
-    `${BASE_URL}/courier/bettwen?startDate=${
-      new Date().toISOString().split("T")[0]
-    }`
-  );
   await axios
     .get(
       `${BASE_URL}/courier/bettwen?startDate=${
-        new Date().toISOString().split("T")[0]
+        !dates
+          ? new Date().toISOString().split("T")[0]
+          : dates.start + "&endDate=" + dates.end
       }`,
       {
         headers: {
@@ -45,7 +42,6 @@ export const GetEvents = async (Token = "") => {
     )
     .then((res) => {
       result[1] = res;
-      console.log(res);
     })
     .catch((err) => {
       result[0] = err;
@@ -108,7 +104,6 @@ export const AddCourier = async (formData, departements, groups) => {
 };
 
 export const UpdateCourier = async (formData, departements, groups) => {
-  console.log(formData, departements, groups);
   if (!formData.get("token")) {
     return ["token error", null];
   }
@@ -243,7 +238,6 @@ export const deleteGroupApi = async (id, token) => {
   }
   const result = [null, null];
   try {
-    console.log("id", id);
     const response = await axios.delete(`${BASE_URL}/groups/${id}`, {
       headers: {
         Authorization: token,
@@ -339,17 +333,14 @@ export const GetUsersApi = async (token) => {
     return [err.response?.data || err.message, null];
   }
 };
-export const GetUsersById = async (token,id) => {
+export const GetUsersById = async (token, id) => {
   if (!token) return ["no token", null];
   try {
-    const response = await axios.get(
-      `${BASE_URL}/users/${id}`,
-      {
-        headers: {
-          Authorization: token,
-        },
-      }
-    );
+    const response = await axios.get(`${BASE_URL}/users/${id}`, {
+      headers: {
+        Authorization: token,
+      },
+    });
 
     return [null, response.data];
   } catch (err) {
@@ -362,7 +353,6 @@ export const DeleteUserApi = async (id, token) => {
   }
   const result = [null, null];
   try {
-    console.log("id", id);
     const response = await axios.delete(`${BASE_URL}/users/${id}`, {
       headers: {
         Authorization: token,
@@ -373,4 +363,4 @@ export const DeleteUserApi = async (id, token) => {
     result[0] = err.response?.data || err.message; // Stocker l'erreur
   }
   return result;
-};  
+};

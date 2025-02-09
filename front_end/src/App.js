@@ -35,10 +35,6 @@ function App() {
   }, [userData.token]);
 
   useEffect(() => {
-    console.log(departements_group);
-  }, [departements_group]);
-
-  useEffect(() => {
     if (!userData.token) return;
     getDepartements(userData.token).then(async (departements_res) => {
       if (departements_res[0])

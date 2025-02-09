@@ -10,10 +10,6 @@ export default function AddDepartmentComponent() {
 
   const [userData, setUserData] = User.useStore();
 
-  useEffect(() => {
-    console.log(formData);
-  }, [formData]);
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="p-6 w-full max-w-md bg-white shadow-lg rounded-lg">

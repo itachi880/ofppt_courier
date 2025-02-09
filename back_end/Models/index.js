@@ -234,10 +234,10 @@ module.exports.Users = {
     }
   },
   /**
- * Read a single user by ID from the database
- * @param {number} id - The ID of the user to retrieve
- * @returns {Promise<[(import("mysql2").QueryError | string | null ),(User | null)]>}
- */
+   * Read a single user by ID from the database
+   * @param {number} id - The ID of the user to retrieve
+   * @returns {Promise<[(import("mysql2").QueryError | string | null ),(User | null)]>}
+   */
   async readById(id) {
     try {
       const query = `SELECT * FROM ${TablesNames.users} WHERE id = ? LIMIT 1`;
@@ -245,7 +245,7 @@ module.exports.Users = {
       if (rows.length === 0) {
         return ["User not found", null]; // Retourne une erreur si l'utilisateur n'existe pas
       }
-  
+
       return [null, rows[0]]; // Retourne l'utilisateur trouvé
     } catch (e) {
       console.error(e);
@@ -899,19 +899,17 @@ module.exports.CourierAssignee = {
         query += ` WHERE ${TablesNames.courier_assigne}.group_id = ?`;
         values.push(grp_id);
       }
-    
-    
+
       if (condition) {
-        if(dep_id || grp_id)  query += " AND "
-        else{
-          query += ' WHERE '
+        if (dep_id || grp_id) query += " AND ";
+        else {
+          query += " WHERE ";
         }
-        query+=condition
-       
+        query += condition;
+
         values.push(...conditionValue);
       }
       const [rows] = await db.query(query, values);
-
       const result = [];
       const insertedIds = new Map();
 
@@ -919,7 +917,7 @@ module.exports.CourierAssignee = {
         const courierId = row[`id`];
         if (!insertedIds.has(courierId)) {
           row[`deadline`].setHours(24);
-    
+
           result.push({
             id: courierId,
             title: row[`title`],

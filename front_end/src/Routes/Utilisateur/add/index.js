@@ -65,27 +65,25 @@ const styles = {
     justifyContent: "center",
   },
 };
-export  function AddUsers () {
+export function AddUsers() {
   const [userData, setUserData] = User.useStore();
   const [formData, setFormData] = useState({
-    nom:"",
-    prenom:"",
-    email:"",
-    password:"",
+    nom: "",
+    prenom: "",
+    email: "",
+    password: "",
     departement_id: 0,
     group_id: 0,
-    token:userData.token,
-    role:"user"
+    token: userData.token,
+    role: "user",
   });
-// const [dept,setDept]=useState({ departements:[],groups: []})
+  // const [dept,setDept]=useState({ departements:[],groups: []})
   const [departementsGroup, setDepartementsGroup] =
     departements_group_store.useStore();
   // const [password,setPassword]=useState("");
-  useEffect(() => {
-    console.log(formData);
-  }, [formData]);
+
   return (
-    <div style={styles.container} >
+    <div style={styles.container}>
       <div style={styles.section}>
         <label style={styles.label}> nom:</label>
         <input
@@ -96,7 +94,7 @@ export  function AddUsers () {
           }}
           value={formData.nom}
         />
-           <label style={styles.label}> Prenom:</label>
+        <label style={styles.label}> Prenom:</label>
         <input
           style={styles.input}
           placeholder="prenom"
@@ -105,7 +103,7 @@ export  function AddUsers () {
           }}
           value={formData.prenom}
         />
-           <label style={styles.label}> Email:</label>
+        <label style={styles.label}> Email:</label>
         <input
           style={styles.input}
           placeholder="Email"
@@ -122,71 +120,72 @@ export  function AddUsers () {
             setFormData({ ...formData, password: e.target.value });
           }}
           value={formData.password}
-     
         />
       </div>
       <div style={styles.section}>
-      <label style={styles.label}>Départements</label>
-<select
-  style={styles.select}
-  onChange={(e) => {
-    setFormData({ 
-      ...formData, 
-      departement_id: Number(e.target.value),
-      // group_id: null,
-    });
-  }}
-  // disabled={formData.group_id !== null}
->
-  <option value="" hidden>
-    Sélectionner une entité
-  </option>
-  {departementsGroup.departements.map((dep) => (
-    <option key={dep.department_id} value={dep.department_id}>
-      {dep.department_name}
-    </option>
-  ))}
-</select>
+        <label style={styles.label}>Départements</label>
+        <select
+          style={styles.select}
+          onChange={(e) => {
+            setFormData({
+              ...formData,
+              departement_id: Number(e.target.value),
+              // group_id: null,
+            });
+          }}
+          // disabled={formData.group_id !== null}
+        >
+          <option value="" hidden>
+            Sélectionner une entité
+          </option>
+          {departementsGroup.departements.map((dep) => (
+            <option key={dep.department_id} value={dep.department_id}>
+              {dep.department_name}
+            </option>
+          ))}
+        </select>
 
-<label style={styles.label}>Groupes</label>
-<select
-  style={styles.select}
-  onChange={(e) => {
-    setFormData({ 
-      ...formData, 
-      group_id: Number(e.target.value) ,
-      // departement_id: null,
-       // ✅ Convertir en Number
-    });
-  }}
-  // disabled={formData.departement_id !== null} 
->
-  <option value="" hidden>
-    Sélectionner un groupe
-  </option>
-  {departementsGroup.departements
-    .map((dep) => dep.groups)
-    .flatMap((grps) =>
-      grps.map((grp) => (
-        <option key={grp.id} value={grp.id}>
-          {grp.name}
-        </option>
-      ))
-    )}
-</select>
-        <input type="submit" value="Submit" style={styles.submitButton}
-        onClick={()=>{
-          console.log('data',formData);
-       
-          AddUserApi(formData).then((response) => {
-            console.log(response);
-          }).catch((err) => {
-            console.log(err);
-          }); 
-        }}
-         />
+        <label style={styles.label}>Groupes</label>
+        <select
+          style={styles.select}
+          onChange={(e) => {
+            setFormData({
+              ...formData,
+              group_id: Number(e.target.value),
+              // departement_id: null,
+              // ✅ Convertir en Number
+            });
+          }}
+          // disabled={formData.departement_id !== null}
+        >
+          <option value="" hidden>
+            Sélectionner un groupe
+          </option>
+          {departementsGroup.departements
+            .map((dep) => dep.groups)
+            .flatMap((grps) =>
+              grps.map((grp) => (
+                <option key={grp.id} value={grp.id}>
+                  {grp.name}
+                </option>
+              ))
+            )}
+        </select>
+        <input
+          type="submit"
+          value="Submit"
+          style={styles.submitButton}
+          onClick={() => {
+            AddUserApi(formData)
+              .then((response) => {
+                console.log(response);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          }}
+        />
       </div>
-    
-      </div>
+    </div>
   );
 }

@@ -11,7 +11,6 @@ export default function Home() {
   useEffect(() => {
     if (!userData.token) return;
     GetEvents(userData.token).then((res) => {
-      console.log(res);
       if (res[0]) return;
       const formattedEvents = res[1].data.map((e) => ({
         ...e,

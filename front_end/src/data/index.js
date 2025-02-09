@@ -40,7 +40,8 @@ export const usersStore = createStore({
     },
   ],
 });
-export const documentType={
-  courier:'courier',
-  event:'event'
-}
+export const documentType = {
+  courier: "courier",
+  event: "event",
+};
+export const fetchedDates = [];

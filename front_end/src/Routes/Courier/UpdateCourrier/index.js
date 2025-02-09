@@ -94,7 +94,6 @@ export default function () {
   useEffect(() => {
     const event = eventsStore.data.find((event) => event.id == id);
     if (!event) return Store.navigateTo("/");
-    console.log(event);
     setFormData({
       id: id,
       title: event.title,
@@ -110,10 +109,6 @@ export default function () {
       files: [],
     });
   }, []);
-
-  useEffect(() => {
-    console.log(formData);
-  }, [formData]);
 
   return (
     <div style={styles.container}>

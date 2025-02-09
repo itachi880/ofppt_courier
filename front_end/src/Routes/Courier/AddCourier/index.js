@@ -71,9 +71,6 @@ const styles = {
   },
 };
 export default function () {
-  // const is_event = useSearchParams();
-  // console.log(is_event);
-
   const today = new Date();
   const [formData, setFormData] = useState({
     title: "",
@@ -94,10 +91,6 @@ export default function () {
   const [userData, setUserData] = User.useStore();
   const [departementsGroup, setDepartementsGroup] =
     departements_group_store.useStore();
-
-  useEffect(() => {
-    console.log(formData);
-  }, [formData]);
 
   return (
     <div style={styles.container} className="container mx-auto pb-32">
@@ -171,7 +164,6 @@ export default function () {
         <select
           style={styles.select}
           onChange={(e) => {
-            console.log("selected dep", e.target.value);
             if (formData.departements.includes(+e.target.value)) return;
             formData.departements.push(+e.target.value);
             setFormData({ ...formData });

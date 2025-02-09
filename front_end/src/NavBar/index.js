@@ -17,11 +17,7 @@ export default () => {
         new Date(event.deadline).getTime() <= Date.now() + 48 * 60 * 60 * 1000
     );
     setAlertEvents(upcomingEvents);
-    console.log(alertEvents);
   }, [eventsData]);
-  useEffect(() => {
-    console.log(userData);
-  }, [userData]);
 
   if (!userData.token || Object.keys(userData.data).length === 0) return null;
 

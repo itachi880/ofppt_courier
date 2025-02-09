@@ -14,7 +14,6 @@ export default function ShowDepartments() {
 
   const handleDelete = (id) => {
     DeleteDepartment(userData.token, id).then((res) => {
-      console.log(res);
       setDepartmentsGroups({
         departements: departementsGroups.departements.filter(
           (dept) => dept.department_id !== id

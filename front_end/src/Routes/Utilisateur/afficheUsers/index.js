@@ -12,8 +12,7 @@ export function AfficheUsers() {
   useEffect(() => {
     if (!userData.token) return;
     if (userData.data.role != roles.admin) Store.navigateTo("/");
-    console.log("start demond");
-    console.log(users);
+
     GetUsersApi(userData.token).then((res) => {
       if (res[0]) return console.log(res[0]);
       setUsers({ data: res[1] });
@@ -41,10 +40,38 @@ export function AfficheUsers() {
                   key={user.id}
                   className="border-b border-gray-200 hover:bg-gray-50"
                 >
-                  <td className="py-3 px-6" onClick={()=>{ console.log(user.id);  navigate(`/utilisateur/detailUsers/${user.id}`); }}>{user.last_name || ""}</td>
-                  <td className="py-3 px-6" onClick={()=>{console.log(user.id);navigate(`/utilisateur/detailUsers/${user.id}`)}}>{user.first_name || ""}</td>
-                  <td className="py-3 px-6" onClick={()=>{console.log(user.id);navigate(`/utilisateur/detailUsers/${user.id}`)}} >{user.email}</td>
-                  <td className="py-3 px-6" onClick={()=>{console.log(user.id);navigate(`/utilisateur/detailUsers/${user.id}`)}}>{user.role || "uknown"}</td>
+                  <td
+                    className="py-3 px-6"
+                    onClick={() => {
+                      navigate(`/utilisateur/detailUsers/${user.id}`);
+                    }}
+                  >
+                    {user.last_name || ""}
+                  </td>
+                  <td
+                    className="py-3 px-6"
+                    onClick={() => {
+                      navigate(`/utilisateur/detailUsers/${user.id}`);
+                    }}
+                  >
+                    {user.first_name || ""}
+                  </td>
+                  <td
+                    className="py-3 px-6"
+                    onClick={() => {
+                      navigate(`/utilisateur/detailUsers/${user.id}`);
+                    }}
+                  >
+                    {user.email}
+                  </td>
+                  <td
+                    className="py-3 px-6"
+                    onClick={() => {
+                      navigate(`/utilisateur/detailUsers/${user.id}`);
+                    }}
+                  >
+                    {user.role || "uknown"}
+                  </td>
                   {/* <td className="py-3 px-6">{user.id || "uknown"}</td> */}
                 </tr>
               );

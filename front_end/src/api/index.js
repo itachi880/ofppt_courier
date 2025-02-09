@@ -1,6 +1,7 @@
 import axios from "axios";
 import { roles } from "../utils";
 export const BASE_URL = "http://localhost:4000";
+
 export const LoginApi = async (email, password) => {
   if (!email || !password) return ["email or password is empty", null];
 
@@ -363,4 +364,24 @@ export const DeleteUserApi = async (id, token) => {
     result[0] = err.response?.data || err.message; // Stocker l'erreur
   }
   return result;
+};
+export const getArchive = async (token, pageNumber) => {
+  if (!token || !pageNumber || pageNumber < 0) {
+    return ["fealds required", null];
+  }
+  try {
+    const response = await axios.get(`${BASE_URL}/courier/all`, {
+      params: {
+        page: pageNumber,
+      },
+      headers: {
+        Authorization: token,
+      },
+    });
+
+    return [null, response.data]; // Return success result
+  } catch (error) {
+    console.error("Error fetching archive:", error);
+    return [error, null]; // Return error
+  }
 };

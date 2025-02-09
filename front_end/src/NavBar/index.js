@@ -19,7 +19,6 @@ export default () => {
       }
     });
     setAlertEvents(upcomingEvents);
-    console.log(eventsData);
   }, [eventsData]);
 
   if (!userData.token || Object.keys(userData.data).length === 0) return null;

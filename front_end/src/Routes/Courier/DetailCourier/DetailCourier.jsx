@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { Store } from "react-data-stores";
 import { Loader2 } from "lucide-react";
 import { BASE_URL } from "../../../api";
-import {GreenBox,RedBox} from "../../../utils"
+import { GreenBox, RedBox } from "../../../utils";
 
 const DetailCourier = () => {
   const [eventsStore] = events.useStore();
@@ -14,7 +14,6 @@ const DetailCourier = () => {
   const [error, setError] = useState(null);
   const [departementsGroup] = departements_group_store.useStore();
 
-  // Modal state to track image popup
   const [showModal, setShowModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
 
@@ -30,11 +29,11 @@ const DetailCourier = () => {
         }
         setFormData({
           id: event.id,
-          title: event.title,
-          description: event.description,
-          expiditeur: event.expiditeur,
+          title: event.title || "Pas de titre",
+          description: event.description || "Pas de description",
+          expiditeur: event.expiditeur || "Non renseigné",
           deadline: event.deadline || "N/A",
-          state: event.state,
+          state: event.state || "Inconnu",
           critical: event.critical || false,
           created_at: event.created_at || "N/A",
           departements: event.departements || [],
@@ -52,13 +51,11 @@ const DetailCourier = () => {
     fetchEvent();
   }, [id, eventsStore]);
 
-  // Function to open modal with selected image
   const openModal = (image) => {
     setSelectedImage(image);
     setShowModal(true);
   };
 
-  // Function to close the modal
   const closeModal = () => {
     setShowModal(false);
     setSelectedImage(null);
@@ -82,98 +79,104 @@ const DetailCourier = () => {
         Détails du Courrier
       </h1>
 
-      <div className="grid gap-4">
-        <div className="bg-gray-50 p-4 rounded-xl">
-          <h2 className="text-lg font-semibold">Titre :</h2>
-          <p className="text-gray-700">{formData.title}</p>
-        </div>
-
-        <div className="bg-gray-50 p-4 rounded-xl">
-          <h2 className="text-lg font-semibold">Description :</h2>
-          <p className="text-gray-700">{formData.description}</p>
-        </div>
-
-        <div className="bg-gray-50 p-4 rounded-xl">
-          <h2 className="text-lg font-semibold">Expéditeur :</h2>
-          <p className="text-gray-700">{formData.expiditeur}</p>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
+      {formData ? (
+        <div className="grid gap-4">
           <div className="bg-gray-50 p-4 rounded-xl">
-            <h2 className="text-lg font-semibold">Date Limite :</h2>
-            <p className="text-gray-700">{formData.deadline}</p>
+            <h2 className="text-lg font-semibold">Titre :</h2>
+            <p className="text-gray-700">{formData.title}</p>
           </div>
 
           <div className="bg-gray-50 p-4 rounded-xl">
-            <h2 className="text-lg font-semibold">Statut :</h2>
-            <p className="text-gray-700">{formData.state}</p>
+            <h2 className="text-lg font-semibold">Description :</h2>
+            <p className="text-gray-700">{formData.description}</p>
           </div>
-        </div>
 
-       
+          <div className="bg-gray-50 p-4 rounded-xl">
+            <h2 className="text-lg font-semibold">Expéditeur :</h2>
+            <p className="text-gray-700">{formData.expiditeur}</p>
+          </div>
 
-        <div className="bg-gray-50 p-4 rounded-xl">
-          <h2 className="text-lg font-semibold">Entité :</h2>
-          {formData.departements.length > 0 ? (
-            <div className="list-disc p-2 flex flex-wrap gap-1">
-              {formData.departements.map((departement) =>
-                departementsGroup.departements.map((dep, i) => {
-                  if (dep.department_id === departement) {
-                    return <RedBox key={i}>{dep.department_name}</RedBox>;
-                  }
-                  return null;
-                })
-              )}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-gray-50 p-4 rounded-xl">
+              <h2 className="text-lg font-semibold">Date Limite :</h2>
+              <p className="text-gray-700">{formData.deadline}</p>
             </div>
-          ) : (
-            <p className="text-gray-700">Aucun entité assigné.</p>
+
+            <div className="bg-gray-50 p-4 rounded-xl">
+              <h2 className="text-lg font-semibold">Statut :</h2>
+              <p className="text-gray-700">{formData.state}</p>
+            </div>
+          </div>
+
+          <div className="bg-gray-50 p-4 rounded-xl">
+            <h2 className="text-lg font-semibold">Entité :</h2>
+            {formData.departements.length > 0 ? (
+              <div className="list-disc p-2 flex flex-wrap gap-1">
+                {formData.departements.map((departement) =>
+                  departementsGroup.departements.map((dep, i) => {
+                    if (dep.department_id === departement) {
+                      return <RedBox key={i}>{dep.department_name}</RedBox>;
+                    }
+                    return null;
+                  })
+                )}
+              </div>
+            ) : (
+              <p className="text-gray-700">Aucun entité assigné.</p>
+            )}
+          </div>
+
+          <div className="bg-gray-50 p-4 rounded-xl">
+            <h2 className="text-lg font-semibold">Groupes :</h2>
+            {formData.groups.length > 0 ? (
+              <div className="list-disc p-2 flex flex-wrap gap-1">
+                {formData.groups.map((groupId) =>
+                  departementsGroup.groups.map((grp, i) => {
+                    if (grp.id === groupId) {
+                      return <GreenBox key={i}>{grp.name}</GreenBox>;
+                    }
+                    return null;
+                  })
+                )}
+              </div>
+            ) : (
+              <p className="text-gray-700">Aucun groupe assigné.</p>
+            )}
+          </div>
+
+          <div className="bg-gray-50 p-4 rounded-xl">
+            <h2 className="text-lg font-semibold">Créé le :</h2>
+            <p className="text-gray-700">
+              {formData.created_at.split("T")[0] +
+                " " +
+                (formData.created_at.split("T")[1] ?? "").split(".")[0]}
+            </p>
+          </div>
+
+          {formData.imgs.length > 0 && (
+            <div className="bg-gray-50 p-4 rounded-xl">
+              <h2 className="text-lg font-semibold">Images :</h2>
+              <div className="grid grid-cols-2 gap-4">
+                {formData.imgs.map((img, index) => (
+                  <img
+                    key={index}
+                    src={BASE_URL + "/" + img}
+                    alt={`Image ${index + 1}`}
+                    className="w-full h-auto rounded-xl shadow-md cursor-pointer"
+                    onClick={() => openModal(BASE_URL + "/" + img)}
+                  />
+                ))}
+              </div>
+            </div>
           )}
         </div>
-
-        <div className="bg-gray-50 p-4 rounded-xl">
-          <h2 className="text-lg font-semibold">Groupes :</h2>
-          {formData.groups.length > 0 ? (
-            <div className="list-disc p-2 flex flex-wrap gap-1">
-              {formData.groups.map((groupId) =>
-                departementsGroup.groups.map((grp, i) => {
-                  if (grp.id === groupId) {
-                    return <GreenBox key={i}>{grp.name}</GreenBox>;
-                  }
-                  return null;
-                })
-              )}
-            </div>
-          ) : (
-            <p className="text-gray-700">Aucun groupe assigné.</p>
-          )}
+      ) : (
+        <div className="text-center text-gray-600 py-4">
+          Aucun détail disponible pour ce courrier.
         </div>
+      )}
 
-        <div className="bg-gray-50 p-4 rounded-xl">
-          <h2 className="text-lg font-semibold">Creé le :</h2>
-          {/* extacte la date et le temp negilgen le offset YYYY-MM-DDTHH:MM:SS.ofsset=> YYYY-MM-DD HH:MM:SS  */}
-          <p className="text-gray-700">{formData.created_at.split('T')[0]+' '+(formData.created_at.split('T')[1]??'').split('.')[0]}</p>
-        </div>
-
-        {formData.imgs.length > 0 && (
-          <div className="bg-gray-50 p-4 rounded-xl">
-            <h2 className="text-lg font-semibold">Images :</h2>
-            <div className="grid grid-cols-2 gap-4">
-              {formData.imgs.map((img, index) => (
-                <img
-                  key={index}
-                  src={BASE_URL + "/" + img}
-                  alt={`Image ${index + 1}`}
-                  className="w-full h-auto rounded-xl shadow-md cursor-pointer"
-                  onClick={() => openModal(BASE_URL + "/" + img)}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Modal for image */}
-      {showModal && (
+      {showModal && selectedImage && (
         <div className="modal-overlay">
           <div className="modal-content">
             <button onClick={closeModal} className="modal-close-btn">

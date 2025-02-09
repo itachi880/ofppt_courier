@@ -919,7 +919,6 @@ module.exports.CourierAssignee = {
         query += ` LIMIT ? OFFSET ?`;
         values.push(pageSize, page * pageSize - pageSize);
       }
-      console.log(query, values);
       const [rows] = await db.query(query, values);
 
       const result = [];

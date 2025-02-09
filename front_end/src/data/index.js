@@ -1,6 +1,7 @@
 import { createStore } from "react-data-stores";
 export const events = createStore({
   data: [],
+  pagesIndexs: {},
 });
 
 export const User = createStore({
@@ -45,3 +46,4 @@ export const documentType = {
   event: "event",
 };
 export const fetchedDates = [];
+export const pageFromDb = [];

@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { departements_group_store, User } from "../../../data";
+import { departements_group_store, User, usersStore } from "../../../data";
 import { GreenBox, RedBox } from "../../../utils";
 import { AddUserApi } from "../../../api";
-// import { route } from "../../../../../back_end/Routes/Courier";
-/**
- * @type {Record<string,import("react").CSSProperties>}
- */
+import Swal from "sweetalert2";
+import { Store } from "react-data-stores";
+
 const styles = {
   container: {
     maxWidth: "800px",
@@ -66,7 +65,7 @@ const styles = {
   },
 };
 export function AddUsers() {
-  const [userData, setUserData] = User.useStore();
+  const [userData] = User.useStore();
   const [formData, setFormData] = useState({
     nom: "",
     prenom: "",
@@ -77,63 +76,91 @@ export function AddUsers() {
     token: userData.token,
     role: "user",
   });
-  // const [dept,setDept]=useState({ departements:[],groups: []})
-  const [departementsGroup, setDepartementsGroup] =
-    departements_group_store.useStore();
-  // const [password,setPassword]=useState("");
+  const [usersData, setUsersData] = usersStore.useStore();
+  const [departementsGroup] = departements_group_store.useStore();
+
+  const handleSubmit = () => {
+    AddUserApi(formData)
+      .then((response) => {
+        console.log("API Response:", response); // Log the full API response
+        if (response[0])
+          return Swal.fire({
+            icon: "error",
+            title: "Error!",
+            text: `Server returned an error: ${response.status} - ${
+              response.statusText || "Unknown Error"
+            }`, // Display specific error message
+          });
+        // else
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: "User added successfully!",
+        });
+        setUsersData({
+          data: [...usersData.data, { ...formData, id: response[1] }],
+        });
+        Store.navigateTo("/utilisateur/afficheUsers");
+      })
+      .catch((error) => {
+        console.error("API Error:", error); // Log the error object
+        Swal.fire({
+          icon: "error",
+          title: "Error!",
+          text: "An error occurred while communicating with the server.",
+        });
+      });
+  };
 
   return (
     <div style={styles.container}>
       <div style={styles.section}>
-        <label style={styles.label}> nom:</label>
+        <label style={styles.label}>Nom:</label>
         <input
           style={styles.input}
-          placeholder="nom"
-          onChange={(e) => {
-            setFormData({ ...formData, nom: e.target.value });
-          }}
+          placeholder="Nom"
+          onChange={(e) => setFormData({ ...formData, nom: e.target.value })}
           value={formData.nom}
+          required
         />
-        <label style={styles.label}> Prenom:</label>
+        <label style={styles.label}>Prénom:</label>
         <input
           style={styles.input}
-          placeholder="prenom"
-          onChange={(e) => {
-            setFormData({ ...formData, prenom: e.target.value });
-          }}
+          placeholder="Prénom"
+          onChange={(e) => setFormData({ ...formData, prenom: e.target.value })}
           value={formData.prenom}
+          required
         />
-        <label style={styles.label}> Email:</label>
+        <label style={styles.label}>Email:</label>
         <input
           style={styles.input}
           placeholder="Email"
-          onChange={(e) => {
-            setFormData({ ...formData, email: e.target.value });
-          }}
+          type="email"
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           value={formData.email}
+          required
         />
-        <label style={styles.label}> Password:</label>
+        <label style={styles.label}>Password:</label>
         <input
           style={styles.input}
           placeholder="Password"
-          onChange={(e) => {
-            setFormData({ ...formData, password: e.target.value });
-          }}
+          type="password"
+          onChange={(e) =>
+            setFormData({ ...formData, password: e.target.value })
+          }
           value={formData.password}
+          required
         />
       </div>
       <div style={styles.section}>
-        <label style={styles.label}>Départements</label>
+        <label style={styles.label}>Département:</label>
         <select
           style={styles.select}
-          onChange={(e) => {
-            setFormData({
-              ...formData,
-              departement_id: Number(e.target.value),
-              // group_id: null,
-            });
-          }}
-          // disabled={formData.group_id !== null}
+          onChange={(e) =>
+            setFormData({ ...formData, departement_id: Number(e.target.value) })
+          }
+          value={formData.departement_id}
+          required
         >
           <option value="" hidden>
             Sélectionner une entité
@@ -145,46 +172,34 @@ export function AddUsers() {
           ))}
         </select>
 
-        <label style={styles.label}>Groupes</label>
+        <label style={styles.label}>Groupe:</label>
         <select
           style={styles.select}
-          onChange={(e) => {
-            setFormData({
-              ...formData,
-              group_id: Number(e.target.value),
-              // departement_id: null,
-              // ✅ Convertir en Number
-            });
-          }}
-          // disabled={formData.departement_id !== null}
+          onChange={(e) =>
+            setFormData({ ...formData, group_id: Number(e.target.value) })
+          }
+          value={formData.group_id}
+          required
         >
           <option value="" hidden>
             Sélectionner un groupe
           </option>
           {departementsGroup.departements
-            .map((dep) => dep.groups)
-            .flatMap((grps) =>
-              grps.map((grp) => (
-                <option key={grp.id} value={grp.id}>
-                  {grp.name}
-                </option>
-              ))
-            )}
+            .flatMap((dep) => dep.groups)
+            .map((grp) => (
+              <option key={grp.id} value={grp.id}>
+                {grp.name}
+              </option>
+            ))}
         </select>
-        <input
+
+        <button
           type="submit"
-          value="Submit"
           style={styles.submitButton}
-          onClick={() => {
-            AddUserApi(formData)
-              .then((response) => {
-                console.log(response);
-              })
-              .catch((err) => {
-                console.log(err);
-              });
-          }}
-        />
+          onClick={handleSubmit}
+        >
+          Submit
+        </button>
       </div>
     </div>
   );

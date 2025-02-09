@@ -23,7 +23,7 @@ export default () => {
         flexDirection: "column",
       }}
     >
-      <form
+      {/* <form
         autoFocus
         onSubmit={(e) => {
           e.preventDefault();
@@ -38,14 +38,14 @@ export default () => {
         />
         <i className="fa fa-search"></i>
         <button type="submit">Search</button>
-      </form>
+      </form> */}
 
       {
         <Calendar
           events={renderArray.map((e) => ({
             id: e.id,
-            start: new Date(e.deadline.split("T")[0]),
-            end: new Date(e.deadline.split("T")[0]),
+            start: new Date(e.deadline),
+            end: new Date(e.deadline),
             title: e.title,
             backgroundColor: "red",
             description: e.description,
@@ -64,9 +64,21 @@ export default () => {
               end: new Date(end).toISOString().split("T")[0],
             });
             if (result[0]) return console.log(result);
+
             fetchedDates.push({ start: start, end: end });
+            const set = [];
+            const ids = [];
+            CalendarEvents.data.forEach((e) => {
+              set.push(e);
+              ids.push(e.id);
+            });
+            result[1].data.forEach((e) => {
+              if (ids.includes(e.id)) return;
+              set.push(e);
+              ids.push(e.id);
+            });
             setCalendarEvents({
-              data: [...CalendarEvents.data, ...result[1].data],
+              data: set,
             });
           }}
         />

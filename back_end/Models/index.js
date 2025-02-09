@@ -869,7 +869,15 @@ module.exports.CourierAssignee = {
    * @param {number} grp_id - Group ID
    * @returns {Promise<[(import("mysql2").QueryError | string | null ),(Array<Courier> | null)]>}
    */
-  async getCouriers(dep_id, grp_id, condition, conditionValue) {
+  async getCouriers(
+    dep_id,
+    grp_id,
+    condition,
+    conditionValue,
+    pagination = false,
+    page = 0,
+    pageSize = 10
+  ) {
     try {
       let query = `SELECT 
       ${TablesNames.courier}.id, 
@@ -884,11 +892,11 @@ module.exports.CourierAssignee = {
       ${TablesNames.courier}.is_courier, 
       ${TablesNames.courier}.updated_at, 
       ${TablesNames.courier_files}.path 
-      FROM ${TablesNames.courier_assigne} 
-      JOIN ${TablesNames.courier} 
-      ON ${TablesNames.courier_assigne}.courier_id = ${TablesNames.courier}.id 
-      LEFT JOIN ${TablesNames.courier_files} 
-      ON ${TablesNames.courier_files}.courier_id = ${TablesNames.courier}.id`;
+    FROM ${TablesNames.courier_assigne} 
+    JOIN ${TablesNames.courier} 
+    ON ${TablesNames.courier_assigne}.courier_id = ${TablesNames.courier}.id 
+    LEFT JOIN ${TablesNames.courier_files} 
+    ON ${TablesNames.courier_files}.courier_id = ${TablesNames.courier}.id`;
 
       const values = [];
 
@@ -902,14 +910,18 @@ module.exports.CourierAssignee = {
 
       if (condition) {
         if (dep_id || grp_id) query += " AND ";
-        else {
-          query += " WHERE ";
-        }
+        else query += " WHERE ";
         query += condition;
-
         values.push(...conditionValue);
       }
+      if (pagination) {
+        query += ` ORDER BY ${TablesNames.courier}.created_at DESC`;
+        query += ` LIMIT ? OFFSET ?`;
+        values.push(pageSize, page * pageSize);
+      }
+      console.log(query, values);
       const [rows] = await db.query(query, values);
+
       const result = [];
       const insertedIds = new Map();
 

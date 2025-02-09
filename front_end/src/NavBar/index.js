@@ -12,11 +12,14 @@ export default () => {
   const [alertEvents, setAlertEvents] = useState([]);
   useEffect(() => {
     // Filter events that are within the next 48 hours
-    const upcomingEvents = eventsData.data.filter(
-      (event) =>
-        new Date(event.deadline).getTime() <= Date.now() + 48 * 60 * 60 * 1000
-    );
+    const upcomingEvents = eventsData.data.filter((event) => {
+      const date = new Date(event.deadline).getTime();
+      if (date <= Date.now() + 48 * 60 * 60 * 1000 && date >= Date.now()) {
+        return true;
+      }
+    });
     setAlertEvents(upcomingEvents);
+    console.log(eventsData);
   }, [eventsData]);
 
   if (!userData.token || Object.keys(userData.data).length === 0) return null;
@@ -26,7 +29,7 @@ export default () => {
   };
 
   return (
-    <div className="navbar-holder">
+    <div className="navbar-holder shadow-2xl ">
       <nav className="navbar">
         {/* Profile Section (Left) */}
         <div className="profile">
@@ -181,10 +184,12 @@ export default () => {
               </div>
             </div>
           )}
-          <button onClick={() => Store.navigateTo("/courrier/archive")}>
-            <i className="fa-solid fa-archive"></i>
-            <span>Archive</span>
-          </button>
+          <div className="ml-3">
+            <button onClick={() => Store.navigateTo("/courrier/archive")}>
+              <i className="fa-solid fa-archive"></i>
+              <span>Archive</span>
+            </button>
+          </div>
         </div>
 
         {/* Notifications Dropdown */}
@@ -194,7 +199,7 @@ export default () => {
               onClick={() => handleDropdown("notifications")}
               className="relative p-2"
             >
-              <i className="fa-solid fa-bell text-xl text-white"></i>
+              <i className="fa-solid fa-bell text-xl text-black"></i>
               {alertEvents.length > 0 && (
                 <span className="absolute top-0 right-0 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
                   {alertEvents.filter((alert) => alert.is_courier == 1).length}

@@ -3,13 +3,6 @@ import { events, User, documentType } from "../../../data";
 import { GetEvents } from "../../../api";
 import { Store } from "react-data-stores";
 import { roles, useQuery } from "../../../utils";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"; // Import FontAwesome
-import {
-  faInbox,
-  faCalendarAlt,
-  faUser,
-  faStickyNote,
-} from "@fortawesome/free-solid-svg-icons"; // Import icons
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("courrier");
@@ -38,7 +31,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col pb-16">
       {/* Navbar */}
-      <header className="bg-gray-800 text-white shadow-md py-4 px-8">
+      <header className="bg-gray-300 text-white shadow-md py-4 px-8">
         <div className="container mx-auto flex justify-between items-center">
           <h1 className="text-2xl font-bold">Courrier Dashboard</h1>
           <nav className="flex space-x-4">
@@ -46,8 +39,8 @@ export default function Home() {
               className={`px-4 py-2 rounded-md transition duration-300
                 ${
                   activeTab === "courrier"
-                    ? "bg-blue-800 text-white font-semibold"
-                    : "hover:bg-blue-700 hover:text-white"
+                    ? "bg-green-600 text-white font-semibold"
+                    : "hover:bg-green-700 hover:text-white"
                 }`}
               onClick={() => setActiveTab("courrier")}
             >
@@ -57,8 +50,8 @@ export default function Home() {
               className={`px-4 py-2 rounded-md transition duration-300
                 ${
                   activeTab === "evenements"
-                    ? "bg-blue-800 text-white font-semibold"
-                    : "hover:bg-blue-700 hover:text-white"
+                    ? "bg-green-600 text-white font-semibold"
+                    : "hover:bg-green-700 hover:text-white"
                 }`}
               onClick={() => setActiveTab("evenements")}
             >
@@ -81,9 +74,6 @@ export default function Home() {
           )}{" "}
           {activeTab === "evenements" && (
             <EventTable eventsData={eventsData.data} userData={userData.data} />
-          )}{" "}
-          {activeTab === "evenements" && (
-            <EventTable eventsData={eventsData.data} userData={userData.data} />
           )}
         </div>
       </main>
@@ -92,105 +82,130 @@ export default function Home() {
 }
 
 // Separate components for tables (cleaner code)
-const CourrierTable = ({ eventsData, userData }) => (
-  <section>
-    <h2 className="text-xl font-semibold mb-4">
-      Courriers <i className="fas fa-inbox"></i>{" "}
-    </h2>
-    <p className="text-gray-600">
-      Ici, vous pouvez gérer et consulter vos courries.
-    </p>
-    <table className="w-full mt-4 border-collapse table-auto">
-      {" "}
-      {/* table-auto for better responsiveness */}
-      <thead>
-        <tr>
-          <th className="px-4 py-2 text-left text-gray-500 uppercase font-medium tracking-wider">
-            Deadline <FontAwesomeIcon icon={faCalendarAlt} className="ml-2" />
-          </th>
-          <th className="px-4 py-2 text-left text-gray-500 uppercase font-medium tracking-wider">
-            Expéditeur <FontAwesomeIcon icon={faUser} className="ml-2" />
-          </th>
-          <th className="px-4 py-2 text-left text-gray-500 uppercase font-medium tracking-wider">
-            Objet <FontAwesomeIcon icon={faStickyNote} className="ml-2" />
-          </th>
-        </tr>
-      </thead>
-      <tbody className="bg-white divide-y divide-gray-200">
-        {eventsData
-          .filter((event) => {
-            return event.is_courier == 1;
-          })
-          .map((e) => (
-            <tr
-              key={e.id}
-              className="hover:bg-gray-50 cursor-pointer transition duration-200" // Hover effect
-              onClick={() => {
-                if (userData.role == roles.admin) {
-                  Store.navigateTo("/courrier/update/" + e.id);
-                } else {
-                  Store.navigateTo("/courrier/detail/" + e.id);
-                }
-              }}
-            >
-              <td className="px-4 py-2 whitespace-nowrap">{e?.deadline}</td>
-              <td className="px-4 py-2 whitespace-nowrap">{e?.expiditeur}</td>
-              <td className="px-4 py-2 ">{e?.title}</td>
+const CourrierTable = ({ eventsData, userData }) => {
+  const dataToRender = eventsData.filter((event) => {
+    return event.is_courier == 1;
+  });
+  return (
+    <section>
+      <h2 className="text-xl font-semibold mb-4">
+        Courriers <i className="fas fa-inbox"></i>{" "}
+      </h2>
+      <p className="text-gray-600">
+        Ici, vous pouvez gérer et consulter vos courries.
+      </p>
+      <table className="min-w-full divide-y divide-gray-200 table-auto border-gray-200 border-2">
+        {/* table-auto for better responsiveness */}
+        <thead>
+          <tr className="bg-gray-200">
+            <th className="px-4 py-2 text-center text-gray-500 uppercase font-medium tracking-wider">
+              Deadline <i className="fa-solid fa-calendar-days ml-2"></i>
+            </th>
+            <th className="px-4 py-2 text-center text-gray-500 uppercase font-medium tracking-wider">
+              Expéditeur <i className="fa-solid fa-user ml-2"></i>
+            </th>
+            <th className="px-4 py-2 text-center text-gray-500 uppercase font-medium tracking-wider">
+              Objet <i className="fa-solid fa-note-sticky ml-2"></i>
+            </th>
+          </tr>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200 ">
+          {dataToRender.length > 0 ? (
+            dataToRender.map((e) => (
+              <tr
+                key={e.id}
+                className="hover:bg-gray-50 cursor-pointer transition duration-200" // Hover effect
+                onClick={() => {
+                  if (userData.role == roles.admin) {
+                    Store.navigateTo("/courrier/update/" + e.id);
+                  } else {
+                    Store.navigateTo("/courrier/detail/" + e.id);
+                  }
+                }}
+              >
+                <td className="px-4 text-center py-2 whitespace-nowrap">
+                  {e?.deadline}
+                </td>
+                <td className="px-4 text-center py-2 whitespace-nowrap">
+                  {e?.expiditeur}
+                </td>
+                <td className="px-4 text-center py-2 ">{e?.title}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td></td>
+              <td className="text-center">no data</td>
+              <td></td>
             </tr>
-          ))}
-      </tbody>
-    </table>
-  </section>
-);
+          )}
+        </tbody>
+      </table>
+    </section>
+  );
+};
 
-const EventTable = ({ eventsData, userData }) => (
-  <section>
-    <h2 className="text-xl font-semibold mb-4">
-      Evenements <i className="fas fa-calendar-alt"></i>{" "}
-    </h2>
-    <p className="text-gray-600">
-      Ici, vous pouvez gérer et consulter vos events.
-    </p>
-    <table className="min-w-full divide-y divide-gray-200 table-auto">
-      {" "}
-      {/* table-auto for better responsiveness */}
-      <thead>
-        <tr className="bg-gray-200">
-          <th className="px-4 py-2 text-left text-gray-500 uppercase font-medium tracking-wider">
-            Deadline <i className="fas fa-calendar-alt"></i>{" "}
-          </th>{" "}
-          {/* Text alignment */}
-          <th className="px-4 py-2 text-left text-gray-500 uppercase font-medium tracking-wider">
-            Expéditeur <i className="fas fa-user"></i>{" "}
-          </th>
-          <th className="px-4 py-2 text-left text-gray-500 uppercase font-medium tracking-wider">
-            Objet <i className="fas fa-sticky-note"></i>{" "}
-          </th>
-        </tr>
-      </thead>
-      <tbody className="bg-white divide-y divide-gray-200">
-        {eventsData
-          .filter((event) => {
-            return event.is_courier == 0;
-          })
-          .map((e) => (
-            <tr
-              key={e.id}
-              className="hover:bg-gray-50 cursor-pointer transition duration-200" // Hover effect
-              onClick={() => {
-                if (userData.role == roles.admin) {
-                  Store.navigateTo("/courrier/update/" + e.id);
-                } else {
-                  Store.navigateTo("/courrier/detail/" + e.id);
-                }
-              }}
-            >
-              <td className="px-4 py-2 whitespace-nowrap">{e?.deadline}</td>
-              <td className="px-4 py-2 whitespace-nowrap">{e?.expiditeur}</td>
-              <td className="px-4 py-2">{e?.title}</td>
+const EventTable = ({ eventsData, userData }) => {
+  const dataToRender = eventsData.filter((event) => {
+    return event.is_courier == 0;
+  });
+  return (
+    <section>
+      <h2 className="text-xl font-semibold mb-4">
+        Evenements <i className="fas fa-calendar-alt"></i>{" "}
+      </h2>
+      <p className="text-gray-600">
+        Ici, vous pouvez gérer et consulter vos events.
+      </p>
+      <table className="min-w-full divide-y divide-gray-200 table-auto border-gray-200 border-2">
+        {" "}
+        {/* table-auto for better responsiveness */}
+        <thead>
+          <tr className="bg-gray-200">
+            <th className="px-4 py-2 text-center text-gray-500 uppercase font-medium tracking-wider">
+              Deadline <i className="fas fa-calendar-alt ml-2"></i>{" "}
+            </th>{" "}
+            {/* Text alignment */}
+            <th className="px-4 py-2 text-center text-gray-500 uppercase font-medium tracking-wider">
+              Expéditeur <i className="fas fa-user ml-2"></i>{" "}
+            </th>
+            <th className="px-4 py-2 text-center text-gray-500 uppercase font-medium tracking-wider">
+              Objet <i className="fas fa-sticky-note ml-2"></i>{" "}
+            </th>
+          </tr>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+          {dataToRender.length > 0 ? (
+            dataToRender.map((e) => (
+              <tr
+                key={e.id}
+                className="hover:bg-gray-50 cursor-pointer transition duration-200" // Hover effect
+                onClick={() => {
+                  if (userData.role == roles.admin) {
+                    Store.navigateTo("/courrier/update/" + e.id);
+                  } else {
+                    Store.navigateTo("/courrier/detail/" + e.id);
+                  }
+                }}
+              >
+                <td className="px-4 text-center py-2 whitespace-nowrap">
+                  {e?.deadline}
+                </td>
+                <td className="px-4 text-center py-2 whitespace-nowrap">
+                  {e?.expiditeur}
+                </td>
+                <td className="px-4 text-center py-2">{e?.title}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={3} className="text-center">
+                no data
+              </td>
             </tr>
-          ))}
-      </tbody>
-    </table>
-  </section>
-);
+          )}
+        </tbody>
+      </table>
+    </section>
+  );
+};

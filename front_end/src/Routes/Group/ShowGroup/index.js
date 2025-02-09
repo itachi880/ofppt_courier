@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { getGroups, deleteGroupApi } from "../../../api"; // Assurez-vous que cette fonction existe dans vos APIs.
+import { getGroups, deleteGroupApi } from "../../../api";
 import { departements_group_store, User } from "../../../data";
 import { useNavigate } from "react-router-dom";
 import { FaTrashAlt, FaEdit } from "react-icons/fa";
+import Swal from "sweetalert2";
 
 export default function ShowGroup() {
   const [loading, setLoading] = useState(true);
@@ -28,9 +29,14 @@ export default function ShowGroup() {
 
   const handleDelete = (id) => {
     deleteGroupApi(id, userData.token).then(() => {
-      setDepartmentsGroups(
-        departementsGroups.groups.filter((gr) => gr.id !== id)
-      );
+      setDepartmentsGroups({
+        groups: departementsGroups.groups.filter((gr) => gr.id !== id),
+      });
+      Swal.fire({
+        icon: "success",
+        title: "Success!",
+        text: "Le group a été Suprimer avec succès.",
+      });
     });
   };
 

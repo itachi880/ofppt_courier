@@ -78,12 +78,24 @@ router.post("/add", fileSaver.array("files", 3), async (req, res) => {
 
 router.get("/all", async (req, res) => {
   let [err, response] = [null, null];
+  const pageNember = req.query.page;
   if (req.user.role == Roles.admin) {
-    [err, response] = await CourierAssignee.getCouriers();
+    [err, response] = await CourierAssignee.getCouriers(
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      true,
+      pageNember
+    );
   } else {
     [err, response] = await CourierAssignee.getCouriers(
       req.user.depId,
-      req.user.grpId
+      req.user.grpId,
+      undefined,
+      undefined,
+      true,
+      pageNember
     );
   }
   if (err) return res.status(500).end("back end err") && console.log(err);

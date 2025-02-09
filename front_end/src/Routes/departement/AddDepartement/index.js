@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
-import { User } from "../../../data";
+import { User, departements_group_store } from "../../../data";
 import { AddDepartment } from "../../../api";
+import Swal from "sweetalert2"; // Import SweetAlert2
 
 export default function AddDepartmentComponent() {
   const [formData, setFormData] = useState({
     name: "",
     token: "",
   });
+  const [DepartementsGroupStore, setDepartementsGroupStore] =
+    departements_group_store.useStore();
 
   const [userData, setUserData] = User.useStore();
 
@@ -14,14 +17,14 @@ export default function AddDepartmentComponent() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="p-6 w-full max-w-md bg-white shadow-lg rounded-lg">
         <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-          Add Department
+          Ajouter une Entité
         </h2>
         <label className="block text-sm font-medium text-gray-600 mb-2">
-          Department Name
+          Nom de l'Entité
         </label>
         <input
           type="text"
-          placeholder="Enter Department Name"
+          placeholder="Nom de l'Entité"
           onChange={(e) => {
             setFormData({ ...formData, name: e.target.value });
           }}
@@ -38,6 +41,22 @@ export default function AddDepartmentComponent() {
 
             AddDepartment(departmentData)
               .then((res) => {
+                if (res[0]) return;
+                setDepartementsGroupStore({
+                  departements: [
+                    ...DepartementsGroupStore.departements,
+                    {
+                      department_name: departmentData.name,
+                      groups: [],
+                      department_id: res[1].data,
+                    },
+                  ],
+                });
+                Swal.fire({
+                  icon: "success",
+                  title: "Success!",
+                  text: "L'entité a été ajoutée avec succès.",
+                });
                 console.log("Department added successfully:", res);
               })
               .catch((err) => {
@@ -46,7 +65,7 @@ export default function AddDepartmentComponent() {
           }}
           className="w-full py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          Add Department
+          Ajouter Entite
         </button>
       </div>
     </div>

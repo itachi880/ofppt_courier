@@ -94,8 +94,10 @@ function App() {
           </Routes>
         </motion.div>
       </AnimatePresence>
-      <footer className="bg-gray-800 text-white py-4 text-center mt-auto w-full fixed bottom-0">
-        <p>&copy; 2025 OFPPT. Tous droits réservés.</p>
+      <footer class=" py-4 text-center mt-auto w-full fixed bottom-0 shadow-md z-auto">
+        <div class="container mx-auto">
+          <p class="text-sm">&copy; 2025 OFPPT. Tous droits réservés.</p>
+        </div>
       </footer>
     </div>
   );

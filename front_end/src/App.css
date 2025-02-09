@@ -73,3 +73,12 @@
 body {
   margin-top: 90px;
 }
+/* In your CSS file (or within a <style> tag) */
+/* This is only needed if you want *different* styles than the navbar */
+footer {
+  transition: background-color 0.3s ease; /* Smooth background transition */
+}
+
+footer p {
+  transition: color 0.3s ease; /* Smooth color transition */
+}

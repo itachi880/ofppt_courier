@@ -1,19 +1,19 @@
 /* Scrollbar Styling (Webkit Browsers) */
 .scrollbar-thin::-webkit-scrollbar {
-  width: 6px; /* Adjust scrollbar width */
+  width: 6px;
 }
 
 .scrollbar-thin::-webkit-scrollbar-track {
-  background: #f1f1f1; /* Track color */
+  background: #f1f1f1;
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: #888; /* Thumb color */
-  border-radius: 3px; /* Rounded thumb */
+  background: #888;
+  border-radius: 3px;
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: #555; /* Thumb hover color */
+  background: #555;
 }
 
 /* For Firefox */
@@ -24,15 +24,15 @@
 
 /* Custom Scrollbar Styles */
 ul {
-  max-height: 250px; /* Adjust this as per your design */
-  overflow-y: auto; /* Enable only vertical scrolling */
-  overflow-x: hidden; /* Disable horizontal scrolling */
-  scrollbar-width: thin; /* For Firefox */
-  scrollbar-color: #888 #e0e0e0; /* For Firefox */
+  max-height: 250px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #888 #e0e0e0;
 }
 
 ul::-webkit-scrollbar {
-  width: 8px; /* Adjust width of the scrollbar */
+  width: 8px;
 }
 
 ul::-webkit-scrollbar-thumb {
@@ -44,7 +44,6 @@ ul::-webkit-scrollbar-track {
   background-color: #e0e0e0;
 }
 
-/* Add this to your global CSS file or inline styles */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -52,7 +51,7 @@ ul::-webkit-scrollbar-track {
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
-  z-index: 1000; /* Ensure it's above other content */
+  z-index: 1000;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -60,9 +59,9 @@ ul::-webkit-scrollbar-track {
 
 .modal-content {
   position: relative;
-  max-width: 90vw; /* Limit width */
-  max-height: 90vh; /* Limit height */
-  overflow: auto; /* Allow scrolling if content overflows */
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
   background-color: white;
   border-radius: 8px;
   padding: 16px;
@@ -82,17 +81,17 @@ ul::-webkit-scrollbar-track {
 
 .navbar-holder {
   width: 100%;
-  background-color: #19212c; /* Bleu foncé moderne */
+  background-color: #f8f9fa; /* Light background for navbar */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   position: fixed;
   top: 0;
   z-index: 1000;
 }
+
 .profile .name {
-  color: #ffffff;
+  color: #343a40; /* Dark gray for profile name */
 }
 
-/* Navigation principale */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -100,7 +99,6 @@ ul::-webkit-scrollbar-track {
   padding: 1rem 1.2rem;
 }
 
-/* Profil utilisateur */
 .profile {
   display: flex;
   align-items: center;
@@ -111,7 +109,7 @@ ul::-webkit-scrollbar-track {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  border: 2px solid #3b82f6; /* Couleur bleue claire */
+  border: 2px solid #28a745; /* Green border for profile image */
 }
 
 .profile span {
@@ -119,51 +117,49 @@ ul::-webkit-scrollbar-track {
   align-items: center;
   font-size: 1rem;
   font-weight: 500;
-  color: #f3f4f6; /* Couleur claire pour le texte */
+  color: #343a40; /* Dark gray for profile text */
 }
 
 .logout {
-  color: #f87171; /* Rouge doux */
+  color: #dc3545; /* Red logout */
   cursor: pointer;
   transition: color 0.2s ease;
 }
 
 .logout:hover {
-  color: #ef4444; /* Rouge vif */
+  color: #bd2130; /* Darker red */
 }
 
-/* Boutons d'options */
 .options {
   display: flex;
   gap: 0.05rem;
 }
 
 .options button {
-  background-color: #00a3a6; /* Couleur bleue claire */
-  color: #ffffff;
+  background-color: #28a745; /* Green buttons */
+  color: #ffffff; /* White text on green */
   border: none;
   border-radius: 5px;
   padding: 0.5rem 1rem;
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem; /* Space between icon and text */
-  position: relative;
+  transition: background-color 0.3s ease, transform 0.2s ease,
+    box-shadow 0.2s ease; /* Add box-shadow transition */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); /* Subtle shadow on buttons */
 }
 
 .options button:hover {
-  background-color: #00a3a69e; /* Bleu plus foncé */
+  background-color: #218838; /* Darker green on hover */
   transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* More prominent shadow on hover */
 }
 
 .options button:active {
   transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); /* Shadow back to normal on active */
 }
 
-/* Dropdown Menu */
 .dropdown {
   position: relative;
   display: inline-block;
@@ -175,7 +171,7 @@ ul::-webkit-scrollbar-track {
   position: absolute;
   top: 100%;
   left: 0;
-  background-color: #1e293b;
+  background-color: #ffffff; /* White dropdown background */
   border-radius: 5px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   z-index: 1;
@@ -187,34 +183,32 @@ ul::-webkit-scrollbar-track {
   width: 100%;
   text-align: left;
   padding: 0.5rem 1rem;
-  background-color: #00a3a6;
+  background-color: transparent; /* Transparent button background */
   border: none;
-  border-radius: 5px; /* border  */
-  color: #ffffff;
+  border-radius: 5px;
+  color: #343a40; /* Dark gray text in dropdown */
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.5s ease;
+  transition: background-color 0.3s ease, color 0.3s ease; /* Added color transition */
   margin-top: 4px;
 }
 
 .dropdown-content button:hover {
-  background-color: #04a8abb8;
+  background-color: #f0f0f0; /* Light gray on hover */
+  color: #007bff; /* Blue text on hover */
 }
 
 .dropdown:hover .dropdown-content {
   display: block;
 }
 
-/* Hamburger Menu Icon for Mobile */
 .mobile-menu-icon {
   display: none;
-  color: #f3f4f6;
+  color: #343a40; /* Dark gray for mobile menu icon */
   font-size: 1.5rem;
   cursor: pointer;
 }
-
-/* Résponsive pour petits écrans */
 @media (max-width: 768px) {
   .navbar {
     flex-direction: row;
@@ -223,20 +217,20 @@ ul::-webkit-scrollbar-track {
   }
 
   .options {
-    display: none; /* Hide options by default on mobile */
+    display: none;
     flex-direction: column;
     gap: 0.5rem;
     width: 100%;
     background-color: #1e293b;
     padding: 1rem;
     position: absolute;
-    top: 80px; /* Adjust based on navbar height */
+    top: 80px;
     left: 0;
     z-index: 999;
   }
 
   .options.open {
-    display: flex; /* Show options when menu is open */
+    display: flex;
   }
 
   .profile {
@@ -245,7 +239,7 @@ ul::-webkit-scrollbar-track {
   }
 
   .mobile-menu-icon {
-    display: block; /* Show hamburger icon on mobile */
+    display: block;
   }
 
   .dropdown-content {

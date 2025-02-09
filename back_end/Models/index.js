@@ -917,7 +917,7 @@ module.exports.CourierAssignee = {
       if (pagination) {
         query += ` ORDER BY ${TablesNames.courier}.created_at DESC`;
         query += ` LIMIT ? OFFSET ?`;
-        values.push(pageSize, page * pageSize);
+        values.push(pageSize, page * pageSize - pageSize);
       }
       console.log(query, values);
       const [rows] = await db.query(query, values);

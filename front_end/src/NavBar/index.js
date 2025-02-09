@@ -3,6 +3,7 @@ import "./index.css";
 import { User, events, documentType } from "../data";
 import { useEffect, useState } from "react";
 import { formatDistanceToNow } from "date-fns"; // Import date-fns for relative time
+import { roles } from "../utils";
 export default () => {
   const [userData, setUserData] = User.useStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -42,22 +43,15 @@ export default () => {
         </div>
 
         {/* Hamburger Menu Icon for Mobile */}
-        <div
-          className="mobile-menu-icon"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-        >
-          <i className="fa-solid fa-bars"></i>
-        </div>
 
         {/* Menu Items (Center) */}
         <div className={`options ${isMenuOpen ? "open" : ""}`}>
-          <button onClick={() => Store.navigateTo("/")}>
+          <button title="Accueil" onClick={() => Store.navigateTo("/")}>
             <i className="fa-solid fa-calendar-day"></i>
-            <span>Accueil</span>
           </button>
 
           {/* Départements Dropdown */}
-          {userData.data.role === "admin" && (
+          {userData.data.role === roles.admin && (
             <div
               className={`dropdown ${
                 openDropdown === "departement" ? "open" : ""
@@ -65,9 +59,8 @@ export default () => {
               onMouseEnter={() => handleDropdown("departement")}
               onMouseLeave={() => handleDropdown(null)}
             >
-              <button>
+              <button title="Entite">
                 <i className="fa-solid fa-building"></i>
-                <span> Entité </span>
               </button>
               <div className="dropdown-content">
                 <button onClick={() => Store.navigateTo("/departement")}>
@@ -83,15 +76,14 @@ export default () => {
           )}
 
           {/* Groupes Dropdown */}
-          {userData.data.role === "admin" && (
+          {userData.data.role === roles.admin && (
             <div
               className={`dropdown ${openDropdown === "group" ? "open" : ""}`}
               onMouseEnter={() => handleDropdown("group")}
               onMouseLeave={() => handleDropdown(null)}
             >
-              <button>
+              <button title="Groupes">
                 <i className="fa-solid fa-users"></i>
-                <span>Groupes</span>
               </button>
               <div className="dropdown-content">
                 <button onClick={() => Store.navigateTo("/Group")}>
@@ -112,16 +104,15 @@ export default () => {
             onMouseEnter={() => handleDropdown("courrier")}
             onMouseLeave={() => handleDropdown(null)}
           >
-            <button>
+            <button title="Courriers">
               <i className="fa-solid fa-envelope"></i>
-              <span>Courriers</span>
             </button>
             <div className="dropdown-content">
               <button onClick={() => Store.navigateTo("/courrier")}>
                 <i className="fa-solid fa-list"></i>
                 <span>Afficher Courriers</span>
               </button>
-              {userData.data.role === "admin" && (
+              {userData.data.role === roles.admin && (
                 <button onClick={() => Store.navigateTo("/courrier/add")}>
                   <i className="fa-solid fa-plus"></i>
                   <span>Ajouter Courrier</span>
@@ -135,29 +126,30 @@ export default () => {
             onMouseEnter={() => handleDropdown("events")}
             onMouseLeave={() => handleDropdown(null)}
           >
-            <button>
-              <i className="fa-solid fa-envelope"></i>
-              <span>Events</span>
+            <button title="Events">
+              <i className="fa-regular fa-calendar"></i>
             </button>
             <div className="dropdown-content">
               <button onClick={() => Store.navigateTo("/courrier?event=true")}>
                 <i className="fa-solid fa-list"></i>
                 <span>Afficher events</span>
               </button>
-              <button
-                onClick={() =>
-                  Store.navigateTo(
-                    "/courrier/add?" + documentType.event + "=true"
-                  )
-                }
-              >
-                <i className="fa-solid fa-plus"></i>
-                <span>Ajouter events</span>
-              </button>
+              {userData.data.role === roles.admin && (
+                <button
+                  onClick={() =>
+                    Store.navigateTo(
+                      "/courrier/add?" + documentType.event + "=true"
+                    )
+                  }
+                >
+                  <i className="fa-solid fa-plus"></i>
+                  <span>Ajouter events</span>
+                </button>
+              )}
             </div>
           </div>
 
-          {userData.data.role === "admin" && (
+          {userData.data.role === roles.admin && (
             <div
               className={`dropdown ${
                 openDropdown === "utilisateur" ? "open" : ""
@@ -165,9 +157,8 @@ export default () => {
               onMouseEnter={() => handleDropdown("utilisateur")}
               onMouseLeave={() => handleDropdown(null)}
             >
-              <button>
+              <button title="Utilisateurs">
                 <i className="fa-solid fa-user"></i>
-                <span>Utilisateurs</span>
               </button>
               <div className="dropdown-content">
                 <button
@@ -183,16 +174,25 @@ export default () => {
               </div>
             </div>
           )}
-          <div className="ml-3">
-            <button onClick={() => Store.navigateTo("/courrier/archive")}>
+
+          <div className="dropdown">
+            <button
+              title="Archive"
+              onClick={() => Store.navigateTo("/courrier/archive")}
+            >
               <i className="fa-solid fa-archive"></i>
-              <span>Archive</span>
             </button>
           </div>
         </div>
 
         {/* Notifications Dropdown */}
         <div className="flex gap-3">
+          <div
+            className="mobile-menu-icon"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            <i className="fa-solid fa-bars"></i>
+          </div>
           <div className="relative">
             <button
               onClick={() => handleDropdown("notifications")}
@@ -208,9 +208,8 @@ export default () => {
             </button>
 
             {openDropdown === "notifications" && (
-              <div className="absolute right-0 mt-2 w-72 bg-white border border-gray-200 shadow-lg rounded-lg overflow-hidden">
-                {" "}
-                {/* Increased width, added overflow-hidden */}
+              <div className="absolute right-0 mt-2  w-64 bg-white border border-gray-200 shadow-lg rounded-lg overflow-hidden">
+                {/* Header */}
                 <div className="bg-gray-100 px-4 py-2 font-semibold text-gray-700">
                   {" "}
                   {/* Added header styling */}
@@ -218,39 +217,42 @@ export default () => {
                 </div>
                 <ul className="max-h-64 overflow-y-auto">
                   {alertEvents.length > 0 ? (
-                    alertEvents.map((event) => (
-                      <li
-                        key={event.id}
-                        className="p-3 hover:bg-gray-50 border-b last:border-b-0 cursor-pointer" // Added hover effect, removed last border
-                        onClick={() => {
-                          // Handle notification click (e.g., navigate to event details)
-                          Store.navigateTo(`/courrier/detail/${event.id}`); // Example navigation
-                          setOpenDropdown(null); // Close the dropdown
-                        }}
-                      >
-                        <div className="flex items-start">
-                          {" "}
-                          {/* Use flexbox for layout */}
-                          <div className="flex-shrink-0 mr-2">
+                    alertEvents.map((event) => {
+                      if (event.is_courier == 0) return null;
+                      return (
+                        <li
+                          key={event.id}
+                          className="p-3 hover:bg-gray-50 border-b last:border-b-0 cursor-pointer" // Added hover effect, removed last border
+                          onClick={() => {
+                            // Handle notification click (e.g., navigate to event details)
+                            Store.navigateTo(`/courrier/detail/${event.id}`); // Example navigation
+                            setOpenDropdown(null); // Close the dropdown
+                          }}
+                        >
+                          <div className="flex items-start">
                             {" "}
-                            {/* Icon container */}
-                            <i className="fa-solid fa-exclamation-triangle text-yellow-500"></i>{" "}
-                            {/* Example icon */}
-                          </div>
-                          <div>
-                            <div className="font-semibold text-gray-800">
-                              {event.title}
+                            {/* Use flexbox for layout */}
+                            <div className="flex-shrink-0 ">
+                              {" "}
+                              {/* Icon container */}
+                              <i className="fa-solid fa-exclamation-triangle text-yellow-500"></i>{" "}
+                              {/* Example icon */}
                             </div>
-                            <div className="text-gray-500 text-sm">
-                              {formatDistanceToNow(new Date(event.deadline), {
-                                addSuffix: true,
-                              })}{" "}
-                              {/* Relative time */}
+                            <div>
+                              <div className="font-semibold text-gray-800">
+                                {event.title}
+                              </div>
+                              <div className="text-gray-500 text-sm">
+                                {formatDistanceToNow(new Date(event.deadline), {
+                                  addSuffix: true,
+                                })}{" "}
+                                {/* Relative time */}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </li>
-                    ))
+                        </li>
+                      );
+                    })
                   ) : (
                     <li className="p-3 text-center text-gray-500">
                       Pas d&apos; notifications

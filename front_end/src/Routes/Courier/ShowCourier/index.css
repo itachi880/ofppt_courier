@@ -119,6 +119,7 @@
   overflow: hidden;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   background-color: #ffffff;
+  min-height: 600px;
 }
 
 .rbc-month-view {
@@ -283,13 +284,13 @@
 }
 
 .rbc-toolbar button:active {
-  background-color: #007bff;
+  background-color: #218838;
 }
 
 .rbc-toolbar .rbc-active {
-  background-color: #007bff;
+  background-color: #218838;
   color: #ffffff;
-  border-color: #007bff;
+  border-color: #218838;
 }
 
 .rbc-toolbar-label {
@@ -402,15 +403,24 @@
   .view-toggle-buttons {
     flex-direction: column;
     gap: 10px;
+    align-items: center;
   }
 
   .custom-button {
     width: 100%;
+    margin: 0;
   }
 
   .date-indicator {
-    text-align: left;
+    text-align: center;
     margin-bottom: 10px;
+    width: 100%;
+  }
+  .rbc-calendar {
+    height: 420px;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
   }
 }
 .rbc-agenda-time-cell,

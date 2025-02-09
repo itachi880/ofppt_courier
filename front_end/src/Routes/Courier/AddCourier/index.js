@@ -10,6 +10,7 @@ import Swal from "sweetalert2";
  */
 const styles = {
   container: {
+    width: window.innerWidth,
     maxWidth: "800px",
     margin: "20px auto",
     padding: "20px",
@@ -21,6 +22,7 @@ const styles = {
     flexWrap: "wrap",
     justifyContent: "space-between",
     alignItems: "start",
+    boxSizing: "border-box",
   },
   input: {
     width: "100%",
@@ -29,6 +31,7 @@ const styles = {
     borderRadius: "5px",
     border: "1px solid #ccc",
     fontSize: "16px",
+    boxSizing: "border-box",
   },
   select: {
     width: "100%",
@@ -49,7 +52,6 @@ const styles = {
     borderRadius: "5px",
     cursor: "pointer",
     fontSize: "16px",
-    marginBottom: "16px",
     width: "100%",
   },
   hr: {
@@ -63,7 +65,8 @@ const styles = {
     display: "block",
   },
   section: {
-    width: "350px",
+    width: "100%",
+    maxWidth: "350px",
     display: "flex",
     flexDirection: "column",
     alignItems: "stretch",

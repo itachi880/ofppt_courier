@@ -122,7 +122,7 @@ router.post(
         expiditeur: req.body.expiditeur,
       });
       if (updateError) return res.status(404).send("Courier not found");
-
+      console.log(req.body.assigneed_to);
       const [assigneError] = await CourierAssignee.updateAssignment(
         JSON.parse(req.body.assigneed_to),
         courierId

@@ -62,16 +62,16 @@ export default function Home() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-grow container mx-auto py-8 px-4">
+      <main className="flex-grow container mx-auto md:px-4 py-8 sm:px-0  ">
         {/* Common Section Styles */}
-        <div className="bg-white shadow-md rounded-md p-6 mb-8">
+        <div className="bg-white shadow-md rounded-md md:p-6 sm:p-1 mb-8">
           {/* Added margin bottom */}
           {activeTab === "courrier" && (
             <CourrierTable
               eventsData={eventsData.data}
               userData={userData.data}
             />
-          )}{" "}
+          )}
           {activeTab === "evenements" && (
             <EventTable eventsData={eventsData.data} userData={userData.data} />
           )}
@@ -89,7 +89,7 @@ const CourrierTable = ({ eventsData, userData }) => {
   return (
     <section>
       <h2 className="text-xl font-semibold mb-4">
-        Courriers <i className="fas fa-inbox"></i>{" "}
+        Courriers <i className="fas fa-inbox"></i>
       </h2>
       <p className="text-gray-600">
         Ici, vous pouvez gérer et consulter vos courries.
@@ -152,25 +152,24 @@ const EventTable = ({ eventsData, userData }) => {
   return (
     <section>
       <h2 className="text-xl font-semibold mb-4">
-        Evenements <i className="fas fa-calendar-alt"></i>{" "}
+        Evenements <i className="fas fa-calendar-alt"></i>
       </h2>
       <p className="text-gray-600">
         Ici, vous pouvez gérer et consulter vos events.
       </p>
       <table className="min-w-full divide-y divide-gray-200 table-auto border-gray-200 border-2">
-        {" "}
         {/* table-auto for better responsiveness */}
         <thead>
           <tr className="bg-gray-200">
             <th className="px-4 py-2 text-center text-gray-500 uppercase font-medium tracking-wider">
-              Deadline <i className="fas fa-calendar-alt ml-2"></i>{" "}
-            </th>{" "}
+              Deadline <i className="fas fa-calendar-alt ml-2"></i>
+            </th>
             {/* Text alignment */}
             <th className="px-4 py-2 text-center text-gray-500 uppercase font-medium tracking-wider">
-              Expéditeur <i className="fas fa-user ml-2"></i>{" "}
+              Expéditeur <i className="fas fa-user ml-2"></i>
             </th>
             <th className="px-4 py-2 text-center text-gray-500 uppercase font-medium tracking-wider">
-              Objet <i className="fas fa-sticky-note ml-2"></i>{" "}
+              Objet <i className="fas fa-sticky-note ml-2"></i>
             </th>
           </tr>
         </thead>

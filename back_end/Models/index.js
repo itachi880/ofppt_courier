@@ -855,7 +855,7 @@ module.exports.CourierAssignee = {
         TablesNames.courier_assigne
       } (courier_id,group_id,department_id) values ${[
         ...assignment.departements.map((dep) => `(${id},NULL,${dep})`),
-        ...assignment.groups.map((grp) => `(${id},NULL,${grp})`),
+        ...assignment.groups.map((grp) => `(${id},${grp},NULL)`),
       ].join(",")}`);
       return [null, res];
     } catch (e) {

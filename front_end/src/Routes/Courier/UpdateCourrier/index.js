@@ -4,13 +4,14 @@ import { BASE_URL, UpdateCourier } from "../../../api";
 import { useParams } from "react-router-dom";
 import { GreenBox, ImgsWithCancelIcon, RedBox } from "../../../utils";
 import { Store } from "react-data-stores";
+import Swal from "sweetalert2";
 
 /**
  * @type {Record<string,import("react").CSSProperties>}
  */
 const styles = {
   container: {
-    maxWidth: "800px",
+    maxWidth: window.innerWidth,
     margin: "20px auto",
     padding: "20px",
     border: "1px solid #ccc",
@@ -21,6 +22,7 @@ const styles = {
     flexWrap: "wrap",
     justifyContent: "space-between",
     alignItems: "start",
+    boxSizing: "border-box",
   },
   input: {
     width: "100%",
@@ -29,6 +31,7 @@ const styles = {
     borderRadius: "5px",
     border: "1px solid #ccc",
     fontSize: "16px",
+    boxSizing: "border-box",
   },
   select: {
     width: "100%",
@@ -62,7 +65,8 @@ const styles = {
     display: "block",
   },
   section: {
-    width: "350px",
+    width: "100%",
+    maxWidth: "350px",
     display: "flex",
     flexDirection: "column",
     alignItems: "stretch",
@@ -363,7 +367,8 @@ export default function () {
         type="submit"
         value="Update"
         style={styles.submitButton}
-        onClick={() => {
+        onClick={async () => {
+          console.log(formData);
           const formDataToSend = new FormData();
           formDataToSend.append("title", formData.title);
           formDataToSend.append("description", formData.description);
@@ -374,6 +379,7 @@ export default function () {
           formDataToSend.append("critical", formData.critical);
           formDataToSend.append("expiditeur", formData.expiditeur);
           formDataToSend.append("token", userData.token);
+
           formDataToSend.append(
             "deleted_imgs",
             JSON.stringify({
@@ -386,9 +392,40 @@ export default function () {
             Array.from(formData.files).forEach((file) => {
               formDataToSend.append("files", file);
             });
-          UpdateCourier(formDataToSend, formData.departements, formData.groups)
-            .then(console.log)
-            .catch(console.log);
+          const result = await UpdateCourier(
+            formDataToSend,
+            formData.departements,
+            formData.groups
+          );
+          if (result[0])
+            return Swal.fire({
+              icon: "error",
+              title: "Error!",
+              text: "Failed to Update courier. Please try again.",
+            });
+          Swal.fire({
+            icon: "success",
+            title: "Success!",
+            text: "Courier Update successfully!",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          eventsStore.data[
+            eventsStore.data.findIndex((e) => e.id == formData.id)
+          ] = {
+            id: formData.id,
+            title: formData.title,
+            description: formData.description,
+            expiditeur: formData.expiditeur,
+            deadline: formData.deadline,
+            state: formData.state,
+            critical: formData.critical,
+            created_at: formData.created_at,
+            departements: formData.departements,
+            imgs: formData.imgs, //! na9shom les image jdad
+            groups: formData.groups,
+          };
+          Store.navigateTo("/");
         }}
       />
     </div>

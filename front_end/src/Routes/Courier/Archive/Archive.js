@@ -70,8 +70,7 @@ const Archive = () => {
               </div>
             </div>
           ))}
-          {currentEvents.length === 0 && <p>Aucune donnée disponible.</p>}{" "}
-          {/* Display message if no data */}
+          {currentEvents.length === 0 && <p>Aucune donnée disponible.</p>} {/* Display message if no data */}
         </div>
 
         {/* Pagination */}
@@ -83,23 +82,17 @@ const Archive = () => {
           >
             Precedent
           </button>
-          {Array.from(
-            { length: Math.ceil(totalPages / eventsPerPage) },
-            (
-              _,
-              i // Use totalPages for pagination
-            ) => (
-              <button
-                key={i}
-                onClick={() => handlePageChange(i + 1)}
-                className={`bg-[#FFC107] hover:bg-[#F9A602] text-[#0078D7] font-bold py-2 px-4 rounded mx-1 transition duration-300 ${
-                  currentPage === i + 1 ? "bg-[#0078D7] text-white" : ""
-                }`}
-              >
-                {i + 1}
-              </button>
-            )
-          )}
+          {Array.from({ length: Math.ceil(totalPages / eventsPerPage) }, (_, i) => ( // Use totalPages for pagination
+            <button
+              key={i}
+              onClick={() => handlePageChange(i + 1)}
+              className={`bg-[#FFC107] hover:bg-[#F9A602] text-[#0078D7] font-bold py-2 px-4 rounded mx-1 transition duration-300 ${
+                currentPage === i + 1 ? "bg-[#0078D7] text-white" : ""
+              }`}
+            >
+              {i + 1}
+            </button>
+          ))}
 
           <button
             onClick={() => handlePageChange(currentPage + 1)}

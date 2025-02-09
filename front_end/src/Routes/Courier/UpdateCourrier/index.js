@@ -11,7 +11,8 @@ import Swal from "sweetalert2";
  */
 const styles = {
   container: {
-    maxWidth: window.innerWidth,
+    width: window.innerWidth,
+    maxWidth: "800px",
     margin: "20px auto",
     padding: "20px",
     border: "1px solid #ccc",

@@ -181,7 +181,12 @@ export default () => {
               </div>
             </div>
           )}
+          <button onClick={() => Store.navigateTo("/courrier/archive")}>
+            <i className="fa-solid fa-archive"></i>
+            <span>Archive</span>
+          </button>
         </div>
+
         {/* Notifications Dropdown */}
         <div className="flex gap-3">
           <div className="relative">

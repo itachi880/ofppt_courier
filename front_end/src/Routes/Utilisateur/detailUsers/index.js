@@ -20,7 +20,6 @@ export function DetailUsers() {
       console.log("res1", res[1]);
       setUsers([...users, res[1]]);
     });
-    console.log(departementsGroups);
   }, []);
   return (
     <div className="overflow-x-auto p-6">
@@ -64,7 +63,7 @@ export function DetailUsers() {
                       .map(
                         (departement) =>
                           departement.groups.find(
-                            (group) => group.id === user.group_id
+                            (group) => group.id == user.group_id
                           )?.name
                       )
                       .find((name) => name) || "Inconnu"}

@@ -11,13 +11,16 @@ export function DetailUsers() {
   const { id } = useParams();
   const [users, setUsers] = useState([]);
   const [loadingFlag, setLoadingFlag] = loading.useStore();
+  const navigate = useNavigate();
   useEffect(() => {
     setLoadingFlag({ loading: true });
     GetUsersById(userData.token, id).then((res) => {
       setLoadingFlag({ loading: false });
       if (res[0]) return console.log(res[0]);
+      console.log("res1", res[1]);
       setUsers([...users, res[1]]);
     });
+    console.log(departementsGroups);
   }, []);
   return (
     <div className="overflow-x-auto p-6">
@@ -71,7 +74,7 @@ export function DetailUsers() {
                       className="text-blue-500 hover:text-blue-700"
                       aria-label="Update Department"
                       onClick={() => {
-                        console.log(id);
+                        navigate(`/utilisateur/updateUsers/${user.id}`);
                       }}
                     >
                       <FaEdit />

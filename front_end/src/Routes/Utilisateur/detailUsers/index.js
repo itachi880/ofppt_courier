@@ -11,6 +11,7 @@ export function DetailUsers(){
     const [userData, setUserData] = User.useStore();
     const { id } = useParams();
     const [users, setUsers] = useState([]);
+    const navigate = useNavigate();
     useEffect(() => {
         GetUsersById(userData.token,id).then((res) => {
             if (res[0]) return console.log(res[0]);
@@ -18,7 +19,7 @@ export function DetailUsers(){
             setUsers([...users,res[1]]);
 
         });
-        // console.log(departementsGroups)
+        console.log(departementsGroups)
         
     }, []);
     return(
@@ -58,7 +59,7 @@ export function DetailUsers(){
     .find(name => name) || "Inconnu"}
 </td>
                     <td className="py-3 px-6" ><button className="text-blue-500 hover:text-blue-700"
-                    aria-label="Update Department" onClick={()=>{console.log(id)}}><FaEdit/></button></td>
+                    aria-label="Update Department" onClick={()=>{ navigate(`/utilisateur/updateUsers/${user.id}`);}}><FaEdit/></button></td>
                     <td className="py-3 px-6" ><button   className="text-red-500 hover:text-red-700 mr-2"   
                       onClick={() => DeleteUserApi(user.id, userData.token).then((res) => {
                         console.log(res);

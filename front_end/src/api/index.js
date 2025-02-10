@@ -374,3 +374,32 @@ export const DeleteUserApi = async (id, token) => {
   }
   return result;
 };  
+export const UpdateUserApi = async (id, token,data) => {
+  if (!id) {
+    return ["User ID is required", null];
+  }
+  const result = [null, null];
+  try {
+    console.log("id", id);
+    const response = await axios.put(`${BASE_URL}/users/${id}`,
+      {
+        first_name: data.first_name,
+        last_name: data.last_name,
+        email: data.email,
+        password: data.password,
+        departement_id: +data.departement_id,
+        group_id: +data.group_id,
+        role: data.role,
+      },
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+    result[1] = response.data; // Stocker le succès
+  } catch (err) {
+    result[0] = err.response?.data || err.message; // Stocker l'erreur
+  }
+  return result;
+};  

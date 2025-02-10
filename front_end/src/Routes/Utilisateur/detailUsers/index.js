@@ -63,7 +63,7 @@ export function DetailUsers() {
                       .map(
                         (departement) =>
                           departement.groups.find(
-                            (group) => group.id === users.group_id
+                            (group) => group.id == users.group_id
                           )?.name
                       )
                       .find((name) => name) || "Inconnu"}

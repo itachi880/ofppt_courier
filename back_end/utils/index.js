@@ -1,18 +1,12 @@
 const EasyMailer = require("esay_mailer");
-const nodemailer = require('nodemailer');
+const nodemailer = require("nodemailer");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const path = require("path");
+const fs = require("fs");
 const multer = require("multer");
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: 'jamaaoui.business@gmail.com',
-      pass: 'vdhu bpnx tifv hqgh' 
-    }
-  });
-module.exports.fileSaver = multer({ storage: multer.memoryStorage() });
 require("dotenv").config(path.join(__dirname, "..", ".env"));
+module.exports.fileSaver = multer({ storage: multer.memoryStorage() });
 module.exports.mailer = new EasyMailer({
   user: process.env.MAILER_EMAIL, // Votre email ou nom d'utilisateur SMTP
   pass: process.env.MAILER_PASS, // Votre mot de passe SMTP
@@ -24,7 +18,8 @@ module.exports.hashPass = (pass) => {
     .update(pass + process.env.HASH_SALT)
     .digest("hex");
 };
-module.exports.jwt_signe = (data) => jwt.sign(data, process.env.HASH_SALT, { expiresIn: "1d" });
+module.exports.jwt_signe = (data) =>
+  jwt.sign(data, process.env.HASH_SALT, { expiresIn: "1d" });
 /**
  *
  * @param {string} token
@@ -42,94 +37,46 @@ module.exports.Roles = {
   normal: "normal",
 };
 module.exports.auth_middleware = function (req, res, next = () => {}) {
-  const [auth_error, auth_data] = module.exports.jwt_verify(req.headers.authorization + "");
+  const [auth_error, auth_data] = module.exports.jwt_verify(
+    req.headers.authorization + ""
+  );
   if (auth_error) return res.status(401).end("token error");
   req.user = auth_data;
   next();
 };
-module.exports.envoyerEmail= async(email,code)=>{
-  const mailOptions = {
-    from: 'jamaaoui.business@gmail.com',
-    to: email,
-    subject: 'Réinitialisation de votre mot de passe',
-    html: `
-      <html>
-        <head>
-          <style>
-            body {
-              font-family: Arial, sans-serif;
-              background-color: #f4f4f4;
-              margin: 0;
-              padding: 0;
-            }
-            .container {
-              width: 100%;
-              max-width: 600px;
-              margin: 0 auto;
-              background-color: #ffffff;
-              padding: 20px;
-              border-radius: 8px;
-              box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            }
-            h2 {
-              color: #333;
-              text-align: center;
-            }
-            .code {
-              display: block;
-              font-size: 24px;
-              font-weight: bold;
-              text-align: center;
-              background-color: #f1f1f1;
-              padding: 10px;
-              margin-top: 20px;
-              border-radius: 4px;
-              color: #333;
-            }
-            .footer {
-              text-align: center;
-              margin-top: 40px;
-              color: #888;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <h2>Réinitialisation de votre mot de passe</h2>
-            <p>Bonjour,</p>
-            <p>Vous avez demandé à réinitialiser votre mot de passe. Utilisez le code suivant pour réinitialiser votre mot de passe :</p>
-            <div class="code">
-              ${code}
-            </div>
-            <p>Si vous n'avez pas demandé cette réinitialisation, ignorez ce message.</p>
-            <div class="footer">
-              <p>Merci de nous avoir contactés.</p>
-            </div>
-          </div>
-        </body>
-      </html>
-    `,
-  };
+module.exports.envoyerEmail = async (email, link) => {
   try {
-    await transporter.sendMail(mailOptions);
-    console.log('Email envoyé avec succès.');
-  } catch (error) {
-    console.error('Erreur lors de l\'envoi de l\'email :', error);
+    await this.mailer.sendEmail({
+      to: email,
+      subject: "Réinitialisation de votre mot de passe",
+      html: {
+        STRING_CODE: fs.readFileSync(
+          path.join(__dirname, "ForgetPasswordTeamplate.html"),
+          { encoding: "utf-8" }
+        ),
+        DATA_TO_REPLACE: {
+          link: link,
+        },
+        SOURCE_WORD: "data",
+      },
+    });
+  } catch (e) {
+    console.log(e);
   }
-}
-module.exports.generateCode=(email)=>{
-  const secret = process.env.HASH_SALT ;
-  return   jwt.sign({ email }, secret, { expiresIn: '15m' });
-}
-module.exports.verifierCode=  (code)=>{
-     try {
-        const decoded =  jwt.verify(code, process.env.HASH_SALT );
-        return decoded.email; 
-      } catch (error) {
-        console.error('Code invalide ou expiré.');
-        return null;
-      }
-}
+};
+module.exports.generateCode = (email) => {
+  const secret = process.env.HASH_SALT;
+  return jwt.sign({ email }, secret, { expiresIn: "15m" });
+};
+module.exports.verifierCode = (code) => {
+  try {
+    const decoded = jwt.verify(code, process.env.HASH_SALT);
+    return decoded.email;
+  } catch (error) {
+    console.error("Code invalide ou expiré.");
+    return null;
+  }
+};
 //conditions types
 
 /**
@@ -155,9 +102,13 @@ module.exports.parse_condition = (condition) => {
   const sql = [];
   for (const [key, val] of Object.entries(condition)) {
     if (key === "and" || key === "or") {
-      sql.push(`(${val.map(module.exports.parse_condition).join(" " + key + " ")})`);
+      sql.push(
+        `(${val.map(module.exports.parse_condition).join(" " + key + " ")})`
+      );
     } else {
-      sql.push(`${key} ${val.operateur} "${module.exports.escapeChar(val.value + "")}"`);
+      sql.push(
+        `${key} ${val.operateur} "${module.exports.escapeChar(val.value + "")}"`
+      );
     }
   }
   return sql.join(" and ");
@@ -196,7 +147,8 @@ module.exports.courierStates = {
   urgent: "urgent",
   "tres urgent": "tres urgent",
 };
-module.exports.documentType={
-  courier:'courier',
-  event:'event'
-}
+module.exports.documentType = {
+  courier: "courier",
+  event: "event",
+};
+module.exports.FRONT_END_APP = process.env.FRONT_END_APP;

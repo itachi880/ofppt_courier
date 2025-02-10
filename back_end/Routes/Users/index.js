@@ -1,4 +1,4 @@
-const { auth_middleware } = require("../../utils");
+const { auth_middleware, verifierCode } = require("../../utils");
 const { Users } = require("../../Models");
 const { Roles, hashPass } = require("../../utils");
 const router = require("express").Router();
@@ -42,8 +42,8 @@ router.delete("/:id", async (req, res) => {
 router.put("/:id", async (req, res) => {
   const userId = req.params.id;
   const updateData = req.body;
-    if(updateData.departement_id==0) return updateData.departement_id=null
-  if(updateData.group_id==0) return updateData.group_id=null
+  if (updateData.departement_id == 0) updateData.departement_id = null;
+  if (updateData.group_id == 0) updateData.group_id = null;
   try {
     if (req.user.role != Roles.admin)
       return res.status(401).end("you don't have access");
@@ -53,7 +53,7 @@ router.put("/:id", async (req, res) => {
     res.end("done");
   } catch (e) {
     console.log(e);
-    res.status(500).end("server error");
+    return res.status(500).end("server error");
   }
 });
 router.post("/add", async (req, res) => {
@@ -73,5 +73,21 @@ router.post("/add", async (req, res) => {
     console.log(e);
     res.status(500).end("server error");
   }
+});
+router.post("/forget-pass", async (req, res) => {
+  const { pass } = req.body;
+  console.log(req.body);
+  if (!pass || pass.length <= 3)
+    return res.status(400).end("send correct pass");
+  const [error] = await Users.update(
+    {
+      password: hashPass(pass),
+    },
+    {
+      and: [{ email: { operateur: "=", value: req.user.email } }],
+    }
+  );
+  if (error) return res.status(500).end("problem");
+  return res.end("modified");
 });
 module.exports = router;

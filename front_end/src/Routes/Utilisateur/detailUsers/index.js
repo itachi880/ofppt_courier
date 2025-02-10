@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { DeleteUserApi, GetUsersById } from "../../../api";
 import { User, departements_group_store, loading } from "../../../data";

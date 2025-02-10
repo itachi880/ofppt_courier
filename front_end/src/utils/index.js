@@ -208,3 +208,5 @@ export const LoadingBar = () => {
 
   return !loadingFlag.loading ? null : <div className="loadingBar"></div>;
 };
+export const preventBacklink = ["/", "/login"];
+export const noLoginRoutes = ["/new_password"];

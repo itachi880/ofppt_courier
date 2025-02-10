@@ -269,7 +269,7 @@ export default () => {
               <span
                 className="logout text-2xl m-0"
                 onClick={() => {
-                  setUserData({ token: undefined });
+                  setUserData({}, true);
                   localStorage.removeItem("token");
                   Store.navigateTo("/login");
                 }}

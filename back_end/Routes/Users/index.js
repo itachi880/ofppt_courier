@@ -24,7 +24,7 @@ router.get("/:id", async (req, res) => {
     console.log(e);
     res.status(500).end("server error");
   }
-})
+});
 router.delete("/:id", async (req, res) => {
   const userId = req.params.id;
   try {
@@ -60,16 +60,15 @@ router.post("/add", async (req, res) => {
   console.log(req.body);
   const userData = req.body;
   userData.password = hashPass(userData.password);
-  // if(userData.departement_id==0) return userData.departement_id=null
-  // if(userData.group_id==0) return userData.group_id=null
- 
+  if (userData.group_id <= 0) userData.group_id = null;
+  if (userData.departement_id <= 0) userData.departement_id = null;
   try {
     if (req.user.role != Roles.admin)
       return res.status(401).end("you don't have access");
-    const [errAdd] = await Users.insert(userData);
+    const [errAdd, data] = await Users.insert(userData);
     if (errAdd)
       return res.status(500).end("server error") && console.log(errAdd);
-    res.end("done");
+    res.end(data.insertId + "");
   } catch (e) {
     console.log(e);
     res.status(500).end("server error");

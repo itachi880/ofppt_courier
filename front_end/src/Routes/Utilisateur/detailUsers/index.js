@@ -1,11 +1,11 @@
 import { useParams } from "react-router-dom";
-import {  useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { DeleteUserApi, GetUsersById } from "../../../api";
-import { User, usersStore,departements_group_store } from "../../../data";
+import { User, usersStore, departements_group_store } from "../../../data";
 import { FaTrashAlt, FaEdit } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
-export function DetailUsers(){
+export function DetailUsers() {
   const [departementsGroups, setDepartmentsGroups] =
   departements_group_store.useStore();
     const [userData, setUserData] = User.useStore();

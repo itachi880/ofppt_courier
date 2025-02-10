@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
 import { departements_group_store, events, User } from "../../../data";
-import { UpdateCourier } from "../../../api";
+import { BASE_URL, UpdateCourier } from "../../../api";
 import { useParams } from "react-router-dom";
 import { GreenBox, ImgsWithCancelIcon, RedBox } from "../../../utils";
 import { Store } from "react-data-stores";
+import Swal from "sweetalert2";
 
 /**
  * @type {Record<string,import("react").CSSProperties>}
  */
 const styles = {
   container: {
+    width: window.innerWidth,
     maxWidth: "800px",
     margin: "20px auto",
     padding: "20px",
@@ -20,6 +22,8 @@ const styles = {
     display: "flex",
     flexWrap: "wrap",
     justifyContent: "space-between",
+    alignItems: "start",
+    boxSizing: "border-box",
   },
   input: {
     width: "100%",
@@ -28,6 +32,7 @@ const styles = {
     borderRadius: "5px",
     border: "1px solid #ccc",
     fontSize: "16px",
+    boxSizing: "border-box",
   },
   select: {
     width: "100%",
@@ -48,6 +53,7 @@ const styles = {
     borderRadius: "5px",
     cursor: "pointer",
     fontSize: "16px",
+    width: "100%",
   },
   hr: {
     border: "none",
@@ -60,7 +66,8 @@ const styles = {
     display: "block",
   },
   section: {
-    width: "350px",
+    width: "100%",
+    maxWidth: "350px",
     display: "flex",
     flexDirection: "column",
     alignItems: "stretch",
@@ -92,11 +99,11 @@ export default function () {
   useEffect(() => {
     const event = eventsStore.data.find((event) => event.id == id);
     if (!event) return Store.navigateTo("/");
-    console.log(event);
     setFormData({
       id: id,
       title: event.title,
       description: event.description,
+      expiditeur: event.expiditeur,
       deadline: event.deadline || "",
       state: event.state,
       critical: event.critical || "",
@@ -107,10 +114,6 @@ export default function () {
       files: [],
     });
   }, []);
-
-  useEffect(() => {
-    console.log(formData);
-  }, [formData]);
 
   return (
     <div style={styles.container}>
@@ -125,9 +128,11 @@ export default function () {
           value={formData.title}
         />
         <div style={{ margin: "10px 0" }}>
-          <RedBox>departements</RedBox>
-          <GreenBox>groups</GreenBox>
-          <hr />
+          <span style={{ display: "flex", gap: "5px" }}>
+            <RedBox>departements</RedBox>
+            <GreenBox>groups</GreenBox>
+          </span>
+          <hr style={{ margin: "5px 0" }} />
           <div
             style={{
               display: "flex",
@@ -178,7 +183,7 @@ export default function () {
             })}
           </div>
         </div>
-        <label style={styles.label}>Departements</label>
+        <label style={styles.label}>Entité</label>
         <select
           style={styles.select}
           onChange={(e) => {
@@ -188,7 +193,7 @@ export default function () {
           }}
         >
           <option value="" hidden>
-            Select Departement
+            Select Entité
           </option>
           {departementsGroup.departements.map((dep) => (
             <option value={dep.department_id}>{dep.department_name}</option>
@@ -243,6 +248,7 @@ export default function () {
               width: "100%",
               gap: "10px",
               margin: "10px 0px",
+              alignItems: "center",
             }}
           >
             <div
@@ -282,6 +288,17 @@ export default function () {
                 +
               </button>
             </div>
+            {formData.imgs.map((img) => (
+              <ImgsWithCancelIcon
+                src={BASE_URL + "/" + img}
+                Xclick={() => {
+                  formData.imgs = formData.imgs.filter(
+                    (imgItem) => imgItem == img
+                  );
+                }}
+                imgClick={() => window.open(BASE_URL + "/" + img)}
+              />
+            ))}
             {Array.from(formData.files).map((file, fileIndex) => {
               const src = URL.createObjectURL(file);
               return (
@@ -345,45 +362,73 @@ export default function () {
             }}
             value={formData.created_at.split("T")[0]}
           />
+        </div>{" "}
+      </div>{" "}
+      <input
+        type="submit"
+        value="Update"
+        style={styles.submitButton}
+        onClick={async () => {
+          console.log(formData);
+          const formDataToSend = new FormData();
+          formDataToSend.append("title", formData.title);
+          formDataToSend.append("description", formData.description);
+          formDataToSend.append("id", formData.id);
+          formDataToSend.append("state", formData.state);
+          formDataToSend.append("created_at", formData.created_at);
+          formDataToSend.append("deadline", formData.deadline);
+          formDataToSend.append("critical", formData.critical);
+          formDataToSend.append("expiditeur", formData.expiditeur);
+          formDataToSend.append("token", userData.token);
 
-          <input
-            type="submit"
-            value="Update"
-            style={styles.submitButton}
-            onClick={() => {
-              const formDataToSend = new FormData();
-              formDataToSend.append("title", formData.title);
-              formDataToSend.append("description", formData.description);
-              formDataToSend.append("id", formData.id);
-              formDataToSend.append("state", formData.state);
-              formDataToSend.append("created_at", formData.created_at);
-              formDataToSend.append("deadline", formData.deadline);
-              formDataToSend.append("critical", formData.critical);
-              formDataToSend.append("expiditeur", formData.expiditeur);
-              formDataToSend.append("token", userData.token);
-              formDataToSend.append(
-                "deleted_imgs",
-                JSON.stringify({
-                  imgs: eventsStore.data
-                    .find((event) => event.id == formData.id)
-                    .imgs.filter((img) => !formData.imgs.includes(img)),
-                })
-              );
-              if (formData.files.length > 0)
-                Array.from(formData.files).forEach((file) => {
-                  formDataToSend.append("files", file);
-                });
-              UpdateCourier(
-                formDataToSend,
-                formData.departements,
-                formData.groups
-              )
-                .then(console.log)
-                .catch(console.log);
-            }}
-          />
-        </div>
-      </div>
+          formDataToSend.append(
+            "deleted_imgs",
+            JSON.stringify({
+              imgs: eventsStore.data
+                .find((event) => event.id == formData.id)
+                .imgs.filter((img) => !formData.imgs.includes(img)),
+            })
+          );
+          if (formData.files.length > 0)
+            Array.from(formData.files).forEach((file) => {
+              formDataToSend.append("files", file);
+            });
+          const result = await UpdateCourier(
+            formDataToSend,
+            formData.departements,
+            formData.groups
+          );
+          if (result[0])
+            return Swal.fire({
+              icon: "error",
+              title: "Error!",
+              text: "Failed to Update courier. Please try again.",
+            });
+          Swal.fire({
+            icon: "success",
+            title: "Success!",
+            text: "Courier Update successfully!",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          eventsStore.data[
+            eventsStore.data.findIndex((e) => e.id == formData.id)
+          ] = {
+            id: formData.id,
+            title: formData.title,
+            description: formData.description,
+            expiditeur: formData.expiditeur,
+            deadline: formData.deadline,
+            state: formData.state,
+            critical: formData.critical,
+            created_at: formData.created_at,
+            departements: formData.departements,
+            imgs: formData.imgs, //! na9shom les image jdad
+            groups: formData.groups,
+          };
+          Store.navigateTo("/");
+        }}
+      />
     </div>
   );
 }

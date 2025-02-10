@@ -2,6 +2,7 @@ import { Calendar as BigCalendar, momentLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import moment from "moment";
 import { Store } from "react-data-stores";
+import { useSearchParams } from "react-router-dom";
 const localizer = momentLocalizer(moment);
 const CustomNextButton = ({ onClick }) => {
   return (
@@ -94,6 +95,7 @@ export function Calendar({
       backgroundColor: "lightgreen",
     },
   ],
+  onDateRangeChange = ({ start, end }) => {},
 }) {
   return (
     <BigCalendar
@@ -112,8 +114,10 @@ export function Calendar({
             </div>
           ),
         },
+
         toolbar: CustomToolbar,
       }}
+      onRangeChange={onDateRangeChange}
       messages={{ time: "" }}
       defaultView="month"
       eventPropGetter={(event) => {
@@ -133,11 +137,11 @@ export const GreenBox = ({ children, onClick = () => {} }) => (
   <span
     onClick={onClick}
     style={{
-      padding: "5px 10px",
+      padding: "2px 8px",
       background: "rgba(130, 255, 213, 0.48)",
       color: "rgb(0, 255, 170)",
       borderRadius: "5px",
-      margin: "0 5px",
+      margin: "0 0",
     }}
   >
     {children}
@@ -147,11 +151,12 @@ export const RedBox = ({ children, onClick = () => {} }) => (
   <span
     onClick={onClick}
     style={{
-      padding: "5px 10px",
+      padding: "2px 8px",
       background: "rgba(255, 156, 156, 0.48)",
       color: "red",
       borderRadius: "5px",
-      margin: "0 5px",
+      margin: "0 0px",
+      overflow: "hidden",
     }}
   >
     {children}
@@ -187,8 +192,13 @@ export const ImgsWithCancelIcon = ({
     </div>
   );
 };
-export const AppFirstLancheJobs = ({ user, events }) => {};
 export const roles = {
   admin: "admin",
   user: "user",
+};
+
+export const useQuery = () => {
+  const [searchParams] = useSearchParams();
+
+  return (parameter) => searchParams.get(parameter);
 };

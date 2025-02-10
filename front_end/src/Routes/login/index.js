@@ -26,7 +26,6 @@ export function LoginForm() {
     } else {
       setSuccess("Login successful!");
       setError(null);
-      console.log("User data:", data); // Traitez les données de l'utilisateur ici.
       localStorage.setItem("token", data.token);
       setUserData(data);
       Store.navigateTo("/");

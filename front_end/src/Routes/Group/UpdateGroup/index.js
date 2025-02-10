@@ -45,10 +45,6 @@ export default function UpdateGroup() {
       transition: "background-color 0.3s, transform 0.2s",
     },
   };
-  useEffect(() => {
-    console.log(id);
-    console.log(userData.token);
-  }, []);
 
   return (
     <div style={styles.container}>

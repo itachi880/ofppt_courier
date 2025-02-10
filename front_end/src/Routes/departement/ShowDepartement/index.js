@@ -4,6 +4,7 @@ import { departements_group_store, User } from "../../../data";
 import UpdateDepartment from "../updateDepartement";
 import { useNavigate } from "react-router-dom";
 import { FaTrashAlt, FaEdit } from "react-icons/fa";
+import Swal from "sweetalert2"; // Import SweetAlert2
 
 export default function ShowDepartments() {
   const [userData, setUserData] = User.useStore();
@@ -14,11 +15,30 @@ export default function ShowDepartments() {
 
   const handleDelete = (id) => {
     DeleteDepartment(userData.token, id).then((res) => {
-      console.log(res);
+      if (res[0])
+        return Swal.fire({
+          icon: "error",
+          title: "Error!",
+          text: "L'entité n'a pas été supprimée.",
+        }); //animation
+      const ids = [];
       setDepartmentsGroups({
-        departements: departementsGroups.departements.filter(
-          (dept) => dept.department_id !== id
+        departements: departementsGroups.departements.filter((dept) => {
+          if (dept.department_id == id) {
+            ids.push(...dept.groups.map((g) => +g.id));
+
+            return false;
+          }
+          return true;
+        }),
+        groups: departementsGroups.groups.filter(
+          (grp) => !ids.includes(grp.id)
         ),
+      });
+      Swal.fire({
+        icon: "success",
+        title: "Success!",
+        text: "L'entité a été Suprimer avec succès.",
       });
     });
   };

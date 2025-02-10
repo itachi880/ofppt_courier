@@ -1,20 +1,26 @@
 import { Store } from "react-data-stores";
 import "./index.css";
-import { User, events } from "../data";
+import { User, events, documentType } from "../data";
 import { useEffect, useState } from "react";
-
+import { formatDistanceToNow } from "date-fns"; // Import date-fns for relative time
+import { roles } from "../utils";
 export default () => {
   const [userData, setUserData] = User.useStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [eventsData, setEventsData] = events.useStore();
-  const [alertEvents, setAlertEvents] = useState([
 
-  ]); // ⚠️ Replace with real API data
-
+  const [alertEvents, setAlertEvents] = useState([]);
   useEffect(() => {
-    console.log(userData);
-  }, [userData]);
+    // Filter events that are within the next 48 hours
+    const upcomingEvents = eventsData.data.filter((event) => {
+      const date = new Date(event.deadline).getTime();
+      if (date <= Date.now() + 48 * 60 * 60 * 1000 && date >= Date.now()) {
+        return true;
+      }
+    });
+    setAlertEvents(upcomingEvents);
+  }, [eventsData]);
 
   if (!userData.token || Object.keys(userData.data).length === 0) return null;
 
@@ -23,7 +29,7 @@ export default () => {
   };
 
   return (
-    <div className="navbar-holder">
+    <div className="navbar-holder shadow-2xl ">
       <nav className="navbar">
         {/* Profile Section (Left) */}
         <div className="profile">
@@ -37,85 +43,81 @@ export default () => {
         </div>
 
         {/* Hamburger Menu Icon for Mobile */}
-        <div
-          className="mobile-menu-icon"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-        >
-          <i className="fa-solid fa-bars"></i>
-        </div>
 
         {/* Menu Items (Center) */}
         <div className={`options ${isMenuOpen ? "open" : ""}`}>
-          <button onClick={() => Store.navigateTo("/")}>
+          <button title="Accueil" onClick={() => Store.navigateTo("/")}>
             <i className="fa-solid fa-calendar-day"></i>
-            <span>Accueil</span>
           </button>
 
           {/* Départements Dropdown */}
-          <div
-            className={`dropdown ${
-              openDropdown === "departement" ? "open" : ""
-            }`}
-            onMouseEnter={() => handleDropdown("departement")}
-            onMouseLeave={() => handleDropdown(null)}
-          >
-            <button>
-              <i className="fa-solid fa-building"></i>
-              <span>Départements</span>
-            </button>
-            <div className="dropdown-content">
-              <button onClick={() => Store.navigateTo("/departement")}>
-                <i className="fa-solid fa-list"></i>
-                <span>Afficher Départements</span>
+          {userData.data.role === roles.admin && (
+            <div
+              className={`dropdown ${
+                openDropdown === "departement" ? "open" : ""
+              }`}
+              onMouseEnter={() => handleDropdown("departement")}
+              onMouseLeave={() => handleDropdown(null)}
+            >
+              <button title="Entite">
+                <i className="fa-solid fa-building"></i>
               </button>
-              <button onClick={() => Store.navigateTo("/departement/add")}>
-                <i className="fa-solid fa-plus"></i>
-                <span>Ajouter Département</span>
-              </button>
+              <div className="dropdown-content">
+                <button onClick={() => Store.navigateTo("/departement")}>
+                  <i className="fa-solid fa-list"></i>
+                  <span>Afficher Entité</span>
+                </button>
+                <button onClick={() => Store.navigateTo("/departement/add")}>
+                  <i className="fa-solid fa-plus"></i>
+                  <span>Ajouter Entité</span>
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Groupes Dropdown */}
-          <div
-            className={`dropdown ${openDropdown === "group" ? "open" : ""}`}
-            onMouseEnter={() => handleDropdown("group")}
-            onMouseLeave={() => handleDropdown(null)}
-          >
-            <button>
-              <i className="fa-solid fa-users"></i>
-              <span>Groupes</span>
-            </button>
-            <div className="dropdown-content">
-              <button onClick={() => Store.navigateTo("/Group")}>
-                <i className="fa-solid fa-list"></i>
-                <span>Afficher Groupes</span>
+          {userData.data.role === roles.admin && (
+            <div
+              className={`dropdown ${openDropdown === "group" ? "open" : ""}`}
+              onMouseEnter={() => handleDropdown("group")}
+              onMouseLeave={() => handleDropdown(null)}
+            >
+              <button title="Groupes">
+                <i className="fa-solid fa-users"></i>
               </button>
-              <button onClick={() => Store.navigateTo("/Group/add")}>
-                <i className="fa-solid fa-plus"></i>
-                <span>Ajouter Groupe</span>
-              </button>
+              <div className="dropdown-content">
+                <button onClick={() => Store.navigateTo("/Group")}>
+                  <i className="fa-solid fa-list"></i>
+                  <span>Afficher Groupes</span>
+                </button>
+                <button onClick={() => Store.navigateTo("/Group/add")}>
+                  <i className="fa-solid fa-plus"></i>
+                  <span>Ajouter Groupe</span>
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Courriers Dropdown */}
+          {/* Courriers Dropdown (Admin can add, all can view) */}
           <div
             className={`dropdown ${openDropdown === "courrier" ? "open" : ""}`}
             onMouseEnter={() => handleDropdown("courrier")}
             onMouseLeave={() => handleDropdown(null)}
           >
-            <button>
+            <button title="Courriers">
               <i className="fa-solid fa-envelope"></i>
-              <span>Courriers</span>
             </button>
             <div className="dropdown-content">
               <button onClick={() => Store.navigateTo("/courrier")}>
                 <i className="fa-solid fa-list"></i>
                 <span>Afficher Courriers</span>
               </button>
-              <button onClick={() => Store.navigateTo("/courrier/add")}>
-                <i className="fa-solid fa-plus"></i>
-                <span>Ajouter Courrier</span>
-              </button>
+              {userData.data.role === roles.admin && (
+                <button onClick={() => Store.navigateTo("/courrier/add")}>
+                  <i className="fa-solid fa-plus"></i>
+                  <span>Ajouter Courrier</span>
+                </button>
+              )}
             </div>
           </div>
           {/* i5tra3 dyal */}
@@ -124,83 +126,137 @@ export default () => {
             onMouseEnter={() => handleDropdown("events")}
             onMouseLeave={() => handleDropdown(null)}
           >
-            <button>
-              <i className="fa-solid fa-envelope"></i>
-              <span>Events</span>
+            <button title="Events">
+              <i className="fa-regular fa-calendar"></i>
             </button>
             <div className="dropdown-content">
-              <button onClick={() => Store.navigateTo("/courrier")}>
+              <button onClick={() => Store.navigateTo("/courrier?event=true")}>
                 <i className="fa-solid fa-list"></i>
                 <span>Afficher events</span>
               </button>
-              <button onClick={() => Store.navigateTo("/courrier/add?event=true")}>
-                <i className="fa-solid fa-plus"></i>
-                <span>Ajouter events</span>
-              </button>
+              {userData.data.role === roles.admin && (
+                <button
+                  onClick={() =>
+                    Store.navigateTo(
+                      "/courrier/add?" + documentType.event + "=true"
+                    )
+                  }
+                >
+                  <i className="fa-solid fa-plus"></i>
+                  <span>Ajouter events</span>
+                </button>
+              )}
             </div>
           </div>
-          {/* Utilisateur Dropdown */}
-          <div
-  className={`dropdown ${openDropdown === "utilisateur" ? "open" : ""}`}
-  onMouseEnter={() => handleDropdown("utilisateur")}
-  onMouseLeave={() => handleDropdown(null)}
->
-  <button>
-    <i className="fa-solid fa-user"></i>
-    <span>Utilisateurs</span>
-  </button>
-  <div className="dropdown-content">
-    <button onClick={() => Store.navigateTo("/utilisateur/afficheUsers")}>
-      <i className="fa-solid fa-list"></i>
-      <span>Afficher Utilisateurs</span>
-    </button>
-    <button onClick={() => Store.navigateTo("/utilisateur/add")}>
-      <i className="fa-solid fa-plus"></i>
-      <span>Ajouter Utilisateur</span>
-    </button>
-  </div>
-</div>
+
+          {userData.data.role === roles.admin && (
+            <div
+              className={`dropdown ${
+                openDropdown === "utilisateur" ? "open" : ""
+              }`}
+              onMouseEnter={() => handleDropdown("utilisateur")}
+              onMouseLeave={() => handleDropdown(null)}
+            >
+              <button title="Utilisateurs">
+                <i className="fa-solid fa-user"></i>
+              </button>
+              <div className="dropdown-content">
+                <button
+                  onClick={() => Store.navigateTo("/utilisateur/afficheUsers")}
+                >
+                  <i className="fa-solid fa-list"></i>
+                  <span>Afficher Utilisateurs</span>
+                </button>
+                <button onClick={() => Store.navigateTo("/utilisateur/add")}>
+                  <i className="fa-solid fa-plus"></i>
+                  <span>Ajouter Utilisateur</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className="dropdown">
+            <button
+              title="Archive"
+              onClick={() => Store.navigateTo("/courrier/archive")}
+            >
+              <i className="fa-solid fa-archive"></i>
+            </button>
+          </div>
         </div>
+
         {/* Notifications Dropdown */}
-        <div className="flex">
+        <div className="flex gap-3">
+          <div
+            className="mobile-menu-icon"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            <i className="fa-solid fa-bars"></i>
+          </div>
           <div className="relative">
             <button
               onClick={() => handleDropdown("notifications")}
               className="relative p-2"
             >
-              <i className="fa-solid fa-bell text-xl text-white"></i>
+              <i className="fa-solid fa-bell text-xl text-black"></i>
               {alertEvents.length > 0 && (
                 <span className="absolute top-0 right-0 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                  {
-                    eventsData.data.filter((event) => {
-                      if (
-                        new Date(event.deadline).getTime() <=
-                        Date.now() + 48 * 60 * 60 * 1000
-                      )
-                        return true;
-                      return false;
-                    }).length
-                  }
+                  {alertEvents.filter((alert) => alert.is_courier == 1).length}
+                  {/* Show only the count */}
                 </span>
               )}
             </button>
 
             {openDropdown === "notifications" && (
-              <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-300 shadow-lg rounded-lg">
-                <div className="p-4 font-bold border-b">Notifications</div>
-                <ul className="max-h-60 overflow-y-auto">
+              <div className="absolute right-0 mt-2  w-64 bg-white border border-gray-200 shadow-lg rounded-lg overflow-hidden">
+                {/* Header */}
+                <div className="bg-gray-100 px-4 py-2 font-semibold text-gray-700">
+                  {" "}
+                  {/* Added header styling */}
+                  Notifications
+                </div>
+                <ul className="max-h-64 overflow-y-auto">
                   {alertEvents.length > 0 ? (
-                    alertEvents.map((event) => (
-                      <li
-                        key={event.id}
-                        className="p-3 hover:bg-gray-100 border-b"
-                      >
-                        <span className="font-semibold">{event.title}</span> -{" "}
-                        {event.deadline}
-                      </li>
-                    ))
+                    alertEvents.map((event) => {
+                      if (event.is_courier == 0) return null;
+                      return (
+                        <li
+                          key={event.id}
+                          className="p-3 hover:bg-gray-50 border-b last:border-b-0 cursor-pointer" // Added hover effect, removed last border
+                          onClick={() => {
+                            // Handle notification click (e.g., navigate to event details)
+                            Store.navigateTo(`/courrier/detail/${event.id}`); // Example navigation
+                            setOpenDropdown(null); // Close the dropdown
+                          }}
+                        >
+                          <div className="flex items-start">
+                            {" "}
+                            {/* Use flexbox for layout */}
+                            <div className="flex-shrink-0 ">
+                              {" "}
+                              {/* Icon container */}
+                              <i className="fa-solid fa-exclamation-triangle text-yellow-500"></i>{" "}
+                              {/* Example icon */}
+                            </div>
+                            <div>
+                              <div className="font-semibold text-gray-800">
+                                {event.title}
+                              </div>
+                              <div className="text-gray-500 text-sm">
+                                {formatDistanceToNow(new Date(event.deadline), {
+                                  addSuffix: true,
+                                })}{" "}
+                                {/* Relative time */}
+                              </div>
+                            </div>
+                          </div>
+                        </li>
+                      );
+                    })
                   ) : (
-                    <li className="p-3 text-gray-500">Aucune notification</li>
+                    <li className="p-3 text-center text-gray-500">
+                      Pas d&apos; notifications
+                    </li>
                   )}
                 </ul>
               </div>
@@ -211,7 +267,7 @@ export default () => {
           <div className="logout">
             <button>
               <span
-                className="logout text-2xl"
+                className="logout text-2xl m-0"
                 onClick={() => {
                   setUserData({ token: undefined });
                   localStorage.removeItem("token");

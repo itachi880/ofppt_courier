@@ -234,10 +234,10 @@ module.exports.Users = {
     }
   },
   /**
- * Read a single user by ID from the database
- * @param {number} id - The ID of the user to retrieve
- * @returns {Promise<[(import("mysql2").QueryError | string | null ),(User | null)]>}
- */
+   * Read a single user by ID from the database
+   * @param {number} id - The ID of the user to retrieve
+   * @returns {Promise<[(import("mysql2").QueryError | string | null ),(User | null)]>}
+   */
   async readById(id) {
     try {
       const query = `SELECT * FROM ${TablesNames.users} WHERE id = ? LIMIT 1`;
@@ -245,7 +245,7 @@ module.exports.Users = {
       if (rows.length === 0) {
         return ["User not found", null]; // Retourne une erreur si l'utilisateur n'existe pas
       }
-  
+
       return [null, rows[0]]; // Retourne l'utilisateur trouvé
     } catch (e) {
       console.error(e);
@@ -855,7 +855,7 @@ module.exports.CourierAssignee = {
         TablesNames.courier_assigne
       } (courier_id,group_id,department_id) values ${[
         ...assignment.departements.map((dep) => `(${id},NULL,${dep})`),
-        ...assignment.groups.map((grp) => `(${id},NULL,${grp})`),
+        ...assignment.groups.map((grp) => `(${id},${grp},NULL)`),
       ].join(",")}`);
       return [null, res];
     } catch (e) {
@@ -869,13 +869,22 @@ module.exports.CourierAssignee = {
    * @param {number} grp_id - Group ID
    * @returns {Promise<[(import("mysql2").QueryError | string | null ),(Array<Courier> | null)]>}
    */
-  async getCouriers(dep_id, grp_id, condition, conditionValue) {
+  async getCouriers(
+    dep_id,
+    grp_id,
+    condition,
+    conditionValue,
+    pagination = false,
+    page = 0,
+    pageSize = 10
+  ) {
     try {
       let query = `SELECT 
       ${TablesNames.courier}.id, 
       ${TablesNames.courier}.title, 
       ${TablesNames.courier}.description, 
       ${TablesNames.courier}.deadline, 
+      ${TablesNames.courier}.expiditeur, 
       ${TablesNames.courier}.state, 
       ${TablesNames.courier_assigne}.group_id, 
       ${TablesNames.courier_assigne}.department_id, 
@@ -883,11 +892,11 @@ module.exports.CourierAssignee = {
       ${TablesNames.courier}.is_courier, 
       ${TablesNames.courier}.updated_at, 
       ${TablesNames.courier_files}.path 
-      FROM ${TablesNames.courier_assigne} 
-      JOIN ${TablesNames.courier} 
-      ON ${TablesNames.courier_assigne}.courier_id = ${TablesNames.courier}.id 
-      LEFT JOIN ${TablesNames.courier_files} 
-      ON ${TablesNames.courier_files}.courier_id = ${TablesNames.courier}.id`;
+    FROM ${TablesNames.courier_assigne} 
+    JOIN ${TablesNames.courier} 
+    ON ${TablesNames.courier_assigne}.courier_id = ${TablesNames.courier}.id 
+    LEFT JOIN ${TablesNames.courier_files} 
+    ON ${TablesNames.courier_files}.courier_id = ${TablesNames.courier}.id`;
 
       const values = [];
 
@@ -898,9 +907,17 @@ module.exports.CourierAssignee = {
         query += ` WHERE ${TablesNames.courier_assigne}.group_id = ?`;
         values.push(grp_id);
       }
+
       if (condition) {
+        if (dep_id || grp_id) query += " AND ";
+        else query += " WHERE ";
         query += condition;
         values.push(...conditionValue);
+      }
+      if (pagination) {
+        query += ` ORDER BY ${TablesNames.courier}.created_at DESC`;
+        query += ` LIMIT ? OFFSET ?`;
+        values.push(pageSize, page * pageSize - pageSize);
       }
       const [rows] = await db.query(query, values);
 
@@ -911,12 +928,12 @@ module.exports.CourierAssignee = {
         const courierId = row[`id`];
         if (!insertedIds.has(courierId)) {
           row[`deadline`].setHours(24);
-          //2024-09-11
 
           result.push({
             id: courierId,
             title: row[`title`],
             description: row[`description`],
+            expiditeur: row[`expiditeur`],
             deadline: row[`deadline`],
             state: row[`state`],
             created_at: row[`created_at`],

@@ -1,15 +1,16 @@
 import { useEffect, useRef, useState } from "react";
-import { departements_group_store, User } from "../../../data";
+import { departements_group_store, User, documentType } from "../../../data";
 import { AddCourier } from "../../../api";
-import { GreenBox, ImgsWithCancelIcon, RedBox } from "../../../utils";
+import { GreenBox, ImgsWithCancelIcon, RedBox, useQuery } from "../../../utils";
 import { useSearchParams } from "react-router-dom";
-
+import Swal from "sweetalert2";
 
 /**
  * @type {Record<string,import("react").CSSProperties>}
  */
 const styles = {
   container: {
+    width: window.innerWidth,
     maxWidth: "800px",
     margin: "20px auto",
     padding: "20px",
@@ -20,6 +21,8 @@ const styles = {
     display: "flex",
     flexWrap: "wrap",
     justifyContent: "space-between",
+    alignItems: "start",
+    boxSizing: "border-box",
   },
   input: {
     width: "100%",
@@ -28,6 +31,7 @@ const styles = {
     borderRadius: "5px",
     border: "1px solid #ccc",
     fontSize: "16px",
+    boxSizing: "border-box",
   },
   select: {
     width: "100%",
@@ -48,7 +52,7 @@ const styles = {
     borderRadius: "5px",
     cursor: "pointer",
     fontSize: "16px",
-    marginBottom: "16px",
+    width: "100%",
   },
   hr: {
     border: "none",
@@ -61,7 +65,8 @@ const styles = {
     display: "block",
   },
   section: {
-    width: "350px",
+    width: "100%",
+    maxWidth: "350px",
     display: "flex",
     flexDirection: "column",
     alignItems: "stretch",
@@ -69,10 +74,6 @@ const styles = {
   },
 };
 export default function () {
-
-  // const is_event = useSearchParams();
-  // console.log(is_event);
-
   const today = new Date();
   const [formData, setFormData] = useState({
     title: "",
@@ -85,21 +86,19 @@ export default function () {
     created_at: today.toISOString().split("T")[0],
     imgs: [],
     groups: [],
-    type: "courrier",
+    type: useQuery()(documentType.event)
+      ? documentType.event
+      : documentType.courier,
     files: [],
   });
   const [userData, setUserData] = User.useStore();
   const [departementsGroup, setDepartementsGroup] =
     departements_group_store.useStore();
 
-  useEffect(() => {
-    console.log(formData);
-  }, [formData]);
-
   return (
     <div style={styles.container} className="container mx-auto pb-32">
       <div style={styles.section}>
-        <label style={styles.label}>Object Title</label>
+        <label style={styles.label}>Object Titre</label>
         <input
           style={styles.input}
           placeholder="Object"
@@ -109,9 +108,11 @@ export default function () {
           value={formData.title}
         />
         <div style={{ margin: "10px 0" }}>
-          <RedBox>departements</RedBox>
-          <GreenBox>groups</GreenBox>
-          <hr />
+          <span style={{ display: "flex", gap: "5px" }}>
+            <RedBox>departements</RedBox>
+            <GreenBox>groups</GreenBox>
+          </span>
+          <hr style={{ margin: "5px 0" }} />
           <div
             style={{
               display: "flex",
@@ -162,11 +163,10 @@ export default function () {
             })}
           </div>
         </div>
-        <label style={styles.label}>Departements</label>
+        <label style={styles.label}>Entité</label>
         <select
           style={styles.select}
           onChange={(e) => {
-            console.log("selected dep", e.target.value);
             if (formData.departements.includes(+e.target.value)) return;
             formData.departements.push(+e.target.value);
             setFormData({ ...formData });
@@ -200,19 +200,7 @@ export default function () {
               grps.map((grp) => <option value={grp.id}>{grp.name}</option>)
             )}
         </select>
-        <label style={styles.label}>type</label>
-        <select
-          style={styles.select}
-          onChange={(e) => {
-            setFormData({ ...formData, type: e.target.value });
-          }}
-        >
-          <option value="" hidden>
-            Select type
-          </option>
-          <option>courrier</option>
-          <option>evenement</option>
-        </select>
+
         <label style={styles.label}>Expiditeur</label>
         <input
           style={styles.input}
@@ -233,7 +221,7 @@ export default function () {
         />
       </div>
       <div style={styles.section}>
-        <label style={styles.label}>Upload Images</label>
+        <label style={styles.label}>Upload Fichiers</label>
 
         <div
           style={{
@@ -242,6 +230,7 @@ export default function () {
             width: "100%",
             gap: "10px",
             margin: "10px 0px",
+            alignItems: "center",
           }}
         >
           <div
@@ -256,7 +245,7 @@ export default function () {
               alignItems: "center",
             }}
           >
-            {formData.files.length} imgs selected
+            {formData.files.length} images selectionner
             <button
               style={{
                 background: "#00b345",
@@ -346,39 +335,56 @@ export default function () {
           }}
           value={formData.created_at}
         />
+      </div>{" "}
+      <input
+        type="submit"
+        value="Send"
+        style={styles.submitButton}
+        onClick={() => {
+          const formDataToSend = new FormData();
+          formDataToSend.append("token", userData.token);
+          formDataToSend.append("titel", formData.title);
+          formDataToSend.append("description", formData.description);
+          formDataToSend.append("expiditeur", formData.expiditeur);
+          formDataToSend.append("state", formData.state);
+          formDataToSend.append("deadline", formData.deadline);
+          formDataToSend.append("type", formData.type);
+          formDataToSend.append("critical", formData.critical);
+          formDataToSend.append("created_at", formData.created_at);
+          if (formData.files) {
+            Array.from(formData.files).forEach((file) => {
+              formDataToSend.append("files", file);
+            });
+          }
 
-        <input
-          type="submit"
-          value="Send"
-          style={styles.submitButton}
-          onClick={() => {
-            const formDataToSend = new FormData();
-            formDataToSend.append("token", userData.token);
-            formDataToSend.append("titel", formData.title);
-            formDataToSend.append("description", formData.description);
-            formDataToSend.append("expiditeur", formData.expiditeur);
-            formDataToSend.append("state", formData.state);
-            formDataToSend.append("deadline", formData.deadline);
-            formDataToSend.append("critical", formData.critical);
-            formDataToSend.append("created_at", formData.created_at);
-            if (formData.files) {
-              Array.from(formData.files).forEach((file) => {
-                formDataToSend.append("files", file);
-              });
-            }
-            console.log(formDataToSend);
-            AddCourier(formDataToSend, formData.departements, formData.groups)
-              .then((res) => {
-                alert("Courier added successfully!");
+          AddCourier(formDataToSend, formData.departements, formData.groups)
+            .then((res) => {
+              if (res[0])
+                return Swal.fire({
+                  icon: "error",
+                  title: "Error!",
+                  text: "Failed to add courier. Please try again.",
+                });
+              Swal.fire({
+                icon: "success",
+                title: "Success!",
+                text: "Courier added successfully!",
+                showConfirmButton: false,
+                timer: 1500,
+              }).then(() => {
                 window.location.href = "/";
-              })
-              .catch((err) => {
-                alert("Failed to add courier. Please try again.");
-                console.error("Upload failed:", err);
               });
-          }}
-        />
-      </div>
+            })
+            .catch((err) => {
+              Swal.fire({
+                icon: "error",
+                title: "Error!",
+                text: "Failed to add courier. Please try again.",
+              });
+              console.error("Upload failed:", err);
+            });
+        }}
+      />
     </div>
   );
 }

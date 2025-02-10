@@ -105,3 +105,7 @@ module.exports.courierStates = {
   urgent: "urgent",
   "tres urgent": "tres urgent",
 };
+module.exports.documentType={
+  courier:'courier',
+  event:'event'
+}

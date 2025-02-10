@@ -45,9 +45,6 @@ export default function UpdateDepartment() {
       transition: "background-color 0.3s, transform 0.2s",
     },
   };
-  useEffect(() => {
-    console.log(id);
-  }, []);
 
   return (
     <div style={styles.container}>

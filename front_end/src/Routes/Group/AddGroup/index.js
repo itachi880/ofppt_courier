@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { departements_group_store, User } from "../../../data/index";
 import { AddGroupApi } from "../../../api";
+import Swal from "sweetalert2"; // Import SweetAlert2
 
 /**
  * @type {Record<string,import("react").CSSProperties>}
@@ -51,77 +52,109 @@ const styles = {
 };
 
 export default function AddGroup() {
-  const [userData, setUserData] = User.useStore();
-    const [departementsGroups, setDepartmentsGroups] = departements_group_store.useStore();
+  const [userData] = User.useStore();
+  const [departementsGroups, setDepartementsGroup] =
+    departements_group_store.useStore();
   const [formData, setFormData] = useState({
     name: "",
     token: userData.token,
-    id:0
+    department_id: 0,
   });
 
+  const handleSubmit = () => {
+    const departmentData = {
+      name: formData.name,
+      department_id: formData.department_id,
+      token: formData.token,
+    };
 
-
-  useEffect(() => {
-    console.log(departementsGroups);
-  }, [formData]);
+    AddGroupApi(departmentData)
+      .then((res) => {
+        if (res[0])
+          return Swal.fire({
+            icon: "error",
+            title: "Error!",
+            text: "Failed to add group. All input required.", // Improved error message
+          });
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: "Group added successfully!",
+        });
+        const index = departementsGroups.departements.findIndex(
+          (departement) =>
+            departement.department_id == departmentData.department_id
+        );
+        if (index >= 0)
+          departementsGroups.departements[index].groups.push({
+            id: res[1],
+            name: departmentData.name,
+          });
+        setDepartementsGroup({
+          groups: [
+            ...departementsGroups.groups,
+            { name: departmentData.name, id: res[1] },
+          ],
+          departements: [...departementsGroups.departements],
+        });
+      })
+      .catch((err) => {
+        console.error("Failed to add group:", err);
+        Swal.fire({
+          icon: "error",
+          title: "Error!",
+          text: "Failed to add group. Please check the form data and try again.", // Improved error message
+        });
+      });
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
-  <div className="p-6 w-full max-w-md bg-white shadow-md rounded-md">
-    <label className="block text-sm font-semibold text-gray-700 mb-2">Group Name</label>
-    <input
-      type="text"
-      placeholder="Enter Group Name"
-      onChange={(e) => {
-        setFormData({ ...formData, name: e.target.value });
-      }}
-      value={formData.name}
-      className="w-full p-2 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-    />
+      <div className="p-6 w-full max-w-md bg-white shadow-md rounded-md">
+        <label className="block text-sm font-semibold text-gray-700 mb-2">
+          Group Name
+        </label>
+        <input
+          type="text"
+          placeholder="Enter Group Name"
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          value={formData.name}
+          className="w-full p-2 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required // Add required attribute for validation
+        />
 
-    <label className="block text-sm font-semibold text-gray-700 mb-2">Assign Department</label>
-    <select
-      onChange={(e) => {
-        setFormData({ ...formData, DepartementAssign: e.target.value });
-      }}
-      className="w-full p-2 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-    >
-      <option>Select Department</option>
-      {departementsGroups.departements.map((e, i) => (
-        <option
-          key={i}
-          value={e.department_id}
-          onClick={() => {
-            setFormData({ ...formData, id: e.department_id });
-          }}
+        <label className="block text-sm font-semibold text-gray-700 mb-2">
+          Assign Department
+        </label>
+        <select
+          onChange={(e) =>
+            setFormData({ ...formData, department_id: Number(e.target.value) })
+          } // Corrected key
+          value={formData.department_id} // Make it controlled
+          className="w-full p-2 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required // Add required attribute
         >
-          {e.department_name}
-        </option>
-      ))}
-    </select>
+          <option value="" hidden>
+            Select Department
+          </option>{" "}
+          {/* Hidden placeholder option */}
+          {departementsGroups.departements.map((e) => (
+            <option key={e.department_id} value={e.department_id}>
+              {" "}
+              {/* Use department_id as key */}
+              {e.department_name}
+            </option>
+          ))}
+        </select>
 
-    <input
-      type="submit"
-      value="Add Group"
-      onClick={() => {
-        const departmentData = {
-          name: formData.name,
-          department_id: formData.DepartementAssign,
-          token: formData.token,
-        };
-
-        AddGroupApi(departmentData)
-          .then((res) => {
-            console.log("Group added successfully:", res);
-          })
-          .catch((err) => {
-            console.error("Failed to add department:", err);
-          });
-      }}
-      className="w-full py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-    />
-  </div>
-</div>
-
+        <button
+          type="submit"
+          onClick={handleSubmit} // Call handleSubmit
+          className="w-full py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          Add Group
+        </button>
+      </div>
+    </div>
   );
 }

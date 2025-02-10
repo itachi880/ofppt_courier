@@ -1,4 +1,10 @@
-import { events, documentType, fetchedDates, User } from "../../../data";
+import {
+  events,
+  documentType,
+  fetchedDates,
+  User,
+  loading,
+} from "../../../data";
 import { Calendar, useQuery } from "../../../utils";
 import "./index.css";
 import { GetEvents } from "../../../api";
@@ -12,6 +18,7 @@ export default () => {
       ? CalendarEvents.data.filter((event) => event.is_courier == 1)
       : CalendarEvents.data.filter((event) => event.is_courier == 0);
   const [userData, setUserData] = User.useStore();
+  const [loadingFlag, setLoadingFlag] = loading.useStore();
   return (
     <div
       className="show-courier"
@@ -59,11 +66,13 @@ export default () => {
               )
             )
               return;
+            setLoadingFlag({ loading: true });
             const result = await GetEvents(userData.token, {
               start: new Date(start).toISOString().split("T")[0],
               end: new Date(end).toISOString().split("T")[0],
             });
-            if (result[0]) return console.log(result);
+            if (result[0])
+              return console.log(result) && setLoadingFlag({ loading: false });
 
             fetchedDates.push({ start: start, end: end });
             const set = [];
@@ -80,6 +89,7 @@ export default () => {
             setCalendarEvents({
               data: set,
             });
+            setLoadingFlag({ loading: false });
           }}
         />
       }

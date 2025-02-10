@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { LoginApi } from "../../api/index";
-import { User } from "../../data";
+import { loading, User } from "../../data";
 import { Store } from "react-data-stores";
 
 export function LoginForm() {
@@ -10,14 +10,16 @@ export function LoginForm() {
   const [success, setSuccess] = useState(null);
   const [userData, setUserData] = User.useStore();
   const [showPass, setShowPass] = useState(true);
-
+  const [loadingFlag, setLoadingFlag] = loading.useStore();
   useEffect(() => {
     if (!userData.token) return;
   }, []); // Exécutée une seule fois après le premier rendu.
 
   const handleLogin = async (e) => {
     e.preventDefault(); // Empêche le rechargement de la page.
+    setLoadingFlag({ loading: true });
     const [err, data] = await LoginApi(email, password);
+    setLoadingFlag({ loading: false });
     if (err) {
       setError(
         err?.response?.data?.message || "An error occurred during login"

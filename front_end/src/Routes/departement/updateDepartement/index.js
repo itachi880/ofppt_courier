@@ -1,11 +1,14 @@
 import { useEffect, useState, useRef } from "react";
 import { UpdateDepartementApi } from "../../../api"; // Assurez-vous que cette fonction existe dans vos APIs.
-import { User } from "../../../data";
+import { departements_group_store, loading, User } from "../../../data";
 import { useParams } from "react-router-dom";
+import { Store } from "react-data-stores";
 
 export default function UpdateDepartment() {
   const { id } = useParams();
   const [userData, setUserData] = User.useStore();
+  const [loadingFlag, setLoadingFlag] = loading.useStore();
+  const [departements, setDepartements] = departements_group_store.useStore();
   const in1 = useRef();
   const styles = {
     container: {
@@ -52,13 +55,22 @@ export default function UpdateDepartment() {
       <button
         style={styles.button}
         onClick={() => {
+          setLoadingFlag({ loading: true });
           UpdateDepartementApi(userData.token, id, in1.current.value).then(
             (response) => {
               if (response[0]) {
                 console.log("Error updating department:", response[0]);
+                setLoadingFlag({ loading: false });
                 return;
               }
-              console.log("Department updated successfully");
+              const index = departements.departements.findIndex(
+                (e) => e.department_id == id
+              );
+              if (index < 0) return (window.location.href = "/");
+              departements.departements[index].department_name =
+                in1.current.value;
+              setDepartements({ departements: [...departements.departements] });
+              setLoadingFlag({ loading: false });
             }
           );
         }}

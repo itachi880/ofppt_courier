@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { departements_group_store, events, User } from "../../../data";
+import { departements_group_store, events, loading, User } from "../../../data";
 import { BASE_URL, UpdateCourier } from "../../../api";
 import { useParams } from "react-router-dom";
 import { GreenBox, ImgsWithCancelIcon, RedBox } from "../../../utils";
@@ -95,7 +95,7 @@ export default function () {
   const [userData, setUserData] = User.useStore();
   const [departementsGroup, setDepartementsGroup] =
     departements_group_store.useStore();
-
+  const [loadingFlag, setLoadingFlag] = loading.useStore();
   useEffect(() => {
     const event = eventsStore.data.find((event) => event.id == id);
     if (!event) return Store.navigateTo("/");
@@ -370,6 +370,7 @@ export default function () {
         style={styles.submitButton}
         onClick={async () => {
           console.log(formData);
+          setLoadingFlag({ loading: true });
           const formDataToSend = new FormData();
           formDataToSend.append("title", formData.title);
           formDataToSend.append("description", formData.description);
@@ -399,11 +400,13 @@ export default function () {
             formData.groups
           );
           if (result[0])
-            return Swal.fire({
-              icon: "error",
-              title: "Error!",
-              text: "Failed to Update courier. Please try again.",
-            });
+            return (
+              Swal.fire({
+                icon: "error",
+                title: "Error!",
+                text: "Failed to Update courier. Please try again.",
+              }) && setLoadingFlag({ loading: false })
+            );
           Swal.fire({
             icon: "success",
             title: "Success!",
@@ -426,6 +429,7 @@ export default function () {
             imgs: formData.imgs, //! na9shom les image jdad
             groups: formData.groups,
           };
+          setLoadingFlag({ loading: false });
           Store.navigateTo("/");
         }}
       />

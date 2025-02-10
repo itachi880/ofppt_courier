@@ -3,6 +3,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import moment from "moment";
 import { Store } from "react-data-stores";
 import { useSearchParams } from "react-router-dom";
+import { loading } from "../data";
 const localizer = momentLocalizer(moment);
 const CustomNextButton = ({ onClick }) => {
   return (
@@ -201,4 +202,9 @@ export const useQuery = () => {
   const [searchParams] = useSearchParams();
 
   return (parameter) => searchParams.get(parameter);
+};
+export const LoadingBar = () => {
+  const [loadingFlag, setLoadingFlag] = loading.useStore();
+
+  return !loadingFlag.loading ? null : <div className="loadingBar"></div>;
 };

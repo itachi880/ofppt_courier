@@ -1,5 +1,4 @@
 import axios from "axios";
-import { roles } from "../utils";
 export const BASE_URL = "http://localhost:4000";
 
 export const LoginApi = async (email, password) => {

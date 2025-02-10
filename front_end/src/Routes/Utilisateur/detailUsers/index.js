@@ -1,9 +1,8 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { DeleteUserApi, GetUsersById } from "../../../api";
-import { User, usersStore, departements_group_store } from "../../../data";
+import { User, departements_group_store, loading } from "../../../data";
 import { FaTrashAlt, FaEdit } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
 
 export function DetailUsers() {
   const [departementsGroups, setDepartmentsGroups] =
@@ -11,8 +10,11 @@ export function DetailUsers() {
   const [userData, setUserData] = User.useStore();
   const { id } = useParams();
   const [users, setUsers] = useState([]);
+  const [loadingFlag, setLoadingFlag] = loading.useStore();
   useEffect(() => {
+    setLoadingFlag({ loading: true });
     GetUsersById(userData.token, id).then((res) => {
+      setLoadingFlag({ loading: false });
       if (res[0]) return console.log(res[0]);
       setUsers([...users, res[1]]);
     });

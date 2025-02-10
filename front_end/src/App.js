@@ -12,6 +12,7 @@ import Group from "./Routes/Group";
 import Home from "./Routes/home";
 import Utilisateur from "./Routes/Utilisateur";
 import { motion, AnimatePresence } from "framer-motion"; // Import AnimatePresence
+import { LoadingBar } from "./utils";
 
 function App() {
   Store.navigateTo = useNavigate();
@@ -68,38 +69,41 @@ function App() {
   //   );
 
   return (
-    <div className="min-h-screen flex flex-col mb-5">
-      <NavBar />
-      {/* Wrap Routes with AnimatePresence */}
-      <AnimatePresence mode="wait">
-        {" "}
-        {/* mode="wait" for smoother transitions */}
-        <motion.div
-          key={location.pathname}
-          variants={variants} // Use animation variants
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          transition={{ duration: 0.3, type: "tween" }} // Add type for smoother scaling
-          className="flex-grow relative" // Added relative for absolute positioning of loading overlay (if needed)
-        >
-          <Routes>
-            <Route index element={<Home />} />
-            <Route path="/login" element={<LoginForm />} />
-            <Route path="/courrier/*" element={<Courier />} />
-            <Route path="/departement/*" element={<Departement />} />
-            <Route path="/group/*" element={<Group />} />
-            <Route path="/utilisateur/*" element={<Utilisateur />} />
-            <Route path="*" element={<>404</>} />
-          </Routes>
-        </motion.div>
-      </AnimatePresence>
-      <footer className=" py-4 text-center mt-auto w-full fixed bottom-0 shadow-md z-auto">
-        <div className="container mx-auto">
-          <p className="text-sm">&copy; 2025 OFPPT. Tous droits réservés.</p>
-        </div>
-      </footer>
-    </div>
+    <>
+      <div className="min-h-screen flex flex-col mb-5">
+        <NavBar />
+        {/* Wrap Routes with AnimatePresence */}
+        <AnimatePresence mode="wait">
+          {" "}
+          {/* mode="wait" for smoother transitions */}
+          <motion.div
+            key={location.pathname}
+            variants={variants} // Use animation variants
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={{ duration: 0.3, type: "tween" }} // Add type for smoother scaling
+            className="flex-grow relative" // Added relative for absolute positioning of loading overlay (if needed)
+          >
+            <Routes>
+              <Route index element={<Home />} />
+              <Route path="/login" element={<LoginForm />} />
+              <Route path="/courrier/*" element={<Courier />} />
+              <Route path="/departement/*" element={<Departement />} />
+              <Route path="/group/*" element={<Group />} />
+              <Route path="/utilisateur/*" element={<Utilisateur />} />
+              <Route path="*" element={<>404</>} />
+            </Routes>
+          </motion.div>
+        </AnimatePresence>
+        <footer className=" py-4 text-center mt-auto w-full fixed bottom-0 shadow-md z-auto">
+          <div className="container mx-auto">
+            <p className="text-sm">&copy; 2025 OFPPT. Tous droits réservés.</p>
+          </div>
+        </footer>
+      </div>
+      <LoadingBar />
+    </>
   );
 }
 

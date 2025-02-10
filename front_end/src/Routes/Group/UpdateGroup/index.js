@@ -1,11 +1,12 @@
 import { useEffect, useState, useRef } from "react";
 import { UpdateGrouptApi } from "../../../api"; // Assurez-vous que cette fonction existe dans vos APIs.
-import { User } from "../../../data";
+import { loading, User } from "../../../data";
 import { useParams } from "react-router-dom";
 
 export default function UpdateGroup() {
   const { id } = useParams();
   const [userData, setUserData] = User.useStore();
+  const [loadingFlag, setLoadingFlag] = loading.useStore();
   const in1 = useRef();
   const styles = {
     container: {
@@ -56,8 +57,10 @@ export default function UpdateGroup() {
       <button
         style={styles.button}
         onClick={() => {
+          setLoadingFlag({ loading: true });
           UpdateGrouptApi(userData.token, id, in1.current.value).then(
             (response) => {
+              setLoadingFlag({ loading: false });
               if (response[0]) {
                 console.log("Error updating group:", response[0]);
                 return;

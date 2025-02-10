@@ -1,5 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { departements_group_store, User, usersStore } from "../../../data";
+import {
+  departements_group_store,
+  loading,
+  User,
+  usersStore,
+} from "../../../data";
 import { GreenBox, RedBox } from "../../../utils";
 import { AddUserApi } from "../../../api";
 import Swal from "sweetalert2";
@@ -78,19 +83,23 @@ export function AddUsers() {
   });
   const [usersData, setUsersData] = usersStore.useStore();
   const [departementsGroup] = departements_group_store.useStore();
-
+  const [loadingFlag, setLoadingFlag] = loading.useStore();
   const handleSubmit = () => {
+    setLoadingFlag({ loading: true });
     AddUserApi(formData)
       .then((response) => {
         console.log("API Response:", response); // Log the full API response
         if (response[0])
-          return Swal.fire({
-            icon: "error",
-            title: "Error!",
-            text: `Server returned an error: ${response.status} - ${
-              response.statusText || "Unknown Error"
-            }`, // Display specific error message
-          });
+          return (
+            setLoadingFlag({ loading: false }) &&
+            Swal.fire({
+              icon: "error",
+              title: "Error!",
+              text: `Server returned an error: ${response.status} - ${
+                response.statusText || "Unknown Error"
+              }`, // Display specific error message
+            })
+          );
         // else
         Swal.fire({
           icon: "success",
@@ -100,6 +109,7 @@ export function AddUsers() {
         setUsersData({
           data: [...usersData.data, { ...formData, id: response[1] }],
         });
+        setLoadingFlag({ loading: false });
         Store.navigateTo("/utilisateur/afficheUsers");
       })
       .catch((error) => {

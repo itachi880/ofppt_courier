@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { departements_group_store, User } from "../../../data/index";
+import { departements_group_store, loading, User } from "../../../data/index";
 import { AddGroupApi } from "../../../api";
 import Swal from "sweetalert2"; // Import SweetAlert2
 
@@ -60,6 +60,7 @@ export default function AddGroup() {
     token: userData.token,
     department_id: 0,
   });
+  const [loadingFlag, setLoadingFlag] = loading.useStore();
 
   const handleSubmit = () => {
     const departmentData = {
@@ -67,20 +68,19 @@ export default function AddGroup() {
       department_id: formData.department_id,
       token: formData.token,
     };
-
+    setLoadingFlag({ loading: true });
     AddGroupApi(departmentData)
       .then((res) => {
         if (res[0])
-          return Swal.fire({
-            icon: "error",
-            title: "Error!",
-            text: "Failed to add group. All input required.", // Improved error message
-          });
-        Swal.fire({
-          icon: "success",
-          title: "Success!",
-          text: "Group added successfully!",
-        });
+          return (
+            setLoadingFlag({ loading: false }) &&
+            Swal.fire({
+              icon: "error",
+              title: "Error!",
+              text: "Failed to add group. All input required.", // Improved error message
+            })
+          );
+
         const index = departementsGroups.departements.findIndex(
           (departement) =>
             departement.department_id == departmentData.department_id
@@ -97,6 +97,12 @@ export default function AddGroup() {
           ],
           departements: [...departementsGroups.departements],
         });
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: "Group added successfully!",
+        });
+        setLoadingFlag({ loading: false });
       })
       .catch((err) => {
         console.error("Failed to add group:", err);

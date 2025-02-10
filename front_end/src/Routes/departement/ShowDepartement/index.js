@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
-import { getDepartements, DeleteDepartment } from "../../../api"; // Assurez-vous que cette fonction existe dans vos APIs.
-import { departements_group_store, User } from "../../../data";
-import UpdateDepartment from "../updateDepartement";
+import { useState } from "react";
+import { DeleteDepartment } from "../../../api"; // Assurez-vous que cette fonction existe dans vos APIs.
+import { departements_group_store, loading, User } from "../../../data";
 import { useNavigate } from "react-router-dom";
 import { FaTrashAlt, FaEdit } from "react-icons/fa";
 import Swal from "sweetalert2"; // Import SweetAlert2
@@ -12,15 +11,19 @@ export default function ShowDepartments() {
     departements_group_store.useStore();
   const [selectedDepartment, setSelectedDepartment] = useState(null);
   const navigate = useNavigate();
-
+  const [loadingFlag, setLoadingFlag] = loading.useStore();
   const handleDelete = (id) => {
+    setLoadingFlag({ loading: true });
     DeleteDepartment(userData.token, id).then((res) => {
       if (res[0])
-        return Swal.fire({
-          icon: "error",
-          title: "Error!",
-          text: "L'entité n'a pas été supprimée.",
-        }); //animation
+        return (
+          setLoadingFlag({ loading: false }) &&
+          Swal.fire({
+            icon: "error",
+            title: "Error!",
+            text: "L'entité n'a pas été supprimée.",
+          })
+        ); //animation
       const ids = [];
       setDepartmentsGroups({
         departements: departementsGroups.departements.filter((dept) => {
@@ -40,6 +43,7 @@ export default function ShowDepartments() {
         title: "Success!",
         text: "L'entité a été Suprimer avec succès.",
       });
+      setLoadingFlag({ loading: false });
     });
   };
 

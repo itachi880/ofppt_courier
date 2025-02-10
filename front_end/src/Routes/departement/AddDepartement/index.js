@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { User, departements_group_store } from "../../../data";
+import { useState } from "react";
+import { User, departements_group_store, loading } from "../../../data";
 import { AddDepartment } from "../../../api";
 import Swal from "sweetalert2"; // Import SweetAlert2
 
@@ -12,7 +12,7 @@ export default function AddDepartmentComponent() {
     departements_group_store.useStore();
 
   const [userData, setUserData] = User.useStore();
-
+  const [loadingFlag, setLoadingFlag] = loading.useStore();
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="p-6 w-full max-w-md bg-white shadow-lg rounded-lg">
@@ -34,34 +34,31 @@ export default function AddDepartmentComponent() {
 
         <button
           onClick={() => {
+            setLoadingFlag({ loading: true });
             const departmentData = {
               name: formData.name,
               token: userData.token,
             };
 
-            AddDepartment(departmentData)
-              .then((res) => {
-                if (res[0]) return;
-                setDepartementsGroupStore({
-                  departements: [
-                    ...DepartementsGroupStore.departements,
-                    {
-                      department_name: departmentData.name,
-                      groups: [],
-                      department_id: res[1].data,
-                    },
-                  ],
-                });
-                Swal.fire({
-                  icon: "success",
-                  title: "Success!",
-                  text: "L'entité a été ajoutée avec succès.",
-                });
-                console.log("Department added successfully:", res);
-              })
-              .catch((err) => {
-                console.error("Failed to add department:", err);
+            AddDepartment(departmentData).then((res) => {
+              if (res[0]) return setLoadingFlag({ loading: false });
+              setDepartementsGroupStore({
+                departements: [
+                  ...DepartementsGroupStore.departements,
+                  {
+                    department_name: departmentData.name,
+                    groups: [],
+                    department_id: res[1].data,
+                  },
+                ],
               });
+              Swal.fire({
+                icon: "success",
+                title: "Success!",
+                text: "L'entité a été ajoutée avec succès.",
+              });
+              setLoadingFlag({ loading: false });
+            });
           }}
           className="w-full py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >

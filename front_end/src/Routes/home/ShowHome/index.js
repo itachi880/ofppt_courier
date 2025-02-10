@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { events, User, documentType } from "../../../data";
+import { events, User } from "../../../data";
 import { GetEvents } from "../../../api";
 import { Store } from "react-data-stores";
-import { roles, useQuery } from "../../../utils";
+import { roles } from "../../../utils";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("courrier");

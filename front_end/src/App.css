@@ -82,3 +82,31 @@ footer {
 footer p {
   transition: color 0.3s ease; /* Smooth color transition */
 }
+.loadingBar {
+  left: 0;
+  width: 0;
+  height: 5px;
+  background: #0082ff;
+  position: absolute;
+  top: 0;
+  z-index: 1000;
+  animation-name: loadingBar;
+  animation-duration: 0.5s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+@keyframes loadingBar {
+  0% {
+    left: 0;
+    width: 0;
+  }
+  50% {
+    left: 49%;
+
+    width: 50vw;
+  }
+  100% {
+    left: 100%;
+    width: 0;
+  }
+}

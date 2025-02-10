@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { User, usersStore } from "../../../data";
+import { loading, User, usersStore } from "../../../data";
 import { GetUsersApi } from "../../../api";
 import { roles } from "../../../utils";
 import { Store } from "react-data-stores";
@@ -9,11 +9,13 @@ export function AfficheUsers() {
   const [users, setUsers] = usersStore.useStore();
   const [userData, setUserData] = User.useStore();
   const navigate = useNavigate();
+  const [loadingFlag, setLoadingFlag] = loading.useStore();
   useEffect(() => {
     if (!userData.token) return;
     if (userData.data.role != roles.admin) Store.navigateTo("/");
-
+    setLoadingFlag({ loading: true });
     GetUsersApi(userData.token).then((res) => {
+      setLoadingFlag({ loading: false });
       if (res[0]) return console.log(res[0]);
       setUsers({ data: res[1] });
     });

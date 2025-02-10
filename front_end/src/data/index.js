@@ -47,3 +47,4 @@ export const documentType = {
 };
 export const fetchedDates = [];
 export const pageFromDb = [];
+export const loading = createStore({ loading: false });

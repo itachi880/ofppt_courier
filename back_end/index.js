@@ -1,4 +1,3 @@
-require("./events").startTasks();
 require("dotenv").config();
 const express = require("express");
 const app = express();

@@ -1,8 +1,12 @@
-import { useEffect, useRef, useState } from "react";
-import { departements_group_store, User, documentType } from "../../../data";
+import { useState } from "react";
+import {
+  departements_group_store,
+  User,
+  documentType,
+  loading,
+} from "../../../data";
 import { AddCourier } from "../../../api";
 import { GreenBox, ImgsWithCancelIcon, RedBox, useQuery } from "../../../utils";
-import { useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 
 /**
@@ -75,6 +79,7 @@ const styles = {
 };
 export default function () {
   const today = new Date();
+  const [loadingFlag, setLoadingFlag] = loading.useStore();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -341,6 +346,7 @@ export default function () {
         value="Send"
         style={styles.submitButton}
         onClick={() => {
+          setLoadingFlag({ loading: true });
           const formDataToSend = new FormData();
           formDataToSend.append("token", userData.token);
           formDataToSend.append("titel", formData.title);
@@ -359,6 +365,7 @@ export default function () {
 
           AddCourier(formDataToSend, formData.departements, formData.groups)
             .then((res) => {
+              setLoadingFlag({ loading: false });
               if (res[0])
                 return Swal.fire({
                   icon: "error",

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { LoginApi } from "../../api/index";
 import { User } from "../../data";
 import { Store } from "react-data-stores";
+import { useNavigate } from "react-router-dom";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
@@ -10,6 +11,7 @@ export function LoginForm() {
   const [success, setSuccess] = useState(null);
   const [userData, setUserData] = User.useStore();
   const [showPass, setShowPass] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!userData.token) return;
@@ -125,6 +127,13 @@ export function LoginForm() {
           </div>
         </div>
         <input type="submit" style={styles.button} value={"Login"} />
+        <br ></br>
+        <span 
+  onClick={() => { navigate('/resetPassword') }} 
+  className="text-blue-500 hover:underline mt-2 cursor-pointer transition duration-200 ease-in-out"
+>
+  Mot de passe oublié ?
+</span>
       </form>
       {error && <p style={styles.error}>{error}</p>}
       {success && <p style={styles.success}>{success}</p>}

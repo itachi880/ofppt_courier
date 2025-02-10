@@ -12,6 +12,7 @@ import Group from "./Routes/Group";
 import Home from "./Routes/home";
 import Utilisateur from "./Routes/Utilisateur";
 import { motion, AnimatePresence } from "framer-motion"; // Import AnimatePresence
+import { ReseteMDP } from "./Routes/mdpOublie";
 
 function App() {
   Store.navigateTo = useNavigate();
@@ -86,6 +87,7 @@ function App() {
           <Routes>
             <Route index element={<Home />} />
             <Route path="/login" element={<LoginForm />} />
+            <Route path="/resetPassword" element={<ReseteMDP />} />
             <Route path="/courrier/*" element={<Courier />} />
             <Route path="/departement/*" element={<Departement />} />
             <Route path="/group/*" element={<Group />} />

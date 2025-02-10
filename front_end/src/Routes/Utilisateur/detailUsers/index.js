@@ -10,7 +10,7 @@ export function DetailUsers() {
   departements_group_store.useStore();
     const [userData, setUserData] = User.useStore();
     const { id } = useParams();
-    const [users, setUsers] = useState([]);
+    const [users, setUsers] = useState({})
     const navigate = useNavigate();
     useEffect(() => {
         GetUsersById(userData.token,id).then((res) => {

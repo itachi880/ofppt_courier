@@ -42,7 +42,8 @@ router.delete("/:id", async (req, res) => {
 router.put("/:id", async (req, res) => {
   const userId = req.params.id;
   const updateData = req.body;
-
+    if(updateData.departement_id==0) return updateData.departement_id=null
+  if(updateData.group_id==0) return updateData.group_id=null
   try {
     if (req.user.role != Roles.admin)
       return res.status(401).end("you don't have access");
@@ -59,6 +60,8 @@ router.post("/add", async (req, res) => {
   console.log(req.body);
   const userData = req.body;
   userData.password = hashPass(userData.password);
+  // if(userData.departement_id==0) return userData.departement_id=null
+  // if(userData.group_id==0) return userData.group_id=null
  
   try {
     if (req.user.role != Roles.admin)

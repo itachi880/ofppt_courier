@@ -380,7 +380,6 @@ export const UpdateUserApi = async (id, token,data) => {
   }
   const result = [null, null];
   try {
-    console.log("id", id);
     const response = await axios.put(`${BASE_URL}/users/${id}`,
       {
         first_name: data.first_name,

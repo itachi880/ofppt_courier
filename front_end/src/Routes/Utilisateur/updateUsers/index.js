@@ -79,16 +79,13 @@ export function UpdateUsers(){
                             </td>
         <td className="py-3 px-6">
   <button 
-    onClick={() =>
-        UpdateUserApi(id,userData.token,users).then((res) => {
+    onClick={() =>{ UpdateUserApi(id,userData.token,users).then((res) => {
             console.log(res);
         }).catch((err) => {
             console.log(err);
-        }) 
+        }) }
 }
-
-
-    className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300"
+className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300"
   >
     Submit
   </button>

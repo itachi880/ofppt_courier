@@ -30,9 +30,9 @@ export const GetEvents = async (Token = "", dates) => {
   await axios
     .get(
       `${BASE_URL}/courier/bettwen?startDate=${
-        !dates
+        !dates.start
           ? new Date().toISOString().split("T")[0]
-          : dates.start + "&endDate=" + dates.end
+          : dates.start + (!dates.end ? "" : "&endDate=" + dates.end)
       }`,
       {
         headers: {

@@ -87,7 +87,7 @@ footer p {
   width: 0;
   height: 5px;
   background: #0082ff;
-  position: absolute;
+  position: fixed;
   top: 0;
   z-index: 1000;
   animation-name: loadingBar;

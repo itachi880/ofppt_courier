@@ -38,7 +38,6 @@ function App() {
   useEffect(() => {
     if (noLoginRoutes.includes(window.location.pathname)) return;
     if (Object.keys(userData.data || {}).length > 0) return;
-    if (preventBacklink.includes(window.location.pathname)) return;
     tokenAuthApi(userData.token).then((response) => {
       if (response[0])
         return Store.navigateTo(
@@ -47,12 +46,11 @@ function App() {
               ? "?path=" + window.location.pathname
               : "")
         );
+      console.log(response);
       setUserData(response[1], true);
+
       Store.navigateTo(window.location.pathname);
     });
-  }, [userData.token]);
-  useEffect(() => {
-    if (!userData.token) return;
     getDepartements(userData.token).then(async (departements_res) => {
       if (departements_res[0])
         return console.log("Error getting departements", departements_res[0]);
@@ -67,6 +65,7 @@ function App() {
       });
     });
   }, [userData.token]);
+
   //! dyal simo mat9arbch liha
   const location = useLocation();
 

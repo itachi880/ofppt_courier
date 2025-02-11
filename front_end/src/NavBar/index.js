@@ -22,13 +22,13 @@ export default () => {
     setAlertEvents(upcomingEvents);
   }, [eventsData]);
 
-  if (!userData.token || Object.keys(userData.data).length === 0) return null;
-
   const handleDropdown = (dropdown) => {
     setOpenDropdown(openDropdown === dropdown ? null : dropdown);
   };
-
-  return (
+  useEffect(() => {
+    console.log(userData);
+  }, [userData]);
+  return !userData.token ? null : (
     <div className="navbar-holder shadow-2xl ">
       <nav className="navbar">
         {/* Profile Section (Left) */}

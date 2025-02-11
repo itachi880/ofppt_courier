@@ -928,7 +928,6 @@ module.exports.CourierAssignee = {
         const courierId = row[`id`];
         if (!insertedIds.has(courierId)) {
           row[`deadline`].setHours(24);
-
           result.push({
             id: courierId,
             title: row[`title`],

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { events, User } from "../../../data";
+import { events, fetchedDates, User } from "../../../data";
 import { GetEvents } from "../../../api";
 import { Store } from "react-data-stores";
 import { roles } from "../../../utils";
@@ -8,9 +8,26 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState("courrier");
   const [userData, setUserData] = User.useStore();
   const [eventsData, setEventData] = events.useStore();
+  const [renderArray, setRenderArray] = useState([]);
   useEffect(() => {
     if (!userData.token) return;
-    GetEvents(userData.token).then((res) => {
+    const date = new Date();
+    const start = new Date(
+      date.getFullYear() + "-" + (date.getMonth() + 1) + "-1"
+    );
+    const computed_start = start.getTime();
+    const computed_end = date.getTime();
+    if (
+      fetchedDates.find(
+        (dateTime) =>
+          dateTime.start <= computed_start && computed_end <= dateTime.end
+      )
+    )
+      return;
+    GetEvents(userData.token, {
+      start: start.toISOString().split("T")[0], //from the begenin of the moth
+    }).then((res) => {
+      console.log(res);
       if (res[0]) return;
       const formattedEvents = res[1].data.map((e) => ({
         ...e,
@@ -20,6 +37,15 @@ export default function Home() {
         id: e.id,
       }));
       setEventData({ data: formattedEvents });
+      const end = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+      end.setHours(23);
+      end.setMinutes(59);
+      end.setSeconds(59);
+      fetchedDates.push({
+        start: computed_start,
+        end: end.getTime(), //get the last day of the month
+      });
+      setRenderArray(formattedEvents);
     });
   }, []);
 
@@ -30,79 +56,47 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col pb-16">
-      {/* Navbar */}
-      {/* <header className="bg-gray-300 text-white shadow-md py-4 px-8">
+      <header className="bg-gradient-to-r from-green-500 to-green-700 text-white shadow-lg py-4 px-6 md:px-12">
         <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold" >Courrier Dashboard</h1>
-          <nav className="flex space-x-4">
+          <h1 className="text-3xl font-extrabold tracking-wide">
+            Courrier Dashboard
+          </h1>
+          <nav className="flex space-x-2 md:space-x-6">
             <button
-              className={`px-4 py-2 rounded-md transition duration-300
-                ${
-                  activeTab === "courrier"
-                    ? "bg-green-600 text-white font-semibold"
-                    : "hover:bg-green-700 hover:text-white"
-                }`}
+              className={`px-5 py-2 rounded-lg text-lg font-medium transition-all duration-300 
+              ${
+                activeTab === "courrier"
+                  ? "bg-white text-green-700 shadow-md"
+                  : "hover:bg-green-800 hover:text-white"
+              }`}
               onClick={() => setActiveTab("courrier")}
             >
               Courrier
             </button>
             <button
-              className={`px-4 py-2 rounded-md transition duration-300
-                ${
-                  activeTab === "evenements"
-                    ? "bg-green-600 text-white font-semibold"
-                    : "hover:bg-green-700 hover:text-white"
-                }`}
+              className={`px-5 py-2 rounded-lg text-lg font-medium transition-all duration-300 
+              ${
+                activeTab === "evenements"
+                  ? "bg-white text-green-700 shadow-md"
+                  : "hover:bg-green-800 hover:text-white"
+              }`}
               onClick={() => setActiveTab("evenements")}
             >
               Événements
             </button>
           </nav>
         </div>
-      </header> */}
-      {/* header 2 */}
-      <header className="bg-gradient-to-r from-green-500 to-green-700 text-white shadow-lg py-4 px-6 md:px-12">
-      <div className="container mx-auto flex justify-between items-center">
-        <h1 className="text-3xl font-extrabold tracking-wide">Courrier Dashboard</h1>
-        <nav className="flex space-x-2 md:space-x-6">
-          <button
-            className={`px-5 py-2 rounded-lg text-lg font-medium transition-all duration-300 
-              ${
-                activeTab === "courrier"
-                  ? "bg-white text-green-700 shadow-md"
-                  : "hover:bg-green-800 hover:text-white"
-              }`}
-            onClick={() => setActiveTab("courrier")}
-          >
-            Courrier
-          </button>
-          <button
-            className={`px-5 py-2 rounded-lg text-lg font-medium transition-all duration-300 
-              ${
-                activeTab === "evenements"
-                  ? "bg-white text-green-700 shadow-md"
-                  : "hover:bg-green-800 hover:text-white"
-              }`}
-            onClick={() => setActiveTab("evenements")}
-          >
-            Événements
-          </button>
-        </nav>
-      </div>
-    </header>
+      </header>
       {/* Main Content */}
       <main className="flex-grow container mx-auto md:px-4 py-8 sm:px-0  ">
         {/* Common Section Styles */}
         <div className="bg-white shadow-md rounded-md md:p-6 sm:p-1 mb-8">
           {/* Added margin bottom */}
           {activeTab === "courrier" && (
-            <CourrierTable
-              eventsData={eventsData.data}
-              userData={userData.data}
-            />
+            <CourrierTable eventsData={renderArray} userData={userData.data} />
           )}
           {activeTab === "evenements" && (
-            <EventTable eventsData={eventsData.data} userData={userData.data} />
+            <EventTable eventsData={renderArray} userData={userData.data} />
           )}
         </div>
       </main>

@@ -22,6 +22,7 @@ router.post("/add", fileSaver.array("files", 3), async (req, res) => {
     expiditeur: req.body.expiditeur,
     create_by: req.user.id,
     is_courier: +(req.body.type == documentType.courier),
+    created_at: req.body.created_at,
   });
   if (err) {
     console.error(err);
@@ -158,7 +159,7 @@ router.post(
 );
 router.get("/bettwen", async (req, res) => {
   const { startDate, endDate = null } = req.query;
-
+  console.log(req.query);
   if (!startDate && !endDate) {
     return res.status(400).send("Start date and end date are required");
   }

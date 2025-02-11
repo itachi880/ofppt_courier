@@ -26,7 +26,8 @@ SET time_zone = "+00:00";
 --
 -- Structure de la table `couriers`
 --
-
+CREATE DATABASE `ofppt_couriers`
+USE ofppt_couriers
 CREATE TABLE `couriers` (
   `id` int(11) NOT NULL,
   `title` varchar(255) DEFAULT NULL,

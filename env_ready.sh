@@ -20,20 +20,8 @@ echo "Securing MySQL..."
 read -sp "Enter a password for the MySQL root user: " MYSQL_ROOT_PASS
 echo  # Moves to a new line after password input
 
-# Secure MySQL installation with the provided password
-echo "Setting MySQL root password..."
-
-# Configure phpMyAdmin to allow root login
-echo "Configuring phpMyAdmin to use root user..."
-echo "[mysqld]" | sudo tee -a /etc/mysql/my.cnf
-echo "skip-grant-tables" | sudo tee -a /etc/mysql/my.cnf
-sudo systemctl restart mysql
-
-# Remove restrictions on root login
 sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '$MYSQL_ROOT_PASS'; FLUSH PRIVILEGES;"
 
-# Remove skip-grant-tables to re-enable security
-sudo sed -i '/skip-grant-tables/d' /etc/mysql/my.cnf
 sudo systemctl restart mysql
 # Install PHP and necessary modules
 echo "Installing PHP..."
@@ -52,6 +40,10 @@ echo "Configuring Apache for phpMyAdmin..."
 sudo ln -s /usr/share/phpmyadmin /var/www/html/phpmyadmin
 sudo systemctl restart apache2
 
+# IMPORT DATABSE
+read -sp "Enter file path to import database: " DATABASE
+
+mysql -u root -p $MYSQL_ROOT_PASS < $DATABASE
 # Install Node.js 18.20.5 and npm 10
 echo "Installing Node.js 18.20.5 and npm 10..."
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -

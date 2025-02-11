@@ -31,9 +31,9 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col pb-16">
       {/* Navbar */}
-      <header className="bg-gray-300 text-white shadow-md py-4 px-8">
+      {/* <header className="bg-gray-300 text-white shadow-md py-4 px-8">
         <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Courrier Dashboard</h1>
+          <h1 className="text-2xl font-bold" >Courrier Dashboard</h1>
           <nav className="flex space-x-4">
             <button
               className={`px-4 py-2 rounded-md transition duration-300
@@ -59,8 +59,37 @@ export default function Home() {
             </button>
           </nav>
         </div>
-      </header>
-
+      </header> */}
+      {/* header 2 */}
+      <header className="bg-gradient-to-r from-green-500 to-green-700 text-white shadow-lg py-4 px-6 md:px-12">
+      <div className="container mx-auto flex justify-between items-center">
+        <h1 className="text-3xl font-extrabold tracking-wide">Courrier Dashboard</h1>
+        <nav className="flex space-x-2 md:space-x-6">
+          <button
+            className={`px-5 py-2 rounded-lg text-lg font-medium transition-all duration-300 
+              ${
+                activeTab === "courrier"
+                  ? "bg-white text-green-700 shadow-md"
+                  : "hover:bg-green-800 hover:text-white"
+              }`}
+            onClick={() => setActiveTab("courrier")}
+          >
+            Courrier
+          </button>
+          <button
+            className={`px-5 py-2 rounded-lg text-lg font-medium transition-all duration-300 
+              ${
+                activeTab === "evenements"
+                  ? "bg-white text-green-700 shadow-md"
+                  : "hover:bg-green-800 hover:text-white"
+              }`}
+            onClick={() => setActiveTab("evenements")}
+          >
+            Événements
+          </button>
+        </nav>
+      </div>
+    </header>
       {/* Main Content */}
       <main className="flex-grow container mx-auto md:px-4 py-8 sm:px-0  ">
         {/* Common Section Styles */}
@@ -161,7 +190,7 @@ const EventTable = ({ eventsData, userData }) => {
         {/* table-auto for better responsiveness */}
         <thead>
           <tr className="bg-gray-200">
-            <th className="px-4 py-2 text-center text-gray-500 uppercase font-medium tracking-wider">
+            <th className="px-4 py-2 text-center text-gray-500 uppercase font-bold  tracking-wider ">
               Deadline <i className="fas fa-calendar-alt ml-2"></i>
             </th>
             {/* Text alignment */}

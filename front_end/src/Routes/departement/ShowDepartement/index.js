@@ -52,6 +52,14 @@ export default function ShowDepartments() {
   };
 
   return (
+    <>
+         <header className="bg-gradient-to-r from-green-500 to-green-700 text-white shadow-lg py-4 px-6 md:px-12">
+      <div className="container mx-auto flex justify-between items-center">
+        <h1 className="text-3xl font-extrabold tracking-wide">Show Department</h1>
+        <nav className="flex space-x-2 md:space-x-6">
+        </nav>
+      </div>
+    </header>
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="p-4 w-full max-w-4xl bg-white shadow-md rounded-md">
         <h1 className="text-xl font-semibold text-gray-800 mb-3 text-center">
@@ -99,5 +107,6 @@ export default function ShowDepartments() {
         </table>
       </div>
     </div>
+    </>
   );
 }

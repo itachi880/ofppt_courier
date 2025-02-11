@@ -384,13 +384,15 @@ export const getArchive = async (token, pageNumber) => {
     return [error, null]; // Return error
   }
 };
-export const UpdateUserApi = async (id, token,data) => {
+export const UpdateUserApi = async (id, token, data) => {
   if (!id) {
     return ["User ID is required", null];
   }
+
   const result = [null, null];
   try {
-    const response = await axios.put(`${BASE_URL}/users/${id}`,
+    const response = await axios.put(
+      `${BASE_URL}/users/${id}`,
       {
         first_name: data.first_name,
         last_name: data.last_name,
@@ -406,9 +408,35 @@ export const UpdateUserApi = async (id, token,data) => {
         },
       }
     );
+    console.log("api dar");
+
     result[1] = response.data; // Stocker le succès
   } catch (err) {
     result[0] = err.response?.data || err.message; // Stocker l'erreur
   }
   return result;
-};  
+};
+export const resetPasswordAPI = async (password, token) => {
+  if (!password || !token) {
+    return ["data required", null];
+  }
+  try {
+    const response = await axios.post(
+      BASE_URL + "/users/forget-pass",
+      { pass: password },
+      { headers: { Authorization: token } }
+    );
+    return [null, response.data];
+  } catch (error) {
+    return [error, null];
+  }
+};
+export const GetForgetPassLinkAPI = async (email) => {
+  if (!email) return ["data required", null];
+  try {
+    const response = await axios.post(BASE_URL + "/data", { email: email });
+    return [null, response.data];
+  } catch (error) {
+    return [error, null];
+  }
+};

@@ -12,30 +12,45 @@ import Group from "./Routes/Group";
 import Home from "./Routes/home";
 import Utilisateur from "./Routes/Utilisateur";
 import { motion, AnimatePresence } from "framer-motion"; // Import AnimatePresence
-import { LoadingBar } from "./utils";
+import { LoadingBar, noLoginRoutes, preventBacklink } from "./utils";
 import { ReseteMDP } from "./Routes/mdpOublie";
+import ResetPass from "./Routes/ResetPass";
 
 function App() {
   Store.navigateTo = useNavigate();
   const [userData, setUserData] = User.useStore();
-  const [width, setWidth] = useState(window.innerWidth);
-  window.addEventListener("resize", (e) => {
-    setWidth(window.innerWidth);
-  });
 
   const [departements_group, setDepartementsGroup] =
     departements_group_store.useStore();
 
   useEffect(() => {
-    if (!userData.token) return Store.navigateTo("/login");
-    if (Object.keys(userData.data).length > 0) return;
+    if (noLoginRoutes.includes(window.location.pathname)) return;
+
+    if (!userData.token) {
+      Store.navigateTo(
+        "/login" +
+          (!preventBacklink.includes(window.location.pathname)
+            ? "?path=" + window.location.pathname
+            : "")
+      );
+    }
+  }, []);
+  useEffect(() => {
+    if (noLoginRoutes.includes(window.location.pathname)) return;
+    if (Object.keys(userData.data || {}).length > 0) return;
+    if (preventBacklink.includes(window.location.pathname)) return;
     tokenAuthApi(userData.token).then((response) => {
-      if (response[0]) return Store.navigateTo("/login");
+      if (response[0])
+        return Store.navigateTo(
+          "/login" +
+            (!preventBacklink.includes(window.location.pathname)
+              ? "?path=" + window.location.pathname
+              : "")
+        );
       setUserData(response[1], true);
-      Store.navigateTo("/");
+      Store.navigateTo(window.location.pathname);
     });
   }, [userData.token]);
-
   useEffect(() => {
     if (!userData.token) return;
     getDepartements(userData.token).then(async (departements_res) => {
@@ -62,13 +77,6 @@ function App() {
     exit: { opacity: 0, y: -10, scale: 0.95 }, // Exit state
   };
 
-  // if (width < 1000)
-  //   return (
-  //     <p className="text-center text-2xl mt-20 text-red-600">
-  //       you don't have acces in your mobil phone!! 🧐
-  //     </p>
-  //   );
-
   return (
     <>
       <div className="min-h-screen flex flex-col mb-5">
@@ -89,11 +97,12 @@ function App() {
             <Routes>
               <Route index element={<Home />} />
               <Route path="/login" element={<LoginForm />} />
-            <Route path="/resetPassword" element={<ReseteMDP />} />
+              <Route path="/resetPassword" element={<ReseteMDP />} />
               <Route path="/courrier/*" element={<Courier />} />
               <Route path="/departement/*" element={<Departement />} />
               <Route path="/group/*" element={<Group />} />
               <Route path="/utilisateur/*" element={<Utilisateur />} />
+              <Route path="/new_password/*" element={<ResetPass />} />
               <Route path="*" element={<>404</>} />
             </Routes>
           </motion.div>

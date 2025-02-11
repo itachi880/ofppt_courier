@@ -8,7 +8,12 @@ const DepartementRoute = require("./Routes/Departement");
 const LoginRoute = require("./Routes/Login");
 const GroupRoute = require("./Routes/Group");
 const inscription = require("./Routes/inscription");
-const { envoyerEmail, generateCode,verifierCode } = require("./utils");
+const {
+  envoyerEmail,
+  generateCode,
+  verifierCode,
+  FRONT_END_APP,
+} = require("./utils");
 
 app.use(
   express.json(),
@@ -16,14 +21,23 @@ app.use(
     origin: "*",
   })
 );
-app.post("/data", (req,res)=>{
-  const {email}=req.body
-  const code= generateCode(email)
- envoyerEmail(email,code).then((res)=>{
-  console.log('email sucsess')
- }).catch((e)=>{console.log(e)})
- const resp=verifierCode(code)
- console.log(resp)
+app.post("/data", (req, res) => {
+  const { email } = req.body;
+  const code = generateCode(email);
+  envoyerEmail(
+    email,
+    (process.env.FRONT_END_APP || "http://localhost:3000") +
+      "/new_password?token=" +
+      code
+  )
+    .then((res) => {
+      console.log("email sucsess");
+    })
+    .catch((e) => {
+      console.log(e);
+    });
+  const resp = verifierCode(code);
+  return res.end("done");
 });
 app.use("/users", UsersRoute);
 app.use("/courier", CourierRoute);

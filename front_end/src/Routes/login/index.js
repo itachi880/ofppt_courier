@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { LoginApi } from "../../api/index";
 import { loading, User } from "../../data";
 import { Store } from "react-data-stores";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 export function LoginForm() {
+  const [searchParams] = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
@@ -32,7 +33,7 @@ export function LoginForm() {
       setError(null);
       localStorage.setItem("token", data.token);
       setUserData(data);
-      Store.navigateTo("/");
+      Store.navigateTo(searchParams.get("path") || "/");
     }
   };
   // Styles internes
@@ -129,13 +130,15 @@ export function LoginForm() {
           </div>
         </div>
         <input type="submit" style={styles.button} value={"Login"} />
-        <br ></br>
-        <span 
-  onClick={() => { navigate('/resetPassword') }} 
-  className="text-blue-500 hover:underline mt-2 cursor-pointer transition duration-200 ease-in-out"
->
-  Mot de passe oublié ?
-</span>
+        <br></br>
+        <span
+          onClick={() => {
+            navigate("/resetPassword");
+          }}
+          className="text-blue-500 hover:underline mt-2 cursor-pointer transition duration-200 ease-in-out"
+        >
+          Mot de passe oublié ?
+        </span>
       </form>
       {error && <p style={styles.error}>{error}</p>}
       {success && <p style={styles.success}>{success}</p>}

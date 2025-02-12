@@ -23,7 +23,7 @@ export default () => {
     <>
       <header className="bg-gradient-to-r from-green-500 to-green-700 text-white shadow-lg py-4 px-6 md:px-12">
         <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-3xl font-extrabold tracking-wide">
+          <h1 className="text-2xl font-extrabold tracking-wide">
             Show courier
           </h1>
           <nav className="flex space-x-2 md:space-x-6"></nav>

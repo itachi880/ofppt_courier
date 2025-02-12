@@ -134,7 +134,7 @@ function App() {
             </Routes>
           </motion.div>
         </AnimatePresence>
-        <footer className=" py-4 text-center mt-auto w-full fixed bottom-0 shadow-md z-auto">
+        <footer className="bg-slate-700 text-white py-4 text-center mt-auto w-full fixed bottom-0 shadow-md z-auto">
           <div className="container mx-auto">
             <p className="text-sm">&copy; 2025 OFPPT. Tous droits réservés.</p>
           </div>

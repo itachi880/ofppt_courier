@@ -53,60 +53,61 @@ export default function ShowDepartments() {
 
   return (
     <>
-         <header className="bg-gradient-to-r from-green-500 to-green-700 text-white shadow-lg py-4 px-6 md:px-12">
-      <div className="container mx-auto flex justify-between items-center">
-        <h1 className="text-3xl font-extrabold tracking-wide">Show Department</h1>
-        <nav className="flex space-x-2 md:space-x-6">
-        </nav>
-      </div>
-    </header>
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="p-4 w-full max-w-4xl bg-white shadow-md rounded-md">
-        <h1 className="text-xl font-semibold text-gray-800 mb-3 text-center">
-          Departments
-        </h1>
+      <header className="bg-gradient-to-r from-green-500 to-green-700 text-white shadow-lg py-4 px-6 md:px-12">
+        <div className="container mx-auto flex justify-between items-center">
+          <h1 className="text-2xl font-extrabold tracking-wide">
+            Show Department
+          </h1>
+          <nav className="flex space-x-2 md:space-x-6"></nav>
+        </div>
+      </header>
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="p-4 w-full max-w-4xl bg-white shadow-md rounded-md">
+          <h1 className="text-xl font-semibold text-gray-800 mb-3 text-center">
+            Departments
+          </h1>
 
-        <table className="w-full table-auto border-separate border-spacing-0.5">
-          <thead>
-            <tr>
-              <th className="text-sm text-gray-600 font-medium py-2 px-3 border-b">
-                Name
-              </th>
+          <table className="w-full table-auto border-separate border-spacing-0.5">
+            <thead>
+              <tr>
+                <th className="text-sm text-gray-600 font-medium py-2 px-3 border-b">
+                  Name
+                </th>
 
-              <th className="text-sm text-gray-600 font-medium py-2 px-3 border-b">
-                Option
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {departementsGroups.departements.map((e) => (
-              <tr key={e.department_id} className="hover:bg-gray-100">
-                <td className="text-sm text-gray-700 py-2 px-3 border-b">
-                  {e.department_name}
-                </td>
-
-                <td className="py-2 px-3 border-b">
-                  <button
-                    onClick={() => handleDelete(e.department_id)}
-                    className="text-red-500 hover:text-red-700 mr-2"
-                    aria-label="Delete Department"
-                  >
-                    <FaTrashAlt />
-                  </button>
-                  <button
-                    onClick={() => handleUpdate(e.department_id)}
-                    className="text-blue-500 hover:text-blue-700"
-                    aria-label="Update Department"
-                  >
-                    <FaEdit />
-                  </button>
-                </td>
+                <th className="text-sm text-gray-600 font-medium py-2 px-3 border-b">
+                  Option
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {departementsGroups.departements.map((e) => (
+                <tr key={e.department_id} className="hover:bg-gray-100">
+                  <td className="text-sm text-gray-700 py-2 px-3 border-b">
+                    {e.department_name}
+                  </td>
+
+                  <td className="py-2 px-3 border-b">
+                    <button
+                      onClick={() => handleDelete(e.department_id)}
+                      className="text-red-500 hover:text-red-700 mr-2"
+                      aria-label="Delete Department"
+                    >
+                      <FaTrashAlt />
+                    </button>
+                    <button
+                      onClick={() => handleUpdate(e.department_id)}
+                      className="text-blue-500 hover:text-blue-700"
+                      aria-label="Update Department"
+                    >
+                      <FaEdit />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
     </>
   );
 }

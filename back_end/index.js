@@ -7,7 +7,7 @@ const CourierRoute = require("./Routes/Courier");
 const DepartementRoute = require("./Routes/Departement");
 const LoginRoute = require("./Routes/Login");
 const GroupRoute = require("./Routes/Group");
-const inscription = require("./Routes/inscription");
+const inscriptionRoute = require("./Routes/Inscription");
 const {
   envoyerEmail,
   generateCode,
@@ -51,7 +51,7 @@ app.use("/courier", CourierRoute);
 app.use("/departement", DepartementRoute);
 app.use("/login", LoginRoute);
 app.use("/groups", GroupRoute);
-app.use("/register", inscription);
+app.use("/register", inscriptionRoute);
 app.use(express.static(__dirname + "/data"));
 app.listen(process.env.APP_PORT, () => {
   console.log("serveur running at port " + process.env.APP_PORT);

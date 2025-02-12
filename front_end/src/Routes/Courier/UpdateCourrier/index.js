@@ -290,13 +290,13 @@ export default function () {
             </div>
             {formData.imgs.map((img) => (
               <ImgsWithCancelIcon
-                src={BASE_URL + "/" + img}
+                src={BASE_URL.link + "/" + img}
                 Xclick={() => {
                   formData.imgs = formData.imgs.filter(
                     (imgItem) => imgItem == img
                   );
                 }}
-                imgClick={() => window.open(BASE_URL + "/" + img)}
+                imgClick={() => window.open(BASE_URL.link + "/" + img)}
               />
             ))}
             {Array.from(formData.files).map((file, fileIndex) => {

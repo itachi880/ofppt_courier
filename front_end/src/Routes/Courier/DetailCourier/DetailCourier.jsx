@@ -160,10 +160,10 @@ const DetailCourier = () => {
                 {formData.imgs.map((img, index) => (
                   <img
                     key={index}
-                    src={BASE_URL + "/" + img}
+                    src={BASE_URL.link + "/" + img}
                     alt={`Image ${index + 1}`}
                     className="w-full h-auto rounded-xl shadow-md cursor-pointer"
-                    onClick={() => openModal(BASE_URL + "/" + img)}
+                    onClick={() => openModal(BASE_URL.link + "/" + img)}
                   />
                 ))}
               </div>

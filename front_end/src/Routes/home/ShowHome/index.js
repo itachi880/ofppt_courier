@@ -93,10 +93,13 @@ export default function Home() {
         <div className="bg-white shadow-md rounded-md md:p-6 sm:p-1 mb-8">
           {/* Added margin bottom */}
           {activeTab === "courrier" && (
-            <CourrierTable eventsData={renderArray} userData={userData.data} />
+            <CourrierTable
+              eventsData={eventsData.data}
+              userData={userData.data}
+            />
           )}
           {activeTab === "evenements" && (
-            <EventTable eventsData={renderArray} userData={userData.data} />
+            <EventTable eventsData={eventsData.data} userData={userData.data} />
           )}
         </div>
       </main>

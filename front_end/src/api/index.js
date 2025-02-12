@@ -1,11 +1,14 @@
 import axios from "axios";
-export const BASE_URL = "http://localhost:4000";
+export const BASE_URL = { link: "" };
 
 export const LoginApi = async (email, password) => {
   if (!email || !password) return ["email or password is empty", null];
 
   try {
-    const response = await axios.post(`${BASE_URL}/login`, { email, password });
+    const response = await axios.post(`${BASE_URL.link}/login`, {
+      email,
+      password,
+    });
     return [null, response.data];
   } catch (error) {
     return [error, null];
@@ -15,7 +18,7 @@ export const tokenAuthApi = async (Token = "") => {
   if (!Token) return ["token is empty", null];
   try {
     const response = await axios.post(
-      `${BASE_URL}/login/token`,
+      `${BASE_URL.link.link}/login/token`,
       {},
       { headers: { Authorization: Token } }
     );
@@ -29,7 +32,7 @@ export const GetEvents = async (Token = "", dates) => {
   const result = [null, null];
   await axios
     .get(
-      `${BASE_URL}/courier/bettwen?startDate=${
+      `${BASE_URL.link}/courier/bettwen?startDate=${
         !dates.start
           ? new Date().toISOString().split("T")[0]
           : dates.start + (!dates.end ? "" : "&endDate=" + dates.end)
@@ -52,7 +55,9 @@ export const getDepartements = async (token) => {
   if (!token) return ["token is empty", null];
   const result = [null, null];
   await axios
-    .get(`${BASE_URL}/departement/all`, { headers: { Authorization: token } })
+    .get(`${BASE_URL.link}/departement/all`, {
+      headers: { Authorization: token },
+    })
     .then((res) => {
       result[1] = res.data;
     })
@@ -65,7 +70,7 @@ export const getGroups = async (token) => {
   if (!token) return ["token is empty", null];
   const result = [null, null];
   await axios
-    .get(`${BASE_URL}/groups/all`, { headers: { Authorization: token } })
+    .get(`${BASE_URL.link}/groups/all`, { headers: { Authorization: token } })
     .then((res) => {
       result[1] = res.data;
     })
@@ -90,12 +95,16 @@ export const AddCourier = async (formData, departements, groups) => {
         groups,
       })
     );
-    const response = await axios.post(`${BASE_URL}/courier/add`, formData, {
-      headers: {
-        Authorization: formData.get("token"),
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const response = await axios.post(
+      `${BASE_URL.link}/courier/add`,
+      formData,
+      {
+        headers: {
+          Authorization: formData.get("token"),
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
     result[1] = response;
   } catch (err) {
     result[0] = err;
@@ -118,7 +127,7 @@ export const UpdateCourier = async (formData, departements, groups) => {
       })
     );
     const response = await axios.post(
-      `${BASE_URL}/courier/update/${formData.get("id")}`,
+      `${BASE_URL.link}/courier/update/${formData.get("id")}`,
       formData,
       {
         headers: {
@@ -143,11 +152,15 @@ export const AddDepartment = async (formData) => {
   }
   const result = [null, null];
   try {
-    const response = await axios.post(`${BASE_URL}/departement/add`, formData, {
-      headers: {
-        Authorization: formData.token,
-      },
-    });
+    const response = await axios.post(
+      `${BASE_URL.link}/departement/add`,
+      formData,
+      {
+        headers: {
+          Authorization: formData.token,
+        },
+      }
+    );
     result[1] = response;
   } catch (err) {
     result[0] = err;
@@ -162,7 +175,7 @@ export const DeleteDepartment = async (token, department_id) => {
   const result = [null, null];
   try {
     const response = await axios.delete(
-      `${BASE_URL}/departement/${department_id}`,
+      `${BASE_URL.link}/departement/${department_id}`,
       {
         headers: {
           Authorization: token,
@@ -190,7 +203,7 @@ export const UpdateDepartementApi = async (
   const result = [null, null];
   try {
     const response = await axios.post(
-      `${BASE_URL}/departement/update/${department_id}`,
+      `${BASE_URL.link}/departement/update/${department_id}`,
       { updateBy: { name: updatedName } }, // Body de la requête
       {
         headers: {
@@ -218,7 +231,7 @@ export const AddGroupApi = async (formData) => {
   const result = [null, null];
   try {
     const response = await axios.post(
-      `${BASE_URL}/groups/add`,
+      `${BASE_URL.link}/groups/add`,
       { name: formData.name, departement_id: Number(formData.department_id) },
       {
         headers: {
@@ -238,7 +251,7 @@ export const deleteGroupApi = async (id, token) => {
   }
   const result = [null, null];
   try {
-    const response = await axios.delete(`${BASE_URL}/groups/${id}`, {
+    const response = await axios.delete(`${BASE_URL.link}/groups/${id}`, {
       headers: {
         Authorization: token,
       },
@@ -259,7 +272,7 @@ export const UpdateGrouptApi = async (token, id, updatedName) => {
   const result = [null, null];
   try {
     const response = await axios.post(
-      `${BASE_URL}/groups/update/${id}`,
+      `${BASE_URL.link}/groups/update/${id}`,
       { updateBy: { name: updatedName } }, // Body de la requête
       {
         headers: {
@@ -293,7 +306,7 @@ export const AddUserApi = async (formData) => {
   const result = [null, null];
   try {
     const response = await axios.post(
-      `${BASE_URL}/users/add`,
+      `${BASE_URL.link}/users/add`,
       {
         first_name: formData.nom,
         last_name: formData.prenom,
@@ -319,7 +332,7 @@ export const GetUsersApi = async (token) => {
   if (!token) return ["no token", null];
   try {
     const response = await axios.get(
-      `${BASE_URL}/users/`,
+      `${BASE_URL.link}/users/`,
 
       {
         headers: {
@@ -336,7 +349,7 @@ export const GetUsersApi = async (token) => {
 export const GetUsersById = async (token, id) => {
   if (!token) return ["no token", null];
   try {
-    const response = await axios.get(`${BASE_URL}/users/${id}`, {
+    const response = await axios.get(`${BASE_URL.link}/users/${id}`, {
       headers: {
         Authorization: token,
       },
@@ -353,7 +366,7 @@ export const DeleteUserApi = async (id, token) => {
   }
   const result = [null, null];
   try {
-    const response = await axios.delete(`${BASE_URL}/users/${id}`, {
+    const response = await axios.delete(`${BASE_URL.link}/users/${id}`, {
       headers: {
         Authorization: token,
       },
@@ -369,7 +382,7 @@ export const getArchive = async (token, pageNumber) => {
     return ["fealds required", null];
   }
   try {
-    const response = await axios.get(`${BASE_URL}/courier/all`, {
+    const response = await axios.get(`${BASE_URL.link}/courier/all`, {
       params: {
         page: pageNumber,
       },
@@ -392,7 +405,7 @@ export const UpdateUserApi = async (id, token, data) => {
   const result = [null, null];
   try {
     const response = await axios.put(
-      `${BASE_URL}/users/${id}`,
+      `${BASE_URL.link}/users/${id}`,
       {
         first_name: data.first_name,
         last_name: data.last_name,
@@ -422,7 +435,7 @@ export const resetPasswordAPI = async (password, token) => {
   }
   try {
     const response = await axios.post(
-      BASE_URL + "/users/forget-pass",
+      BASE_URL.link + "/users/forget-pass",
       { pass: password },
       { headers: { Authorization: token } }
     );
@@ -434,7 +447,9 @@ export const resetPasswordAPI = async (password, token) => {
 export const GetForgetPassLinkAPI = async (email) => {
   if (!email) return ["data required", null];
   try {
-    const response = await axios.post(BASE_URL + "/data", { email: email });
+    const response = await axios.post(BASE_URL.link + "/data", {
+      email: email,
+    });
     return [null, response.data];
   } catch (error) {
     return [error, null];

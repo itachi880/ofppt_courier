@@ -18,7 +18,7 @@ export const tokenAuthApi = async (Token = "") => {
   if (!Token) return ["token is empty", null];
   try {
     const response = await axios.post(
-      `${BASE_URL.link.link}/login/token`,
+      `${BASE_URL.link}/login/token`,
       {},
       { headers: { Authorization: Token } }
     );

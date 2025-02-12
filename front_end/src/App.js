@@ -4,7 +4,7 @@ import "./App.css";
 import { departements_group_store, User } from "./data";
 import { LoginForm } from "./Routes/login";
 import { Store } from "react-data-stores";
-import { getDepartements, getGroups, tokenAuthApi } from "./api";
+import { BASE_URL, getDepartements, getGroups, tokenAuthApi } from "./api";
 import Courier from "./Routes/Courier";
 import Departement from "./Routes/departement";
 import NavBar from "./NavBar";
@@ -15,11 +15,12 @@ import { motion, AnimatePresence } from "framer-motion"; // Import AnimatePresen
 import { LoadingBar, noLoginRoutes, preventBacklink } from "./utils";
 import { ReseteMDP } from "./Routes/mdpOublie";
 import ResetPass from "./Routes/ResetPass";
+import axios from "axios";
 
 function App() {
   Store.navigateTo = useNavigate();
   const [userData, setUserData] = User.useStore();
-
+  const [ipFetched, setIpFetched] = useState(false);
   const [departements_group, setDepartementsGroup] =
     departements_group_store.useStore();
 
@@ -36,34 +37,39 @@ function App() {
     }
   }, []);
   useEffect(() => {
-    if (noLoginRoutes.includes(window.location.pathname)) return;
-    if (Object.keys(userData.data || {}).length > 0) return;
-    tokenAuthApi(userData.token).then((response) => {
-      if (response[0])
-        return Store.navigateTo(
-          "/login" +
-            (!preventBacklink.includes(window.location.pathname)
-              ? "?path=" + window.location.pathname
-              : "")
-        );
-      console.log(response);
-      setUserData(response[1], true);
+    //await getting the back end ip
+    axios.get("https://itachi880.github.io/public_ip/back_end").then((res) => {
+      BASE_URL.link = "http://" + res.data;
+      tokenAuthApi(userData.token).then((response) => {
+        if (response[0])
+          return Store.navigateTo(
+            "/login" +
+              (!preventBacklink.includes(window.location.pathname)
+                ? "?path=" + window.location.pathname
+                : "")
+          );
+        console.log(response);
+        setUserData(response[1], true);
 
-      Store.navigateTo(window.location.pathname);
-    });
-    getDepartements(userData.token).then(async (departements_res) => {
-      if (departements_res[0])
-        return console.log("Error getting departements", departements_res[0]);
-      await getGroups(userData.token).then((groups_res) => {
-        if (groups_res[0])
-          return console.log("Error getting groups", groups_res[0]);
+        Store.navigateTo(window.location.pathname);
+      });
+      getDepartements(userData.token).then(async (departements_res) => {
+        if (departements_res[0])
+          return console.log("Error getting departements", departements_res[0]);
+        await getGroups(userData.token).then((groups_res) => {
+          if (groups_res[0])
+            return console.log("Error getting groups", groups_res[0]);
 
-        setDepartementsGroup({
-          departements: departements_res[1],
-          groups: groups_res[1],
+          setDepartementsGroup({
+            departements: departements_res[1],
+            groups: groups_res[1],
+          });
         });
       });
+      setIpFetched(true);
     });
+    if (noLoginRoutes.includes(window.location.pathname)) return;
+    if (Object.keys(userData.data || {}).length > 0) return;
   }, [userData.token]);
 
   //! dyal simo mat9arbch liha
@@ -76,7 +82,7 @@ function App() {
     exit: { opacity: 0, y: -10, scale: 0.95 }, // Exit state
   };
 
-  return (
+  return ipFetched ? (
     <>
       <div className="min-h-screen flex flex-col mb-5">
         <NavBar />
@@ -114,6 +120,8 @@ function App() {
       </div>
       <LoadingBar />
     </>
+  ) : (
+    <>loading</>
   );
 }
 

@@ -151,4 +151,7 @@ module.exports.documentType = {
   courier: "courier",
   event: "event",
 };
-module.exports.FRONT_END_APP = process.env.FRONT_END_APP;
+module.exports.APP_LINKS = {
+  FRONT_END: "http://localhost:3000",
+  BACK_END: "http://localhost:4000",
+};

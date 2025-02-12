@@ -13,8 +13,20 @@ const {
   generateCode,
   verifierCode,
   FRONT_END_APP,
+  APP_LINKS,
 } = require("./utils");
-
+//back end app;
+fetch(process.env.SRC_LINKS_APPS + "/back_end")
+  .then(async (e) => await e.text())
+  .then((e) => {
+    APP_LINKS.BACK_END = "http://" + e;
+  });
+//front_end
+fetch(process.env.SRC_LINKS_APPS + "/front_end")
+  .then(async (e) => await e.text())
+  .then((e) => {
+    APP_LINKS.FRONT_END = "http://" + e;
+  });
 app.use(
   express.json(),
   cors({
@@ -24,12 +36,7 @@ app.use(
 app.post("/data", (req, res) => {
   const { email } = req.body;
   const code = generateCode(email);
-  envoyerEmail(
-    email,
-    (process.env.FRONT_END_APP || "http://localhost:3000") +
-      "/new_password?token=" +
-      code
-  )
+  envoyerEmail(email, APP_LINKS.FRONT_END + "/new_password?token=" + code)
     .then((res) => {
       console.log("email sucsess");
     })

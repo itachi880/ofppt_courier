@@ -203,9 +203,9 @@ export const useQuery = () => {
 
   return (parameter) => searchParams.get(parameter);
 };
-export const LoadingBar = () => {
+export const LoadingBar = ({ state = false }) => {
   const [loadingFlag, setLoadingFlag] = loading.useStore();
-
+  if (state) return <div className="loadingBar"></div>;
   return !loadingFlag.loading ? null : <div className="loadingBar"></div>;
 };
 export const preventBacklink = ["/", "/login"];

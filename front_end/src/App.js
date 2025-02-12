@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import "./App.css";
-import { departements_group_store, User } from "./data";
+import { departements_group_store, loading, User } from "./data";
 import { LoginForm } from "./Routes/login";
 import { Store } from "react-data-stores";
 import { BASE_URL, getDepartements, getGroups, tokenAuthApi } from "./api";
@@ -21,56 +21,77 @@ function App() {
   Store.navigateTo = useNavigate();
   const [userData, setUserData] = User.useStore();
   const [ipFetched, setIpFetched] = useState(false);
+  const [loadingFlag, setLoadingFlag] = loading.useStore();
   const [departements_group, setDepartementsGroup] =
     departements_group_store.useStore();
 
   useEffect(() => {
     if (noLoginRoutes.includes(window.location.pathname)) return;
 
-    if (!userData.token) {
-      Store.navigateTo(
+    if (!localStorage.getItem("token")) {
+      console.log("no token");
+      return Store.navigateTo(
         "/login" +
           (!preventBacklink.includes(window.location.pathname)
             ? "?path=" + window.location.pathname
             : "")
       );
     }
+    setUserData({ token: localStorage.getItem("token") });
   }, []);
   useEffect(() => {
     //await getting the back end ip
-    axios.get("https://itachi880.github.io/public_ip/back_end").then((res) => {
-      BASE_URL.link = "http://" + res.data;
-      tokenAuthApi(userData.token).then((response) => {
-        if (response[0])
-          return Store.navigateTo(
-            "/login" +
-              (!preventBacklink.includes(window.location.pathname)
-                ? "?path=" + window.location.pathname
-                : "")
-          );
-        console.log(response);
-        setUserData(response[1], true);
+    if (userData.token && Object.keys(userData.data || {}).length > 0) return;
 
-        Store.navigateTo(window.location.pathname);
-      });
-      getDepartements(userData.token).then(async (departements_res) => {
-        if (departements_res[0])
-          return console.log("Error getting departements", departements_res[0]);
-        await getGroups(userData.token).then((groups_res) => {
-          if (groups_res[0])
-            return console.log("Error getting groups", groups_res[0]);
+    axios
+      .get("https://itachi880.github.io/puic_ip/back_end")
+      .then((res) => {
+        BASE_URL.link = "http://" + res.data;
+      })
+      .catch(() => {
+        BASE_URL.link = "http://localhost:4000";
+      })
+      .finally(async () => {
+        setLoadingFlag({ loading: true });
+        setIpFetched(true);
+        await tokenAuthApi(userData.token).then((response) => {
+          console.log(BASE_URL);
+          if (response[0])
+            return Store.navigateTo(
+              "/login" +
+                (!preventBacklink.includes(window.location.pathname)
+                  ? "?path=" + window.location.pathname
+                  : "")
+            );
+          console.log("user set", response);
+          setUserData({
+            data: { ...response[1].data },
+            token: response[1].token,
+          });
 
-          setDepartementsGroup({
-            departements: departements_res[1],
-            groups: groups_res[1],
+          Store.navigateTo(window.location.pathname);
+        });
+        await getDepartements(userData.token).then(async (departements_res) => {
+          if (departements_res[0])
+            return console.log(
+              "Error getting departements",
+              departements_res[0]
+            );
+          await getGroups(userData.token).then((groups_res) => {
+            if (groups_res[0])
+              return console.log("Error getting groups", groups_res[0]);
+
+            setDepartementsGroup({
+              departements: departements_res[1],
+              groups: groups_res[1],
+            });
           });
         });
+
+        setLoadingFlag({ loading: false });
       });
-      setIpFetched(true);
-    });
     if (noLoginRoutes.includes(window.location.pathname)) return;
-    if (Object.keys(userData.data || {}).length > 0) return;
-  }, [userData.token]);
+  }, [userData]);
 
   //! dyal simo mat9arbch liha
   const location = useLocation();
@@ -86,6 +107,7 @@ function App() {
     <>
       <div className="min-h-screen flex flex-col mb-5">
         <NavBar />
+
         {/* Wrap Routes with AnimatePresence */}
         <AnimatePresence mode="wait">
           {" "}
@@ -121,7 +143,7 @@ function App() {
       <LoadingBar />
     </>
   ) : (
-    <>loading</>
+    <LoadingBar state={true} />
   );
 }
 

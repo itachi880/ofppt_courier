@@ -12,7 +12,6 @@ const {
   envoyerEmail,
   generateCode,
   verifierCode,
-  FRONT_END_APP,
   APP_LINKS,
 } = require("./utils");
 //back end app;
@@ -20,12 +19,18 @@ fetch(process.env.SRC_LINKS_APPS + "/back_end")
   .then(async (e) => await e.text())
   .then((e) => {
     APP_LINKS.BACK_END = "http://" + e;
+  })
+  .catch((e) => {
+    APP_LINKS.BACK_END = "http://localhost:4000";
   });
 //front_end
 fetch(process.env.SRC_LINKS_APPS + "/front_end")
   .then(async (e) => await e.text())
   .then((e) => {
     APP_LINKS.FRONT_END = "http://" + e;
+  })
+  .catch((e) => {
+    APP_LINKS.FRONT_END = "http://localhost:3000";
   });
 app.use(
   express.json(),

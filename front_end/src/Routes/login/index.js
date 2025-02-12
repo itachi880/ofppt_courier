@@ -16,6 +16,7 @@ export function LoginForm() {
   const [loadingFlag, setLoadingFlag] = loading.useStore();
   useEffect(() => {
     if (!userData.token) return;
+    Store.navigateTo(searchParams.get("path") || "/");
   }, []); // Exécutée une seule fois après le premier rendu.
 
   const handleLogin = async (e) => {

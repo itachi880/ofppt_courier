@@ -9,7 +9,7 @@ export default () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [eventsData, setEventsData] = events.useStore();
-
+  const [activeNavElement, setActiveNavElement] = useState("");
   const [alertEvents, setAlertEvents] = useState([]);
   useEffect(() => {
     // Filter events that are within the next 48 hours
@@ -26,9 +26,11 @@ export default () => {
     setOpenDropdown(openDropdown === dropdown ? null : dropdown);
   };
   useEffect(() => {
-    console.log(userData);
+    console.log("User data updated:", userData);
   }, [userData]);
-  return !userData.token ? null : (
+  return !userData.token || Object.keys(userData.data || {}).length == 0 ? (
+    <></>
+  ) : (
     <div className="navbar-holder shadow-2xl ">
       <nav className="navbar">
         {/* Profile Section (Left) */}
@@ -46,7 +48,16 @@ export default () => {
 
         {/* Menu Items (Center) */}
         <div className={`options ${isMenuOpen ? "open" : ""}`}>
-          <button title="Accueil" onClick={() => Store.navigateTo("/")}>
+          <button
+            title="Accueil"
+            className={
+              activeNavElement == "Accueil" ? "active-nav-element" : ""
+            }
+            onClick={() => {
+              Store.navigateTo("/");
+              setActiveNavElement("Accueil");
+            }}
+          >
             <i className="fa-solid fa-calendar-day"></i>
           </button>
 
@@ -59,15 +70,30 @@ export default () => {
               onMouseEnter={() => handleDropdown("departement")}
               onMouseLeave={() => handleDropdown(null)}
             >
-              <button title="Entite">
+              <button
+                title="Entite"
+                className={
+                  activeNavElement == "Entite" ? "active-nav-element" : ""
+                }
+              >
                 <i className="fa-solid fa-building"></i>
               </button>
               <div className="dropdown-content">
-                <button onClick={() => Store.navigateTo("/departement")}>
+                <button
+                  onClick={() => {
+                    Store.navigateTo("/departement");
+                    setActiveNavElement("Entite");
+                  }}
+                >
                   <i className="fa-solid fa-list"></i>
                   <span>Afficher Entité</span>
                 </button>
-                <button onClick={() => Store.navigateTo("/departement/add")}>
+                <button
+                  onClick={() => {
+                    Store.navigateTo("/departement/add");
+                    setActiveNavElement("Entite");
+                  }}
+                >
                   <i className="fa-solid fa-plus"></i>
                   <span>Ajouter Entité</span>
                 </button>
@@ -82,15 +108,30 @@ export default () => {
               onMouseEnter={() => handleDropdown("group")}
               onMouseLeave={() => handleDropdown(null)}
             >
-              <button title="Groupes">
+              <button
+                title="Groupes"
+                className={
+                  activeNavElement == "Groupes" ? "active-nav-element" : ""
+                }
+              >
                 <i className="fa-solid fa-users"></i>
               </button>
               <div className="dropdown-content">
-                <button onClick={() => Store.navigateTo("/Group")}>
+                <button
+                  onClick={() => {
+                    Store.navigateTo("/Group");
+                    setActiveNavElement("Groupes");
+                  }}
+                >
                   <i className="fa-solid fa-list"></i>
                   <span>Afficher Groupes</span>
                 </button>
-                <button onClick={() => Store.navigateTo("/Group/add")}>
+                <button
+                  onClick={() => {
+                    Store.navigateTo("/Group/add");
+                    setActiveNavElement("Groupes");
+                  }}
+                >
                   <i className="fa-solid fa-plus"></i>
                   <span>Ajouter Groupe</span>
                 </button>
@@ -104,16 +145,31 @@ export default () => {
             onMouseEnter={() => handleDropdown("courrier")}
             onMouseLeave={() => handleDropdown(null)}
           >
-            <button title="Courriers">
+            <button
+              title="Courriers"
+              className={
+                activeNavElement == "Courriers" ? "active-nav-element" : ""
+              }
+            >
               <i className="fa-solid fa-envelope"></i>
             </button>
             <div className="dropdown-content">
-              <button onClick={() => Store.navigateTo("/courrier")}>
+              <button
+                onClick={() => {
+                  Store.navigateTo("/courrier");
+                  setActiveNavElement("Courriers");
+                }}
+              >
                 <i className="fa-solid fa-list"></i>
                 <span>Afficher Courriers</span>
               </button>
               {userData.data.role === roles.admin && (
-                <button onClick={() => Store.navigateTo("/courrier/add")}>
+                <button
+                  onClick={() => {
+                    Store.navigateTo("/courrier/add");
+                    setActiveNavElement("Courriers");
+                  }}
+                >
                   <i className="fa-solid fa-plus"></i>
                   <span>Ajouter Courrier</span>
                 </button>
@@ -126,21 +182,32 @@ export default () => {
             onMouseEnter={() => handleDropdown("events")}
             onMouseLeave={() => handleDropdown(null)}
           >
-            <button title="Events">
+            <button
+              title="Events"
+              className={
+                activeNavElement == "Events" ? "active-nav-element" : ""
+              }
+            >
               <i className="fa-regular fa-calendar"></i>
             </button>
             <div className="dropdown-content">
-              <button onClick={() => Store.navigateTo("/courrier?event=true")}>
+              <button
+                onClick={() => {
+                  Store.navigateTo("/courrier?event=true");
+                  setActiveNavElement("Events");
+                }}
+              >
                 <i className="fa-solid fa-list"></i>
                 <span>Afficher events</span>
               </button>
               {userData.data.role === roles.admin && (
                 <button
-                  onClick={() =>
+                  onClick={() => {
                     Store.navigateTo(
                       "/courrier/add?" + documentType.event + "=true"
-                    )
-                  }
+                    );
+                    setActiveNavElement("Events");
+                  }}
                 >
                   <i className="fa-solid fa-plus"></i>
                   <span>Ajouter events</span>
@@ -157,17 +224,30 @@ export default () => {
               onMouseEnter={() => handleDropdown("utilisateur")}
               onMouseLeave={() => handleDropdown(null)}
             >
-              <button title="Utilisateurs">
+              <button
+                title="Utilisateurs"
+                className={
+                  activeNavElement == "Utilisateurs" ? "active-nav-element" : ""
+                }
+              >
                 <i className="fa-solid fa-user"></i>
               </button>
               <div className="dropdown-content">
                 <button
-                  onClick={() => Store.navigateTo("/utilisateur/afficheUsers")}
+                  onClick={() => {
+                    Store.navigateTo("/utilisateur/afficheUsers");
+                    setActiveNavElement("Utilisateurs");
+                  }}
                 >
                   <i className="fa-solid fa-list"></i>
                   <span>Afficher Utilisateurs</span>
                 </button>
-                <button onClick={() => Store.navigateTo("/utilisateur/add")}>
+                <button
+                  onClick={() => {
+                    Store.navigateTo("/utilisateur/add");
+                    setActiveNavElement("Utilisateurs");
+                  }}
+                >
                   <i className="fa-solid fa-plus"></i>
                   <span>Ajouter Utilisateur</span>
                 </button>
@@ -178,7 +258,13 @@ export default () => {
           <div className="dropdown">
             <button
               title="Archive"
-              onClick={() => Store.navigateTo("/courrier/archive")}
+              className={
+                activeNavElement == "Archive" ? "active-nav-element" : ""
+              }
+              onClick={() => {
+                Store.navigateTo("/courrier/archive");
+                setActiveNavElement("Archive");
+              }}
             >
               <i className="fa-solid fa-archive"></i>
             </button>

@@ -87,7 +87,13 @@ ul::-webkit-scrollbar-track {
   top: 0;
   z-index: 1000;
 }
-
+.navbar-holder .active-nav-element {
+  background-color: white;
+  color: #218838;
+}
+.navbar-holder .active-nav-element:hover {
+  color: white;
+}
 .profile .name {
   color: #343a40; /* Dark gray for profile name */
 }
@@ -140,6 +146,7 @@ ul::-webkit-scrollbar-track {
   color: #ffffff; /* White text on green */
   border: none;
   border-radius: 5px;
+  border: 2px solid #28a745;
   padding: 0.5rem 1rem;
   font-size: 0.9rem;
   font-weight: 500;

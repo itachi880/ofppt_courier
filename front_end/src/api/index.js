@@ -455,3 +455,13 @@ export const GetForgetPassLinkAPI = async (email) => {
     return [error, null];
   }
 };
+export const getCourierById = async (id, token) => {
+  try {
+    const d = await axios.get(BASE_URL.link + "/courier/" + id, {
+      headers: { Authorization: token },
+    });
+    return [null, d.data];
+  } catch (e) {
+    return [e, null];
+  }
+};

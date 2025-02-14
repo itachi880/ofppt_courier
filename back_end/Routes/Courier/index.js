@@ -1,5 +1,5 @@
 const path = require("path");
-const { Courier, CourierAssignee } = require("../../Models");
+const { Courier, CourierAssignee, TablesNames } = require("../../Models");
 const {
   auth_middleware,
   Roles,
@@ -190,5 +190,26 @@ router.get("/bettwen", async (req, res) => {
     return res.status(500).send("Server error");
   }
 });
-
+router.get("/:id", async (req, res) => {
+  try {
+    const resl =
+      req.user.role != Roles.admin
+        ? await CourierAssignee.getCouriers(
+            req.user.grpId,
+            req.user.depId,
+            ` ${TablesNames.courier}.id = ? `,
+            [req.params.id]
+          )
+        : await CourierAssignee.getCouriers(
+            undefined,
+            undefined,
+            ` ${TablesNames.courier}.id = ? `,
+            [req.params.id]
+          );
+    if (resl[0]) return res.status(500).end("error") && console.log(resl[0]);
+    return res.json(resl[1]);
+  } catch (e) {
+    return res.status(500).end("error");
+  }
+});
 module.exports = router;

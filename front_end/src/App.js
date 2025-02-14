@@ -20,7 +20,7 @@ import axios from "axios";
 function App() {
   Store.navigateTo = useNavigate();
   const [userData, setUserData] = User.useStore();
-  const [ipFetched, setIpFetched] = useState(false);
+  const [isDataFetched, setDataFetched] = useState(false);
   const [loadingFlag, setLoadingFlag] = loading.useStore();
   const [departements_group, setDepartementsGroup] =
     departements_group_store.useStore();
@@ -29,7 +29,7 @@ function App() {
     if (noLoginRoutes.includes(window.location.pathname)) return;
 
     if (!localStorage.getItem("token")) {
-      console.log("no token");
+      setDataFetched(true);
       return Store.navigateTo(
         "/login" +
           (!preventBacklink.includes(window.location.pathname)
@@ -52,7 +52,6 @@ function App() {
       })
       .finally(async () => {
         setLoadingFlag({ loading: true });
-        setIpFetched(true);
         if (window.location.pathname == "/login") {
           setLoadingFlag({ loading: false });
           localStorage.clear();
@@ -62,6 +61,7 @@ function App() {
         const tokenRes = await tokenAuthApi(userData.token || token);
         if (tokenRes[0]) {
           localStorage.clear();
+          setDataFetched(true);
           setLoadingFlag({ loading: false });
           setUserData({ token: undefined, data: undefined });
           Store.navigateTo(
@@ -81,22 +81,29 @@ function App() {
         const departementsRes = await getDepartements(userData.token);
         if (departementsRes[0]) {
           setLoadingFlag({ loading: false });
+          setDataFetched(true);
           return console.log("Error getting departements", departementsRes[0]);
         }
         const groupsRes = await getGroups(userData.token);
         if (groupsRes[0]) {
           setLoadingFlag({ loading: false });
+          setDataFetched(true);
           return console.log("Error getting groups", groupsRes[0]);
         }
         setDepartementsGroup({
           departements: departementsRes[1],
           groups: groupsRes[1],
         });
+        console.log(departementsRes, groupsRes);
+
         setLoadingFlag({ loading: false });
-        Store.navigateTo(window.location.pathname);
+        setDataFetched(true);
       });
     if (noLoginRoutes.includes(window.location.pathname)) return;
   }, [userData]);
+  useEffect(() => {
+    console.log(departements_group);
+  }, [departements_group]);
 
   //! dyal simo mat9arbch liha
   const location = useLocation();
@@ -108,7 +115,7 @@ function App() {
     exit: { opacity: 0, y: -10, scale: 0.95 }, // Exit state
   };
 
-  return ipFetched ? (
+  return isDataFetched ? (
     <>
       <div className="min-h-screen flex flex-col mb-5">
         <NavBar />

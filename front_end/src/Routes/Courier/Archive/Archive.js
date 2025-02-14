@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import moment from "moment";
 import { getArchive } from "../../../api";
+import { Store } from "react-data-stores";
 
 const Archive = () => {
   const [eventsData, setEventData] = events.useStore();
@@ -62,15 +63,17 @@ const Archive = () => {
                 <p className="text-gray-600 line-clamp-3">
                   {e.description || "Pas de description"}
                 </p>
-                <Link to={`/courrier/detail/${e.id}`}>
-                  <button className="mt-2 bg-[#0078D7] text-white hover:bg-[#0056b3] font-bold py-2 px-4 rounded transition duration-300">
-                    Afficher plus <i className="fas fa-arrow-right ml-2"></i>
-                  </button>
-                </Link>
+                <button
+                  onClick={() => Store.navigateTo(`/courrier/detail/${e.id}`)}
+                  className="mt-2 bg-[#0078D7] text-white hover:bg-[#0056b3] font-bold py-2 px-4 rounded transition duration-300"
+                >
+                  Afficher plus <i className="fas fa-arrow-right ml-2"></i>
+                </button>
               </div>
             </div>
           ))}
-          {currentEvents.length === 0 && <p>Aucune donnée disponible.</p>} {/* Display message if no data */}
+          {currentEvents.length === 0 && <p>Aucune donnée disponible.</p>}{" "}
+          {/* Display message if no data */}
         </div>
 
         {/* Pagination */}
@@ -82,17 +85,23 @@ const Archive = () => {
           >
             Precedent
           </button>
-          {Array.from({ length: Math.ceil(totalPages / eventsPerPage) }, (_, i) => ( // Use totalPages for pagination
-            <button
-              key={i}
-              onClick={() => handlePageChange(i + 1)}
-              className={`bg-[#FFC107] hover:bg-[#F9A602] text-[#0078D7] font-bold py-2 px-4 rounded mx-1 transition duration-300 ${
-                currentPage === i + 1 ? "bg-[#0078D7] text-white" : ""
-              }`}
-            >
-              {i + 1}
-            </button>
-          ))}
+          {Array.from(
+            { length: Math.ceil(totalPages / eventsPerPage) },
+            (
+              _,
+              i // Use totalPages for pagination
+            ) => (
+              <button
+                key={i}
+                onClick={() => handlePageChange(i + 1)}
+                className={`bg-[#FFC107] hover:bg-[#F9A602] text-[#0078D7] font-bold py-2 px-4 rounded mx-1 transition duration-300 ${
+                  currentPage === i + 1 ? "bg-[#0078D7] text-white" : ""
+                }`}
+              >
+                {i + 1}
+              </button>
+            )
+          )}
 
           <button
             onClick={() => handlePageChange(currentPage + 1)}

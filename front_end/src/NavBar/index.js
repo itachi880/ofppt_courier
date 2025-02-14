@@ -10,6 +10,7 @@ export default () => {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [eventsData, setEventsData] = events.useStore();
   const [activeNavElement, setActiveNavElement] = useState("");
+  const [isSettingOpen, setIsSettingOpen] = useState(false);
   const [alertEvents, setAlertEvents] = useState([]);
   useEffect(() => {
     // Filter events that are within the next 48 hours
@@ -39,9 +40,6 @@ export default () => {
             src="https://seeklogo.com/images/O/ofppt-logo-B2CAD4E136-seeklogo.com.png"
             alt="profile"
           />
-          <span className="name text-white">
-            {userData.data.first_name + " " + userData.data.last_name}
-          </span>
         </div>
 
         {/* Hamburger Menu Icon for Mobile */}
@@ -272,7 +270,7 @@ export default () => {
         </div>
 
         {/* Notifications Dropdown */}
-        <div className="flex gap-3">
+        <div className="flex gap-3 relative">
           <div
             className="mobile-menu-icon"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -350,20 +348,44 @@ export default () => {
           </div>
 
           {/* Logout Section (Right) */}
-          <div className="logout">
-            <button>
-              <span
-                className="logout text-2xl m-0"
-                onClick={() => {
-                  setUserData({}, true);
-                  localStorage.removeItem("token");
-                  Store.navigateTo("/login");
-                }}
-              >
-                <i className="fa-solid fa-arrow-right-from-bracket"></i>
-              </span>
-            </button>
+
+          <div
+            className="profile"
+            onClick={() => setIsSettingOpen((prev) => !prev)}
+            style={{
+              cursor: "pointer",
+            }}
+          >
+            <i className="fa-solid fa-gear text-2xl"></i>
           </div>
+          {isSettingOpen ? (
+            <div className="absolute -bottom-20 -right-3 bg-gray-200 flex flex-col w-48 py-2 px-4 rounded-l  before:w-4 before:h-4 before:bg-gray-200  before:absolute before:-top-2 before:right-4 before:rotate-45">
+              <div className="flex items-center gap-3">
+                <div className="profile">
+                  <img
+                    src="https://seeklogo.com/images/O/ofppt-logo-B2CAD4E136-seeklogo.com.png"
+                    alt="profile"
+                  />
+                </div>
+                <span className="name text-black text-x">
+                  {userData.data.first_name + " " + userData.data.last_name}
+                </span>
+                <button>
+                  <span
+                    className="logout fa-solid fa-right-from-bracket"
+                    onClick={() => {
+                      setUserData({}, true);
+                      localStorage.removeItem("token");
+                      Store.navigateTo("/login");
+                    }}
+                  ></span>
+                </button>
+              </div>
+              <hr />
+            </div>
+          ) : (
+            <></>
+          )}
         </div>
       </nav>
     </div>

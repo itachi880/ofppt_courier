@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { LoginApi } from "../../api/index";
 import { loading, User } from "../../data";
 import { Store } from "react-data-stores";

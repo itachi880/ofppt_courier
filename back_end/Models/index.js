@@ -10,6 +10,7 @@ const TablesNames = {
   courier: "couriers",
   courier_files: "courier_files",
 };
+module.exports.TablesNames = TablesNames;
 
 /**
  * @typedef {object} User user table schema

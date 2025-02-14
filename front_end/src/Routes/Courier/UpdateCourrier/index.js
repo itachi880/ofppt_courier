@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { departements_group_store, events, loading, User } from "../../../data";
-import { BASE_URL, UpdateCourier } from "../../../api";
+import { BASE_URL, getCourierById, UpdateCourier } from "../../../api";
 import { useParams } from "react-router-dom";
 import { GreenBox, ImgsWithCancelIcon, RedBox } from "../../../utils";
 import { Store } from "react-data-stores";
@@ -98,7 +98,26 @@ export default function () {
   const [loadingFlag, setLoadingFlag] = loading.useStore();
   useEffect(() => {
     const event = eventsStore.data.find((event) => event.id == id);
-    if (!event) return Store.navigateTo("/");
+    if (!event)
+      return getCourierById(id, userData.token).then((res) => {
+        if (res[0]) return Store.navigateTo("/");
+        res[1][0].deadline = res[1][0].deadline.split("T")[0];
+        setFormData({
+          id: id,
+          title: res[1][0].title,
+          description: res[1][0].description,
+          expiditeur: res[1][0].expiditeur,
+          deadline: res[1][0].deadline || "",
+          state: res[1][0].state,
+          critical: res[1][0].critical || "",
+          created_at: res[1][0].created_at || "",
+          departements: res[1][0].departements || [],
+          imgs: res[1][0].imgs,
+          groups: res[1][0].groups || [],
+          files: [],
+        });
+        setEventsStore({ data: [...eventsStore.data, res[1][0]] });
+      });
     setFormData({
       id: id,
       title: event.title,

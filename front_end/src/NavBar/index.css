@@ -95,6 +95,8 @@ ul::-webkit-scrollbar-track {
   color: #dc3545; /* Red logout */
   cursor: pointer;
   transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
 }
 
 .logout:hover {

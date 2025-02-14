@@ -40,7 +40,6 @@ function App() {
     setUserData({ token: localStorage.getItem("token") });
   }, []);
   useEffect(() => {
-    //await getting the back end ip
     if (userData.token && Object.keys(userData.data || {}).length > 0) return;
 
     axios
@@ -54,41 +53,47 @@ function App() {
       .finally(async () => {
         setLoadingFlag({ loading: true });
         setIpFetched(true);
-        await tokenAuthApi(userData.token).then((response) => {
-          console.log(BASE_URL);
-          if (response[0])
-            return Store.navigateTo(
-              "/login" +
-                (!preventBacklink.includes(window.location.pathname)
-                  ? "?path=" + window.location.pathname
-                  : "")
-            );
-          console.log("user set", response);
-          setUserData({
-            data: { ...response[1].data },
-            token: response[1].token,
-          });
-
-          Store.navigateTo(window.location.pathname);
-        });
-        await getDepartements(userData.token).then(async (departements_res) => {
-          if (departements_res[0])
-            return console.log(
-              "Error getting departements",
-              departements_res[0]
-            );
-          await getGroups(userData.token).then((groups_res) => {
-            if (groups_res[0])
-              return console.log("Error getting groups", groups_res[0]);
-
-            setDepartementsGroup({
-              departements: departements_res[1],
-              groups: groups_res[1],
-            });
-          });
+        if (window.location.pathname == "/login") {
+          setLoadingFlag({ loading: false });
+          localStorage.clear();
+          return;
+        }
+        const token = localStorage.getItem("token");
+        const tokenRes = await tokenAuthApi(userData.token || token);
+        if (tokenRes[0]) {
+          localStorage.clear();
+          setLoadingFlag({ loading: false });
+          setUserData({ token: undefined, data: undefined });
+          Store.navigateTo(
+            "/login" +
+              (!preventBacklink.includes(window.location.pathname)
+                ? "?path=" + window.location.pathname
+                : "")
+          );
+          return;
+        }
+        console.log("user set", tokenRes);
+        setUserData({
+          data: { ...tokenRes[1].data },
+          token: tokenRes[1].token,
         });
 
+        const departementsRes = await getDepartements(userData.token);
+        if (departementsRes[0]) {
+          setLoadingFlag({ loading: false });
+          return console.log("Error getting departements", departementsRes[0]);
+        }
+        const groupsRes = await getGroups(userData.token);
+        if (groupsRes[0]) {
+          setLoadingFlag({ loading: false });
+          return console.log("Error getting groups", groupsRes[0]);
+        }
+        setDepartementsGroup({
+          departements: departementsRes[1],
+          groups: groupsRes[1],
+        });
         setLoadingFlag({ loading: false });
+        Store.navigateTo(window.location.pathname);
       });
     if (noLoginRoutes.includes(window.location.pathname)) return;
   }, [userData]);
@@ -134,7 +139,10 @@ function App() {
             </Routes>
           </motion.div>
         </AnimatePresence>
-        <footer className="bg-slate-700 text-white py-4 text-center mt-auto w-full fixed bottom-0 shadow-md z-auto">
+        <footer
+          className="bg-slate-700 text-white py-4 text-center mt-auto w-full fixed bottom-0 shadow-md "
+          style={{ zIndex: "1000000" }}
+        >
           <div className="container mx-auto">
             <p className="text-sm">&copy; 2025 OFPPT. Tous droits réservés.</p>
           </div>

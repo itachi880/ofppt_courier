@@ -14,11 +14,7 @@ export function LoginForm() {
   const [showPass, setShowPass] = useState(true);
   const navigate = useNavigate();
   const [loadingFlag, setLoadingFlag] = loading.useStore();
-  useEffect(() => {
-    if (!userData.token) return;
-    Store.navigateTo(searchParams.get("path") || "/");
-  }, []); // Exécutée une seule fois après le premier rendu.
-
+  if (localStorage.getItem("token")) return null;
   const handleLogin = async (e) => {
     e.preventDefault(); // Empêche le rechargement de la page.
     setLoadingFlag({ loading: true });

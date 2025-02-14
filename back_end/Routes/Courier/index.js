@@ -159,7 +159,6 @@ router.post(
 );
 router.get("/bettwen", async (req, res) => {
   const { startDate, endDate = null } = req.query;
-  console.log(req.query);
   if (!startDate && !endDate) {
     return res.status(400).send("Start date and end date are required");
   }

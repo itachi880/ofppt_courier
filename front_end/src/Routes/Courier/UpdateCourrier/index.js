@@ -129,8 +129,8 @@ export default function () {
         />
         <div style={{ margin: "10px 0" }}>
           <span style={{ display: "flex", gap: "5px" }}>
-            <RedBox>departements</RedBox>
-            <GreenBox>groups</GreenBox>
+            <RedBox>Entité</RedBox>
+            <GreenBox>groupes</GreenBox>
           </span>
           <hr style={{ margin: "5px 0" }} />
           <div
@@ -193,14 +193,14 @@ export default function () {
           }}
         >
           <option value="" hidden>
-            Select Entité
+            selectioné un Entité
           </option>
           {departementsGroup.departements.map((dep) => (
             <option value={dep.department_id}>{dep.department_name}</option>
           ))}
         </select>
 
-        <label style={styles.label}>Groups</label>
+        <label style={styles.label}>Groupes</label>
         <select
           style={styles.select}
           onChange={(e) => {
@@ -210,7 +210,7 @@ export default function () {
           }}
         >
           <option value="" hidden>
-            Select Group
+            selectioné un Groupe
           </option>
           {departementsGroup.departements
             .map((dep) => dep.groups)

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { events, fetchedDates, User } from "../../../data";
 import { GetEvents } from "../../../api";
 import { Store } from "react-data-stores";
@@ -8,9 +8,18 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState("courrier");
   const [userData, setUserData] = User.useStore();
   const [eventsData, setEventData] = events.useStore();
-  const [renderArray, setRenderArray] = useState([]);
+  const today = new Date().toISOString().split("T")[0];
+  const renderArray = useMemo(() => {
+    try {
+      return eventsData.data.filter(
+        (e) => new Date(e.deadline).getTime() >= new Date(today).getTime()
+      );
+    } catch (e) {
+      return [];
+    }
+  }, [eventsData.data]);
   useEffect(() => {
-    if (!userData.token) return;
+    if (!userData.token || Object.keys(userData.data || {}).length == 0) return;
     const date = new Date();
     const start = new Date(
       date.getFullYear() + "-" + (date.getMonth() + 1) + "-1"
@@ -27,7 +36,6 @@ export default function Home() {
     GetEvents(userData.token, {
       start: start.toISOString().split("T")[0], //from the begenin of the moth
     }).then((res) => {
-      console.log(res);
       if (res[0]) return;
       const formattedEvents = res[1].data.map((e) => ({
         ...e,
@@ -45,15 +53,11 @@ export default function Home() {
         start: computed_start,
         end: end.getTime(), //get the last day of the month
       });
-      setRenderArray(formattedEvents);
     });
-  }, []);
-
+  }, [userData]);
   useEffect(() => {
-    const today = new Date();
-    today.setDate(today.getDate() + 1);
-  }, [eventsData]);
-
+    console.log("render ", renderArray);
+  }, [renderArray]);
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col pb-16">
       <header className="bg-gradient-to-r from-green-500 to-green-700 text-white shadow-lg py-4 px-6 md:px-12">
@@ -94,12 +98,15 @@ export default function Home() {
           {/* Added margin bottom */}
           {activeTab === "courrier" && (
             <CourrierTable
-              eventsData={eventsData.data}
+              eventsData={renderArray || []}
               userData={userData.data}
             />
           )}
           {activeTab === "evenements" && (
-            <EventTable eventsData={eventsData.data} userData={userData.data} />
+            <EventTable
+              eventsData={renderArray || []}
+              userData={userData.data}
+            />
           )}
         </div>
       </main>
@@ -112,6 +119,7 @@ const CourrierTable = ({ eventsData, userData }) => {
   const dataToRender = eventsData.filter((event) => {
     return event.is_courier == 1;
   });
+
   return (
     <section>
       <h2 className="text-xl font-semibold mb-4">

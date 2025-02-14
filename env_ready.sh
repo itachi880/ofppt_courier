@@ -47,8 +47,7 @@ mysql -u root -p $MYSQL_ROOT_PASS < $DATABASE
 # Install Node.js 18.20.5 and npm 10
 echo "Installing Node.js 18.20.5 and npm 10..."
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-sudo apt install -y nodejs
-sudo npm install -g npm@10
+sudo apt install -y nodejs npm 
 sudo rm ./back_end/package-lock.json
 sudo rm ./front_end/package-lock.json
 # Verify installations

@@ -112,16 +112,18 @@ router.post(
     if (!courierId) return res.status(400).send("Courier ID is required");
 
     try {
-      // Rechercher le courrier dans la base de données
-      const [updateError] = await Courier.updateByID(courierId, {
-        title: req.body.title,
-        description: req.body.description,
-        deadline: req.body.deadline,
-        critical: req.body.critical,
-        created_at: req.body.created_at,
-        state: req.body.state,
-        expiditeur: req.body.expiditeur,
+      const [courierError, courierData] = await Courier.read({
+        and: [
+          {
+            [TablesNames.courier + ".id"]: {
+              value: courierId,
+              operateur: "=",
+            },
+          },
+        ],
       });
+      if (courierError) return res.status(404).end("not found");
+      //!check for role and dep and group
       if (updateError) return res.status(404).send("Courier not found");
       console.log(req.body.assigneed_to);
       const [assigneError] = await CourierAssignee.updateAssignment(

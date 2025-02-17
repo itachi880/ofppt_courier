@@ -40,7 +40,8 @@ CREATE TABLE `couriers` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `is_courier` tinyint(1) NOT NULL DEFAULT 1,
-  `expiditeur` varchar(255) NOT NULL DEFAULT ''
+  `expiditeur` varchar(255) NOT NULL DEFAULT '',
+  `is_validated` boolean NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --

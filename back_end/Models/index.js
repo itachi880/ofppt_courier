@@ -576,7 +576,7 @@ module.exports.Courier = {
    */
   async read(by = {}) {
     try {
-      const query = `SELECT ${TablesNames.courier}.id, 
+      const query = `SELECT ${TablesNames.courier}.id AS id, 
       ${TablesNames.courier}.title, 
       ${TablesNames.courier}.description, 
       ${TablesNames.courier}.deadline, 
@@ -585,14 +585,16 @@ module.exports.Courier = {
       ${TablesNames.courier}.is_courier, 
       ${TablesNames.courier}.updated_at,
       ${TablesNames.courier_files}.id as img_id,
-      path FROM ${TablesNames.courier} JOIN ${TablesNames.courier_files} on ${
-        TablesNames.courier
-      }.id=${TablesNames.courier_files}.courier_id ${parse_condition(by)}`;
+      path FROM ${TablesNames.courier} LEFT JOIN ${
+        TablesNames.courier_files
+      } on ${TablesNames.courier}.id=${
+        TablesNames.courier_files
+      }.courier_id WHERE ${parse_condition(by)}`;
 
       const rows = [];
-
       const res = await db.query(query);
       res[0].forEach((courier) => {
+        if (!courier?.path) return rows.push(courier);
         const index = rows.findIndex((row) => row.id == courier.id);
         if (index >= 0) return rows[index].path.push(courier.path);
         courier.path = [courier.path];

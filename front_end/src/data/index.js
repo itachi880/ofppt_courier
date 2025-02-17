@@ -3,7 +3,7 @@ export const events = createStore({
   data: [],
   pagesIndexs: {},
 });
-
+export const refetch = createStore({ refetch: true });
 export const User = createStore({
   token: undefined,
   data: undefined,

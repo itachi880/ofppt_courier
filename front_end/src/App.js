@@ -58,6 +58,7 @@ function App() {
           return;
         }
         const token = localStorage.getItem("token");
+        //if token present init the data if not go to login thene fetch
         const tokenRes = await tokenAuthApi(userData.token || token);
         if (tokenRes[0]) {
           localStorage.clear();
@@ -77,7 +78,6 @@ function App() {
           data: { ...tokenRes[1].data },
           token: tokenRes[1].token,
         });
-
         const departementsRes = await getDepartements(userData.token);
         if (departementsRes[0]) {
           setLoadingFlag({ loading: false });
@@ -94,8 +94,6 @@ function App() {
           departements: departementsRes[1],
           groups: groupsRes[1],
         });
-        console.log(departementsRes, groupsRes);
-
         setLoadingFlag({ loading: false });
         setDataFetched(true);
       });

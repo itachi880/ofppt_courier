@@ -44,7 +44,6 @@ const ViewToggleButton = ({ onClick, view, text }) => {
 };
 
 const CustomToolbar = ({ onNavigate, label, onView, view }) => {
-  console.log({ onNavigate, label, onView, view });
   return (
     <div className="custom-toolbar">
       <div className="navigation-buttons">

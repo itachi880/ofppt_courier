@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { LoginApi } from "../../api/index";
-import { loading, User } from "../../data";
+import { getDepartements, getGroups, LoginApi } from "../../api/index";
+import { departements_group_store, loading, User } from "../../data";
 import { Store } from "react-data-stores";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
@@ -14,6 +14,8 @@ export function LoginForm() {
   const [showPass, setShowPass] = useState(true);
   const navigate = useNavigate();
   const [loadingFlag, setLoadingFlag] = loading.useStore();
+  const [departements_group, setDepartementsGroup] =
+    departements_group_store.useStore();
   if (localStorage.getItem("token")) return null;
   const handleLogin = async (e) => {
     e.preventDefault(); // Empêche le rechargement de la page.
@@ -21,17 +23,32 @@ export function LoginForm() {
     const [err, data] = await LoginApi(email, password);
     setLoadingFlag({ loading: false });
     if (err) {
-      setError(
-        err?.response?.data?.message || "An error occurred during login"
-      );
+      setError(err?.response?.data || "An error occurred during login");
       setSuccess(null);
-    } else {
-      setSuccess("Login successful!");
-      setError(null);
-      localStorage.setItem("token", data.token);
-      setUserData(data);
-      Store.navigateTo(searchParams.get("path") || "/");
+      return;
     }
+    setLoadingFlag({ loading: true });
+
+    const departementsRes = await getDepartements(data.token);
+    if (departementsRes[0]) {
+      setLoadingFlag({ loading: false });
+      return console.log("Error getting departements", departementsRes[0]);
+    }
+    const groupsRes = await getGroups(data.token);
+    if (groupsRes[0]) {
+      setLoadingFlag({ loading: false });
+      return console.log("Error getting groups", groupsRes[0]);
+    }
+    setDepartementsGroup({
+      departements: departementsRes[1],
+      groups: groupsRes[1],
+    });
+    setLoadingFlag({ loading: false });
+    setUserData(data);
+    localStorage.setItem("token", data.token);
+    setSuccess("Login successful!");
+    setError(null);
+    Store.navigateTo(searchParams.get("path") || "/");
   };
   // Styles internes
   const styles = {

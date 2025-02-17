@@ -25,6 +25,7 @@ export default () => {
 
   const handleDropdown = (dropdown) => {
     setOpenDropdown(openDropdown === dropdown ? null : dropdown);
+    setIsSettingOpen(false);
   };
   useEffect(() => {
     console.log("User data updated:", userData);
@@ -286,7 +287,6 @@ export default () => {
               {alertEvents.length > 0 && (
                 <span className="absolute top-0 right-0 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
                   {alertEvents.filter((alert) => alert.is_courier == 1).length}
-                  {/* Show only the count */}
                 </span>
               )}
             </button>
@@ -350,8 +350,11 @@ export default () => {
           {/* Logout Section (Right) */}
 
           <div
-            className="profile"
-            onClick={() => setIsSettingOpen((prev) => !prev)}
+            className={"profile" + (isSettingOpen ? " active" : "")}
+            onClick={() => {
+              setIsSettingOpen((prev) => !prev);
+              setOpenDropdown("");
+            }}
             style={{
               cursor: "pointer",
             }}
@@ -374,9 +377,8 @@ export default () => {
                   <span
                     className="logout fa-solid fa-right-from-bracket"
                     onClick={() => {
-                      setUserData({}, true);
                       localStorage.removeItem("token");
-                      Store.navigateTo("/login");
+                      window.location.pathname = "/";
                     }}
                   ></span>
                 </button>

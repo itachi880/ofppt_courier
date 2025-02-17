@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { departements_group_store, events, loading, User } from "../../../data";
 import { BASE_URL, getCourierById, UpdateCourier } from "../../../api";
 import { useParams } from "react-router-dom";
-import { GreenBox, ImgsWithCancelIcon, RedBox } from "../../../utils";
+import { GreenBox, ImgsWithCancelIcon, RedBox, roles } from "../../../utils";
 import { Store } from "react-data-stores";
 import Swal from "sweetalert2";
 
@@ -97,10 +97,16 @@ export default function () {
     departements_group_store.useStore();
   const [loadingFlag, setLoadingFlag] = loading.useStore();
   useEffect(() => {
+    if (userData.data.role != roles.admin) {
+      Store.navigateTo("/courrier/detail/" + id);
+      return;
+    }
     const event = eventsStore.data.find((event) => event.id == id);
+
     if (!event)
       return getCourierById(id, userData.token).then((res) => {
         if (res[0]) return Store.navigateTo("/");
+
         res[1][0].deadline = res[1][0].deadline.split("T")[0];
         setFormData({
           id: id,
@@ -249,14 +255,14 @@ export default function () {
         />
       </div>
       <div style={styles.section}>
-        <label style={styles.label}>Expiditeur</label>
+        <label style={styles.label}>Expéditeur</label>
         <input
           style={styles.input}
           onChange={(e) => {
             setFormData({ ...formData, expiditeur: e.target.value });
           }}
           value={formData.expiditeur}
-          placeholder="Expiditeur"
+          placeholder="Expéditeur..."
         />
         <div style={styles.section}>
           <label style={styles.label}>Upload Fichiers</label>

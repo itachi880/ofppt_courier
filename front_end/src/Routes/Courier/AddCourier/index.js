@@ -206,14 +206,14 @@ export default function () {
             )}
         </select>
 
-        <label style={styles.label}>Expiditeur</label>
+        <label style={styles.label}>Expéditeur</label>
         <input
           style={styles.input}
           onChange={(e) => {
             setFormData({ ...formData, expiditeur: e.target.value });
           }}
           value={formData.expiditeur}
-          placeholder="Expiditeur"
+          placeholder="Expéditeur..."
         />
         <label style={styles.label}>Description</label>
         <input

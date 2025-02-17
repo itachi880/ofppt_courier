@@ -8,6 +8,7 @@ import {
 import { Calendar, useQuery } from "../../../utils";
 import "./index.css";
 import { GetEvents } from "../../../api";
+import { useEffect } from "react";
 export default () => {
   const [CalendarEvents, setCalendarEvents] = events.useStore();
   const afficheType = useQuery()(documentType.event)
@@ -19,6 +20,53 @@ export default () => {
       : CalendarEvents.data.filter((event) => event.is_courier == 0);
   const [userData, setUserData] = User.useStore();
   const [loadingFlag, setLoadingFlag] = loading.useStore();
+  async function fetcheDates({ start, end }) {
+    start = start.getTime();
+    end = end.getTime();
+    if (
+      fetchedDates.find(
+        (dateTime) => dateTime.start <= start && end <= dateTime.end
+      )
+    )
+      return;
+    setLoadingFlag({ loading: true });
+    const result = await GetEvents(userData.token, {
+      start: new Date(start).toISOString().split("T")[0],
+      end: new Date(end).toISOString().split("T")[0],
+    });
+    if (result[0])
+      return console.log(result) && setLoadingFlag({ loading: false });
+
+    fetchedDates.push({ start: start, end: end });
+    const set = [];
+    const ids = [];
+    CalendarEvents.data.forEach((e) => {
+      set.push(e);
+      ids.push(e.id);
+    });
+    result[1].data.forEach((e) => {
+      if (ids.includes(e.id)) return;
+      e.deadline = e.deadline.split("T")[0];
+      e.expiditeur = e.expiditeur || "unknown";
+      set.push(e);
+      ids.push(e.id);
+    });
+    setCalendarEvents({
+      data: set,
+    });
+    setLoadingFlag({ loading: false });
+  }
+  useEffect(() => {
+    const today = new Date();
+    const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const lastDayOfMonth = new Date(
+      today.getFullYear(),
+      today.getMonth() + 1,
+      0
+    );
+    // Format to "YYYY-MM-01"
+    fetcheDates({ start: firstDayOfMonth, end: lastDayOfMonth });
+  }, []);
   return (
     <>
       <header className="bg-gradient-to-r from-green-500 to-green-700 text-white shadow-lg py-4 px-6 md:px-12">
@@ -49,42 +97,7 @@ export default () => {
               backgroundColor: "red",
               description: e.description,
             }))}
-            onDateRangeChange={async ({ start, end }) => {
-              start = start.getTime();
-              end = end.getTime();
-              if (
-                fetchedDates.find(
-                  (dateTime) => dateTime.start <= start && end <= dateTime.end
-                )
-              )
-                return;
-              setLoadingFlag({ loading: true });
-              const result = await GetEvents(userData.token, {
-                start: new Date(start).toISOString().split("T")[0],
-                end: new Date(end).toISOString().split("T")[0],
-              });
-              if (result[0])
-                return (
-                  console.log(result) && setLoadingFlag({ loading: false })
-                );
-
-              fetchedDates.push({ start: start, end: end });
-              const set = [];
-              const ids = [];
-              CalendarEvents.data.forEach((e) => {
-                set.push(e);
-                ids.push(e.id);
-              });
-              result[1].data.forEach((e) => {
-                if (ids.includes(e.id)) return;
-                set.push(e);
-                ids.push(e.id);
-              });
-              setCalendarEvents({
-                data: set,
-              });
-              setLoadingFlag({ loading: false });
-            }}
+            onDateRangeChange={fetcheDates}
           />
         }
       </div>

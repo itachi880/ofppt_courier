@@ -104,8 +104,8 @@ export default function () {
     }
     const event = eventsStore.data.find((event) => event.id == id);
 
-    if (!event)
-      return getCourierById(id, userData.token).then((res) => {
+    if (!event) {
+      getCourierById(id, userData.token).then((res) => {
         if (res[0]) return Store.navigateTo("/");
         res[1][0].deadline = res[1][0].deadline.split("T")[0];
         setFormData({
@@ -125,6 +125,8 @@ export default function () {
         });
         setEventsStore({ data: [...eventsStore.data, res[1][0]] });
       });
+      return;
+    }
     setFormData({
       id: id,
       title: event.title,

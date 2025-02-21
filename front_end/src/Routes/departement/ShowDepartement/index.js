@@ -62,50 +62,71 @@ export default function ShowDepartments() {
         </div>
       </header>
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="p-4 w-full max-w-4xl bg-white shadow-md rounded-md">
-          <h1 className="text-xl font-semibold text-gray-800 mb-3 text-center">
+        <div className="p-6 w-full max-w-4xl bg-white shadow-lg rounded-lg">
+          {" "}
+          {/* Increased padding, rounded corners */}
+          <h1 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
+            {" "}
+            {/* Increased title size, margin */}
             Departments
           </h1>
-
-          <table className="w-full table-auto border-separate border-spacing-0.5">
+          <table className="w-full table-auto border-collapse">
+            {" "}
+            {/* Use border-collapse for cleaner table */}
             <thead>
-              <tr>
-                <th className="text-sm text-gray-600 font-medium py-2 px-3 border-b">
+              <tr className="bg-gray-100">
+                {" "}
+                {/* Added background color to header row */}
+                <th className="text-left text-gray-700 font-medium py-3 px-4 border-b border-gray-200">
+                  {" "}
+                  {/* Adjusted padding, border */}
                   Name
                 </th>
-
-                <th className="text-sm text-gray-600 font-medium py-2 px-3 border-b">
+                <th className="text-center text-gray-700 font-medium py-3 px-4 border-b border-gray-200">
+                  {" "}
+                  {/* Centered text */}
                   Delete
                 </th>
-                <th className="text-sm text-gray-600 font-medium py-2 px-3 border-b">
+                <th className="text-center text-gray-700 font-medium py-3 px-4 border-b border-gray-200">
+                  {" "}
+                  {/* Centered text */}
                   Update
                 </th>
               </tr>
             </thead>
             <tbody>
               {departementsGroups.departements.map((e) => (
-                <tr key={e.department_id} className="hover:bg-gray-100">
-                  <td className="text-sm text-gray-700 py-2 px-3 border-b">
+                <tr
+                  key={e.department_id}
+                  className="hover:bg-gray-50 transition duration-200"
+                >
+                  {" "}
+                  {/* Added hover effect, transition */}
+                  <td className="text-gray-700 py-3 px-4 border-b border-gray-200">
+                    {" "}
+                    {/* Adjusted padding, border */}
                     {e.department_name}
                   </td>
-
-                  <td className="py-2 px-3 border-b">
+                  <td className="text-center py-3 px-4 border-b border-gray-200">
+                    {" "}
+                    {/* Centered buttons */}
                     <button
                       onClick={() => handleDelete(e.department_id)}
-                      className="text-red-500 hover:text-red-700 mr-2"
+                      className="text-red-600 hover:text-red-800 mr-2 focus:outline-none transition duration-200" /* Improved button styling */
                       aria-label="Delete Department"
                     >
-                      <FaTrashAlt />
+                      <FaTrashAlt className="text-lg" /> {/* Larger icon */}
                     </button>
-  
                   </td>
-                  <td className="py-2 px-3 border-b">
-                  <button
+                  <td className="text-center py-3 px-4 border-b border-gray-200">
+                    {" "}
+                    {/* Centered buttons */}
+                    <button
                       onClick={() => handleUpdate(e.department_id)}
-                      className="text-blue-500 hover:text-blue-700"
+                      className="text-blue-600 hover:text-blue-800 focus:outline-none transition duration-200" /* Improved button styling */
                       aria-label="Update Department"
                     >
-                      <FaEdit />
+                      <FaEdit className="text-lg" /> {/* Larger icon */}
                     </button>
                   </td>
                 </tr>
@@ -114,7 +135,6 @@ export default function ShowDepartments() {
           </table>
         </div>
       </div>
-
     </>
   );
 }

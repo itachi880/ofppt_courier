@@ -11,7 +11,7 @@ const Archive = () => {
   const eventsPerPage = 10;
   const [userData, setUserData] = User.useStore();
   const [fetchedPages, setFetchedPages] = useState({});
-  const [totalPages, setTotalPages] = useState(0); // Add totalPages state
+  const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
     if (!fetchedPages[currentPage]) {
@@ -19,24 +19,41 @@ const Archive = () => {
         getArchive(userData.token, currentPage).then((res) => {
           if (res[0]) {
             console.log("error", res);
-            return; // Important: Stop execution on error
+            return;
           }
 
-          setEventData(res[1]); // Correctly update eventsData
+          // Vérification si c'est un admin global (sans groupe ni département)
+          const isGlobalAdmin = !userData.groupId && !userData.departmentId;
+
+          // Filtrer les courriers
+          const filteredEvents = res[1].filter((e) => {
+            if (isGlobalAdmin) {
+              return e.is_courier === 1; // Admin global voit tous les courriers
+            }
+
+            // Pour les utilisateurs normaux, filtrer les courriers assignés
+            const isAssigned =
+              e.assignedTo?.includes(userData.id) ||
+              e.groupId === userData.groupId ||
+              e.departmentId === userData.departmentId;
+
+            return e.is_courier === 1 && isAssigned;
+          });
+
+          setEventData(filteredEvents);
           setFetchedPages((prevPages) => ({
             ...prevPages,
-            [currentPage]: res[1],
+            [currentPage]: filteredEvents,
           }));
-          setTotalPages(res[2]); // Assuming res[2] is the total count. Update total pages.
+          setTotalPages(res[2]);
         });
       } catch (error) {
         console.error("Failed to fetch events", error);
       }
     }
-  }, [currentPage, userData.token]); // Add userData.token to dependencies
+  }, [currentPage, userData.token, userData.groupId, userData.departmentId]);
 
-  const currentEvents = fetchedPages[currentPage] || []; // Display data only when it is fetched.
-
+  const currentEvents = fetchedPages[currentPage] || [];
   const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
@@ -72,8 +89,7 @@ const Archive = () => {
               </div>
             </div>
           ))}
-          {currentEvents.length === 0 && <p>Aucune donnée disponible.</p>}{" "}
-          {/* Display message if no data */}
+          {currentEvents.length === 0 && <p>Aucun courrier archivé assigné.</p>}
         </div>
 
         {/* Pagination */}
@@ -85,12 +101,10 @@ const Archive = () => {
           >
             Precedent
           </button>
+
           {Array.from(
             { length: Math.ceil(totalPages / eventsPerPage) },
-            (
-              _,
-              i // Use totalPages for pagination
-            ) => (
+            (_, i) => (
               <button
                 key={i}
                 onClick={() => handlePageChange(i + 1)}
@@ -105,7 +119,7 @@ const Archive = () => {
 
           <button
             onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage * eventsPerPage >= totalPages} // Correctly disable "Next"
+            disabled={currentPage * eventsPerPage >= totalPages}
             className="bg-[#FFC107] hover:bg-[#F9A602] text-[#0078D7] font-bold py-2 px-4 rounded ml-2 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed transition duration-300"
           >
             Suivant

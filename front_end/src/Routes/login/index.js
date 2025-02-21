@@ -52,114 +52,150 @@ export function LoginForm() {
     Store.navigateTo(searchParams.get("path") || "/");
   };
   // Styles internes
+  // Styles internes
   const styles = {
     container: {
-      maxWidth: "400px",
-      margin: "0 auto",
-      padding: "20px",
-      textAlign: "center",
-      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-      borderRadius: "10px",
-      backgroundColor: "#f9f9f9",
+      maxWidth: "480px",
+      margin: "2rem auto",
+      padding: "2.5rem",
+      borderRadius: "16px",
+      backgroundColor: "white",
+      boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)",
+      transition: "all 0.3s ease",
     },
     title: {
-      marginBottom: "20px",
-      color: "#333",
+      marginBottom: "1.5rem",
+      color: "#1a1a1a",
+      fontSize: "24px",
+      fontWeight: "600",
     },
     inputGroup: {
-      marginBottom: "15px",
-      textAlign: "left",
+      marginBottom: "1.25rem",
     },
     label: {
       display: "block",
-      marginBottom: "5px",
-      fontWeight: "bold",
-      color: "#555",
+      marginBottom: "0.5rem",
+      color: "#404040",
+      fontSize: "14px",
+      fontWeight: "500",
     },
     input: {
       width: "100%",
-      padding: "10px",
-      marginTop: "5px",
-      border: "1px solid #ccc",
-      borderRadius: "5px",
+      padding: "0.875rem",
+      border: "1px solid #e5e7eb",
+      borderRadius: "8px",
+      backgroundColor: "#f8fafc",
+      transition: "all 0.2s ease",
+      fontSize: "14px",
       boxSizing: "border-box",
+      outline: "none",
+      ":focus": {
+        borderColor: "#6366f1",
+        boxShadow: "0 0 0 3px rgba(99, 102, 241, 0.1)",
+      },
     },
     button: {
-      padding: "10px 20px",
-      backgroundColor: "#007BFF",
-      color: "#fff",
-      border: "none",
-      cursor: "pointer",
-      borderRadius: "5px",
-      fontWeight: "bold",
+      width: "100%",
+      padding: "0.875rem",
+      backgroundColor: "#6366f1",
+      color: "white",
+      fontWeight: "600",
+      borderRadius: "8px",
+      marginTop: "0.5rem",
+      transition: "all 0.2s ease",
+      textTransform: "uppercase",
+      letterSpacing: "0.5px",
+      ":hover": {
+        backgroundColor: "#4f46e5",
+      },
+      ":active": {
+        transform: "scale(0.98)",
+      },
     },
     error: {
-      color: "red",
-      marginTop: "10px",
+      color: "#dc2626",
+      marginTop: "1rem",
+      padding: "0.75rem",
+      backgroundColor: "#fef2f2",
+      borderRadius: "8px",
+      fontSize: "14px",
     },
     success: {
-      color: "green",
-      marginTop: "10px",
+      color: "#16a34a",
+      marginTop: "1rem",
+      padding: "0.75rem",
+      backgroundColor: "#f0fdf4",
+      borderRadius: "8px",
+      fontSize: "14px",
     },
   };
 
   return (
     <>
-    <img src="../../../public/logo_ofppt.png" alt="enssup" style={{width: "100px", height: "100px", display: "block", margin: "0 auto"}}/>
-    <div style={styles.container}>
-      <h2 style={styles.title}>Login</h2>
-      <form onSubmit={handleLogin}>
-        <div style={styles.inputGroup}>
-          <label htmlFor="email" style={styles.label}>
-            Email:
-          </label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            style={styles.input}
-            required
-          />
-        </div>
-        <div style={styles.inputGroup}>
-          <label htmlFor="password" style={styles.label}>
-            Password:
-          </label>
-          <div style={styles.input}>
+      <img
+        src="../../../public/logo_ofppt.png"
+        alt="enssup"
+        style={{
+          width: "100px",
+          height: "100px",
+          display: "block",
+          margin: "0 auto",
+        }}
+      />
+      <div style={styles.container}>
+        <h2 style={styles.title}>Login</h2>
+        <form onSubmit={handleLogin}>
+          <div style={styles.inputGroup}>
+            <label htmlFor="email" style={styles.label}>
+              Email:
+            </label>
             <input
-              type={showPass ? "password" : "text"}
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              style={{
-                background: "transparent",
-                outline: "none",
-                width: "92%",
-              }}
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              style={styles.input}
               required
             />
-            <i
-              style={{ cursor: "pointer" }}
-              className={"fa-solid fa-eye" + (showPass ? "-slash" : "")}
-              onClick={() => setShowPass((prev) => !prev)}
-            ></i>
           </div>
-        </div>
-        <input type="submit" style={styles.button} value={"Login"} />
-        <br></br>
-        <span
-          onClick={() => {
-            navigate("/resetPassword");
-          }}
-          className="text-blue-500 hover:underline mt-2 cursor-pointer transition duration-200 ease-in-out"
-        >
-          Mot de passe oublié ?
-        </span>
-      </form>
-      {error && <p style={styles.error}>{error}</p>}
-      {success && <p style={styles.success}>{success}</p>}
-    </div>
+          <div style={styles.inputGroup}>
+            <label htmlFor="password" style={styles.label}>
+              Password:
+            </label>
+            <div style={styles.input}>
+              <input
+                type={showPass ? "password" : "text"}
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                style={{
+                  background: "transparent",
+                  outline: "none",
+                  width: "92%",
+                }}
+                required
+              />
+              <i
+                style={{ cursor: "pointer" }}
+                className={"fa-solid fa-eye" + (showPass ? "-slash" : "")}
+                onClick={() => setShowPass((prev) => !prev)}
+              ></i>
+            </div>
+          </div>
+          <input type="submit" style={styles.button} value={"Login"} />
+          <br></br>
+          <span
+            onClick={() => {
+              navigate("/resetPassword");
+            }}
+            className="text-blue-500 hover:underline mt-2 cursor-pointer transition duration-200 ease-in-out"
+          >
+            Mot de passe oublié ?
+          </span>
+        </form>
+        {error && <p style={styles.error}>{error}</p>}
+        {success && <p style={styles.success}>{success}</p>}
+      </div>
     </>
   );
 }

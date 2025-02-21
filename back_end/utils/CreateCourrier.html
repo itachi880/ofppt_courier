@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nouvelle Soumission de Courrier</title>
+  </head>
+  <body
+    style="
+      margin: 0;
+      padding: 20px;
+      background-color: #f9f9f9;
+      font-family: Arial, sans-serif;
+    "
+  >
+    <!--[if mso]>
+      <style type="text/css">
+        .body-table {
+          width: 600px !important;
+        }
+      </style>
+    <![endif]-->
+
+    <center>
+      <table
+        class="body-table"
+        align="center"
+        border="0"
+        cellpadding="0"
+        cellspacing="0"
+        width="100%"
+        style="
+          max-width: 600px;
+          background-color: #ffffff;
+          border-radius: 12px;
+          box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        "
+      >
+        <tr>
+          <td style="padding: 25px">
+            <!-- Header -->
+            <table
+              border="0"
+              cellpadding="0"
+              cellspacing="0"
+              width="100%"
+              style="background-color: #00a651; border-radius: 10px 10px 0 0"
+            >
+              <tr>
+                <td style="padding: 20px; text-align: center; color: white">
+                  <h1 style="font-size: 28px; margin: 0">
+                    📨 Nouvelle Soumission de Courrier
+                  </h1>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Content -->
+            <div style="padding: 20px 0">
+              <p style="line-height: 1.8; margin-bottom: 15px; font-size: 16px">
+                Bonjour,
+              </p>
+              <p style="line-height: 1.8; margin-bottom: 15px; font-size: 16px">
+                Un nouveau courrier a été ajouté avec les détails suivants :
+              </p>
+
+              <!-- Data Items -->
+              <table
+                cellpadding="0"
+                cellspacing="0"
+                width="100%"
+                style="margin-bottom: 20px"
+              >
+                <tr>
+                  <td
+                    style="
+                      background-color: #e6f2ff;
+                      padding: 12px 15px;
+                      margin-bottom: 8px;
+                      border-radius: 8px;
+                      font-size: 15px;
+                    "
+                  >
+                    📄 <strong style="color: #007bff">Titre :</strong>
+                    <span style="color: #00a651; font-weight: 600"
+                      >{{title}}</span
+                    >
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    style="
+                      background-color: #e6f2ff;
+                      padding: 12px 15px;
+                      margin-bottom: 8px;
+                      border-radius: 8px;
+                      font-size: 15px;
+                    "
+                  >
+                    📝
+                    <strong style="color: #007bff">Description :</strong>
+                    {{description}}
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    style="
+                      background-color: #e6f2ff;
+                      padding: 12px 15px;
+                      margin-bottom: 8px;
+                      border-radius: 8px;
+                      font-size: 15px;
+                    "
+                  >
+                    👤
+                    <strong style="color: #007bff">Expéditeur :</strong>
+                    {{expediteur}}
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    style="
+                      background-color: #e6f2ff;
+                      padding: 12px 15px;
+                      margin-bottom: 8px;
+                      border-radius: 8px;
+                      font-size: 15px;
+                    "
+                  >
+                    🏷️ <strong style="color: #007bff">État :</strong> {{state}}
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    style="
+                      background-color: #e6f2ff;
+                      padding: 12px 15px;
+                      margin-bottom: 8px;
+                      border-radius: 8px;
+                      font-size: 15px;
+                    "
+                  >
+                    📅
+                    <strong style="color: #007bff">Date limite :</strong>
+                    {{deadline}}
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    style="
+                      background-color: #e6f2ff;
+                      padding: 12px 15px;
+                      margin-bottom: 8px;
+                      border-radius: 8px;
+                      font-size: 15px;
+                    "
+                  >
+                    ⏰
+                    <strong style="color: #007bff">Créé le :</strong>
+                    {{created_at}}
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Button -->
+              <div style="text-align: center; margin: 25px 0">
+                <a
+                  href="{{link}}"
+                  style="
+                    display: inline-block;
+                    padding: 12px 25px;
+                    background-color: #00a651;
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 8px;
+                    border: 2px solid #007bff;
+                    font-weight: bold;
+                  "
+                >
+                  📎 Voir le courrier
+                </a>
+              </div>
+
+              <p style="line-height: 1.8; margin-bottom: 15px; font-size: 16px">
+                Merci !
+              </p>
+            </div>
+
+            <!-- Footer -->
+            <div
+              style="
+                text-align: center;
+                font-size: 14px;
+                color: #777;
+                padding-top: 20px;
+                border-top: 1px solid #eee;
+              "
+            >
+              © {{year}} Système de Gestion des Courriers. Tous droits réservés.
+            </div>
+          </td>
+        </tr>
+      </table>
+    </center>
+  </body>
+</html>

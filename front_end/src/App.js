@@ -16,7 +16,6 @@ import { LoadingBar, noLoginRoutes, preventBacklink } from "./utils";
 import { ReseteMDP } from "./Routes/mdpOublie";
 import ResetPass from "./Routes/ResetPass";
 import axios from "axios";
-import ValidateCourier from "./Routes/Courier/ValidateCourier";
 
 function App() {
   Store.navigateTo = useNavigate();
@@ -26,17 +25,20 @@ function App() {
   const [departements_group, setDepartementsGroup] =
     departements_group_store.useStore();
 
+  //!
+
   useEffect(() => {
     if (noLoginRoutes.includes(window.location.pathname)) return;
 
     if (!localStorage.getItem("token")) {
       setDataFetched(true);
-      return Store.navigateTo(
+      Store.navigateTo(
         "/login" +
           (!preventBacklink.includes(window.location.pathname)
             ? "?path=" + window.location.pathname
             : "")
       );
+      return;
     }
     setUserData({ token: localStorage.getItem("token") });
   }, []);
@@ -121,7 +123,6 @@ function App() {
 
         {/* Wrap Routes with AnimatePresence */}
         <AnimatePresence mode="wait">
-          {" "}
           <motion.div
             key={location.pathname}
             variants={variants} // Use animation variants

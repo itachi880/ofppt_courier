@@ -20,9 +20,7 @@ const DetailCourier = () => {
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const event = eventsStore?.data?.find(
-          (event) => event.id === parseInt(id)
-        );
+        const event = eventsStore?.data?.find((event) => event.id == id);
         if (!event) {
           Store.navigateTo("/");
           return;
@@ -40,6 +38,8 @@ const DetailCourier = () => {
           imgs: event.imgs || [],
           groups: event.groups || [],
           files: event.files || [],
+          is_validated: event.is_validated || false,
+          result_validation: event.result_validation || "no result",
         });
       } catch (err) {
         setError("Échec du chargement des détails de l'événement.");
@@ -143,7 +143,10 @@ const DetailCourier = () => {
               <p className="text-gray-700">Aucun groupe assigné.</p>
             )}
           </div>
-
+          <div className="bg-gray-50 p-4 rounded-xl">
+            <h2 className="text-lg font-semibold">Result validation :</h2>
+            <p className="text-gray-700">{formData.result_validation}</p>
+          </div>
           <div className="bg-gray-50 p-4 rounded-xl">
             <h2 className="text-lg font-semibold">Créé le :</h2>
             <p className="text-gray-700">

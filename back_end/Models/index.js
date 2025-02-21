@@ -894,6 +894,8 @@ module.exports.CourierAssignee = {
       ${TablesNames.courier_assigne}.department_id, 
       ${TablesNames.courier}.created_at, 
       ${TablesNames.courier}.is_courier, 
+      ${TablesNames.courier}.is_validated, 
+      ${TablesNames.courier}.result_validation, 
       ${TablesNames.courier}.updated_at, 
       ${TablesNames.courier_files}.path 
     FROM ${TablesNames.courier_assigne} 
@@ -945,6 +947,8 @@ module.exports.CourierAssignee = {
             departements: [],
             groups: [],
             imgs: [],
+            is_validated: row[`is_validated`],
+            result_validation: row[`result_validation`],
           });
           insertedIds.set(courierId, result.length - 1);
         }
@@ -963,7 +967,7 @@ module.exports.CourierAssignee = {
           result[index].imgs.push(row.path);
         }
       });
-
+      console.log(result);
       return [null, result];
     } catch (e) {
       console.error(e);

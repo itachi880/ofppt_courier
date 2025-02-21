@@ -108,10 +108,17 @@ export default function () {
       Store.navigateTo("/courrier/detail/" + id);
       return;
     }
+    if (
+      userData.data.role == roles.admin &&
+      (userData.data.departement_id || userData.data.group_id)
+    ) {
+      Store.navigateTo("/courrier/validate/" + id);
+      return;
+    }
     const event = eventsStore.data.find((event) => event.id == id);
 
-    if (!event)
-      return getCourierById(id, userData.token).then((res) => {
+    if (!event) {
+      getCourierById(id, userData.token).then((res) => {
         if (res[0]) return Store.navigateTo("/");
 
         res[1][0].deadline = res[1][0].deadline.split("T")[0];
@@ -128,9 +135,14 @@ export default function () {
           imgs: res[1][0].imgs,
           groups: res[1][0].groups || [],
           files: [],
+          is_validated: res[1][0].is_validated || 0,
+          result_validation: res[1][0].result_validation || "no result",
         });
         setEventsStore({ data: [...eventsStore.data, res[1][0]] });
       });
+
+      return;
+    }
     setFormData({
       id: id,
       title: event.title,
@@ -144,6 +156,8 @@ export default function () {
       imgs: event.imgs,
       groups: event.groups || [],
       files: [],
+      is_validated: event.is_validated || 0,
+      result_validation: event.result_validation || "no result",
     });
   }, []);
 
@@ -260,6 +274,12 @@ export default function () {
           value={formData.description}
           placeholder="Description"
         />
+        <label style={styles.label}>Courier result :</label>
+        <textarea
+          disabled
+          style={{ ...styles.input, resize: "none" }}
+          value={formData?.result_validation ?? "N/A"}
+        ></textarea>
       </div>
       <div style={styles.section}>
         <label style={styles.label}>Expéditeur</label>

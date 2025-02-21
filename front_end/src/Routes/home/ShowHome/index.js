@@ -14,31 +14,40 @@ export default function Home() {
       const data = eventsData.data.filter(
         (e) => new Date(e.deadline).getTime() >= new Date(today).getTime()
       );
-      console.log("data", data);
+
       return data;
     } catch (e) {
       return [];
     }
   }, [eventsData.data]);
+
   useEffect(() => {
+    console.log("start comp");
     if (!userData.token || Object.keys(userData.data || {}).length == 0) return;
+    console.log("check token");
     const date = new Date();
     const start = new Date(
       date.getFullYear() + "-" + (date.getMonth() + 1) + "-1"
     );
     const computed_start = start.getTime();
     const computed_end = date.getTime();
+    console.log("get dates");
     if (
       fetchedDates.find(
         (dateTime) =>
           dateTime.start <= computed_start && computed_end <= dateTime.end
       )
-    )
+    ) {
+      console.log("skip fetch");
       return;
-    GetEvents(userData.token, {
-      start: start.toISOString().split("T")[0], //from the begenin of the moth
-    }).then((res) => {
+    }
+    console.log("not skip fetch");
+    const get = async () => {
+      const res = await GetEvents(userData.token, {
+        start: start.toISOString().split("T")[0], //from the begenin of the moth
+      });
       if (res[0]) return;
+      console.log("skip error");
       const formattedEvents = res[1].data.map((e) => ({
         ...e,
         deadline: e.deadline.split("T")[0],
@@ -46,7 +55,9 @@ export default function Home() {
         title: e.title,
         id: e.id,
       }));
+      console.log("trandform data");
       setEventData({ data: formattedEvents });
+      console.log("set events store compleat");
       const end = new Date(date.getFullYear(), date.getMonth() + 1, 0);
       end.setHours(23);
       end.setMinutes(59);
@@ -55,11 +66,10 @@ export default function Home() {
         start: computed_start,
         end: end.getTime(), //get the last day of the month
       });
-    });
+      console.log("set fetch date to skip re fetch");
+    };
+    get();
   }, [userData]);
-  useEffect(() => {
-    console.table("render ", renderArray);
-  }, [renderArray]);
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col pb-16">
       <header className="bg-gradient-to-r from-green-500 to-green-700 text-white shadow-lg py-4 px-6 md:px-12">
@@ -156,13 +166,13 @@ const CourrierTable = ({ eventsData, userData }) => {
                     Store.navigateTo(
                       "/courrier/update/" +
                         e.id +
-                        (e.is_courier ? "?event=true" : "")
+                        (!e.is_courier ? "?event=true" : "")
                     );
                   } else {
                     Store.navigateTo(
                       "/courrier/detail/" +
                         e.id +
-                        (e.is_courier ? "?event=true" : "")
+                        (!e.is_courier ? "?event=true" : "")
                     );
                   }
                 }}
@@ -228,7 +238,7 @@ const EventTable = ({ eventsData, userData }) => {
                     Store.navigateTo(
                       "/courrier/update/" +
                         e.id +
-                        (e.is_courier ? "?event=true" : "")
+                        (!e.is_courier ? "?event=true" : "")
                     );
                   } else {
                     Store.navigateTo("/courrier/detail/" + e.id);

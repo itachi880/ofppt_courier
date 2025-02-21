@@ -1,10 +1,16 @@
 const path = require("path");
-const { Courier, CourierAssignee, TablesNames } = require("../../Models");
+const {
+  Courier,
+  CourierAssignee,
+  TablesNames,
+  Users,
+} = require("../../Models");
 const {
   auth_middleware,
   Roles,
   fileSaver,
   documentType,
+  notifyCourierCreation,
 } = require("../../utils");
 const router = require("express").Router();
 const fs = require("fs");
@@ -29,6 +35,13 @@ router.post("/add", fileSaver.array("files", 3), async (req, res) => {
     return res.status(500).end("Backend error");
   }
 
+  let assigneed_to;
+  try {
+    assigneed_to = JSON.parse(req.body.assigneed_to);
+  } catch (parseErr) {
+    console.error(parseErr);
+    return res.status(400).end("Invalid assigneed_to format");
+  }
   if (req.files.length > 0) {
     const files = req.files.map((e, i) => {
       const fileName = `${i}_${Date.now()}.${e.originalname.split(".")[1]}`;
@@ -48,15 +61,6 @@ router.post("/add", fileSaver.array("files", 3), async (req, res) => {
       return res.status(500).end("Backend error");
     }
   }
-
-  let assigneed_to;
-  try {
-    assigneed_to = JSON.parse(req.body.assigneed_to);
-  } catch (parseErr) {
-    console.error(parseErr);
-    return res.status(400).end("Invalid assigneed_to format");
-  }
-
   if (!assigneed_to) return res.status(205).end(response.insertId + "");
   const [err2] = await CourierAssignee.insertMany([
     ...assigneed_to.departements.map((e) => ({
@@ -74,6 +78,21 @@ router.post("/add", fileSaver.array("files", 3), async (req, res) => {
     return res.status(500).end("Backend error");
   }
 
+  const [errreadingUsers, usersToNotify] = await Users.read({
+    and: [
+      {
+        role: Roles.admin,
+        or: [
+          ...assigneed_to.departements.map((e) => ({ department_id: e })),
+          ...assigneed_to.groups.map((grp) => ({
+            group_id: grp,
+          })),
+        ],
+      },
+    ],
+  });
+
+  notifyCourierCreation(); // courier=>
   return res.end(response.insertId + "");
 });
 
@@ -183,7 +202,7 @@ router.get("/bettwen", async (req, res) => {
       console.error(err);
       return res.status(500).send("Backend error");
     }
-
+    console.log(response);
     return res.json(response);
   } catch (error) {
     console.error("Error fetching couriers:", error);

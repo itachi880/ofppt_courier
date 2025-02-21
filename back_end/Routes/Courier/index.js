@@ -11,7 +11,7 @@ const fs = require("fs");
 router.use(auth_middleware);
 
 router.post("/add", fileSaver.array("files", 3), async (req, res) => {
-  if (req.user.role != Roles.admin)
+  if (req.user.role != Roles.admin || req.user.depId || req.user.grpId)
     return res.status(401).end("Don't have access");
 
   const [err, response] = await Courier.insert({
@@ -80,7 +80,7 @@ router.post("/add", fileSaver.array("files", 3), async (req, res) => {
 router.get("/all", async (req, res) => {
   let [err, response] = [null, null];
   const pageNember = req.query.page;
-  if (req.user.role == Roles.admin) {
+  if (req.user.role == Roles.admin && !(req.user.depId || req.user.grpId)) {
     [err, response] = await CourierAssignee.getCouriers(
       undefined,
       undefined,
@@ -107,30 +107,28 @@ router.post(
   "/update/:courierId",
   fileSaver.array("files", 3),
   async (req, res) => {
+    if (req.user.role != Roles.admin || req.user.depId || req.user.grpId)
+      return res.status(401).end("Don't have access");
     const courierId = req.params.courierId;
 
     if (!courierId) return res.status(400).send("Courier ID is required");
 
     try {
-      const [courierError, courierData] = await Courier.read({
-        and: [
-          {
-            [TablesNames.courier + ".id"]: {
-              value: courierId,
-              operateur: "=",
-            },
-          },
-        ],
-      });
-      if (courierError) return res.status(404).end("not found");
-      //!check for role and dep and group
-      if (updateError) return res.status(404).send("Courier not found");
-      console.log(req.body.assigneed_to);
-      const [assigneError] = await CourierAssignee.updateAssignment(
-        JSON.parse(req.body.assigneed_to),
-        courierId
-      );
+      const [assigneError, assigneeRes] =
+        await CourierAssignee.updateAssignment(
+          JSON.parse(req.body.assigneed_to),
+          courierId
+        );
       if (assigneError) return res.status(500).end("");
+      const [courierError] = await Courier.updateByID(courierId, {
+        title: req.body.title,
+        deadline: req.body.deadline,
+        state: req.body.state,
+        description: req.body.description,
+        expiditeur: req.body.expiditeur,
+        created_at: req.body.created_at,
+      });
+      if (courierError) return res.status(500).end("Backend error");
       const deleted_imgs = JSON.parse(req.body.deleted_imgs).imgs || [];
       const [errDelete] = await Courier.deleteFiles(deleted_imgs);
       if (!errDelete)
@@ -166,7 +164,7 @@ router.get("/bettwen", async (req, res) => {
   }
   try {
     let [err, response] = [null, null];
-    if (req.user.role == Roles.admin) {
+    if (req.user.role == Roles.admin && !(req.user.depId || req.user.grpId)) {
       [err, response] = await CourierAssignee.getCouriers(
         undefined,
         undefined,
@@ -195,7 +193,7 @@ router.get("/bettwen", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const resl =
-      req.user.role != Roles.admin
+      req.user.role != Roles.admin && req.user.depId && req.user.grpId
         ? await CourierAssignee.getCouriers(
             req.user.grpId,
             req.user.depId,
@@ -213,5 +211,22 @@ router.get("/:id", async (req, res) => {
   } catch (e) {
     return res.status(500).end("error");
   }
+});
+router.post("/validate/:id", async (req, res) => {
+  if (req.user.role === Roles.admin && (req.user.grpId || req.user.depId))
+    return res.status(401).end("Don't have access");
+  const [err, data] = await CourierAssignee.getCouriers(
+    req.user.depId,
+    req.user.grpId,
+    ` ${TablesNames.courier}.id = ? `,
+    [req.params.id]
+  );
+  if (err) return res.status(500).end("Backend error");
+  if (data.length === 0) return res.status(404).end("Courier not found");
+  const [updateError] = await Courier.updateByID(req.params.id, {
+    is_validated: req.body.is_validated || 0,
+  });
+  if (updateError) return res.status(500).end("Backend error");
+  return res.end("Courier validated successfully");
 });
 module.exports = router;

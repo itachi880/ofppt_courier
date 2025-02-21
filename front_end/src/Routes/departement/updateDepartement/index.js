@@ -1,8 +1,7 @@
-import { useEffect, useState, useRef } from "react";
+import { useRef } from "react";
 import { UpdateDepartementApi } from "../../../api"; // Assurez-vous que cette fonction existe dans vos APIs.
 import { departements_group_store, loading, User } from "../../../data";
 import { useParams } from "react-router-dom";
-import { Store } from "react-data-stores";
 
 export default function UpdateDepartment() {
   const { id } = useParams();

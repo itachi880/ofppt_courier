@@ -11,9 +11,11 @@ export default function Home() {
   const today = new Date().toISOString().split("T")[0];
   const renderArray = useMemo(() => {
     try {
-      return eventsData.data.filter(
+      const data = eventsData.data.filter(
         (e) => new Date(e.deadline).getTime() >= new Date(today).getTime()
       );
+      console.log("data", data);
+      return data;
     } catch (e) {
       return [];
     }
@@ -56,7 +58,7 @@ export default function Home() {
     });
   }, [userData]);
   useEffect(() => {
-    console.log("render ", renderArray);
+    console.table("render ", renderArray);
   }, [renderArray]);
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col pb-16">
@@ -151,9 +153,17 @@ const CourrierTable = ({ eventsData, userData }) => {
                 className="hover:bg-gray-50 cursor-pointer transition duration-200" // Hover effect
                 onClick={() => {
                   if (userData.role == roles.admin) {
-                    Store.navigateTo("/courrier/update/" + e.id);
+                    Store.navigateTo(
+                      "/courrier/update/" +
+                        e.id +
+                        (e.is_courier ? "?event=true" : "")
+                    );
                   } else {
-                    Store.navigateTo("/courrier/detail/" + e.id);
+                    Store.navigateTo(
+                      "/courrier/detail/" +
+                        e.id +
+                        (e.is_courier ? "?event=true" : "")
+                    );
                   }
                 }}
               >
@@ -215,7 +225,11 @@ const EventTable = ({ eventsData, userData }) => {
                 className="hover:bg-gray-50 cursor-pointer transition duration-200" // Hover effect
                 onClick={() => {
                   if (userData.role == roles.admin) {
-                    Store.navigateTo("/courrier/update/" + e.id);
+                    Store.navigateTo(
+                      "/courrier/update/" +
+                        e.id +
+                        (e.is_courier ? "?event=true" : "")
+                    );
                   } else {
                     Store.navigateTo("/courrier/detail/" + e.id);
                   }

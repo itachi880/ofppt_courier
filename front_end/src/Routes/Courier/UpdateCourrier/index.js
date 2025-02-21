@@ -2,7 +2,13 @@ import { useEffect, useState } from "react";
 import { departements_group_store, events, loading, User } from "../../../data";
 import { BASE_URL, getCourierById, UpdateCourier } from "../../../api";
 import { useParams } from "react-router-dom";
-import { GreenBox, ImgsWithCancelIcon, RedBox, roles } from "../../../utils";
+import {
+  GreenBox,
+  ImgsWithCancelIcon,
+  RedBox,
+  roles,
+  useQuery,
+} from "../../../utils";
 import { Store } from "react-data-stores";
 import Swal from "sweetalert2";
 
@@ -95,6 +101,7 @@ export default function () {
   const [userData, setUserData] = User.useStore();
   const [departementsGroup, setDepartementsGroup] =
     departements_group_store.useStore();
+  const searchQuery = useQuery();
   const [loadingFlag, setLoadingFlag] = loading.useStore();
   useEffect(() => {
     if (userData.data.role != roles.admin) {
@@ -183,7 +190,7 @@ export default function () {
                     });
                   }}
                 >
-                  {depObj.department_name}
+                  {depObj?.department_name}
                 </RedBox>
               );
             })}
@@ -202,7 +209,7 @@ export default function () {
                     });
                   }}
                 >
-                  {grpObj.name}
+                  {grpObj?.name}
                 </GreenBox>
               );
             })}
@@ -432,6 +439,7 @@ export default function () {
                 text: "Failed to Update courier. Please try again.",
               }) && setLoadingFlag({ loading: false })
             );
+          console.log("result", result);
           Swal.fire({
             icon: "success",
             title: "Success!",
@@ -439,21 +447,23 @@ export default function () {
             showConfirmButton: false,
             timer: 1500,
           });
-          eventsStore.data[
-            eventsStore.data.findIndex((e) => e.id == formData.id)
-          ] = {
-            id: formData.id,
-            title: formData.title,
-            description: formData.description,
-            expiditeur: formData.expiditeur,
-            deadline: formData.deadline,
-            state: formData.state,
-            critical: formData.critical,
-            created_at: formData.created_at,
-            departements: formData.departements,
+          const index = eventsStore.data.findIndex((e) => e.id == formData.id);
+          if (index == -1) {
+            eventsStore.data.push(formData);
+            setEventsStore({ data: [...eventsStore.data] });
+            setLoadingFlag({ loading: false });
+            Store.navigateTo("/");
+            return;
+          }
+          //*else
+          eventsStore.data[index] = {
+            ...formData,
+            id: +formData.id,
             imgs: formData.imgs, //! na9shom les image jdad
             groups: formData.groups,
+            is_courier: +!searchQuery("event"), // '!' means invert if event make it is courier false + for convert to number if false 0
           };
+          setEventsStore({ data: [...eventsStore.data] });
           setLoadingFlag({ loading: false });
           Store.navigateTo("/");
         }}

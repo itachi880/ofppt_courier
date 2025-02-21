@@ -107,7 +107,11 @@ export function Calendar({
             <div
               className="event-month"
               onClick={() => {
-                Store.navigateTo("/courrier/update/" + event.id);
+                Store.navigateTo(
+                  "/courrier/update/" +
+                    event.id +
+                    (event.is_courier ? "?event=true" : "")
+                );
               }}
             >
               <span>{event.title}</span>

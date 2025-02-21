@@ -70,6 +70,7 @@ module.exports.TablesNames = TablesNames;
  * @property {string} created_at
  * @property {string} expiditeur
  * @property {string} updated_at
+ * @property {number} is_validated
  */
 //! CourierAssignee
 /**

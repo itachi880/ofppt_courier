@@ -3,6 +3,7 @@ import { getDepartements, getGroups, LoginApi } from "../../api/index";
 import { departements_group_store, loading, User } from "../../data";
 import { Store } from "react-data-stores";
 import { useNavigate, useSearchParams } from "react-router-dom";
+// import  logo from "../../../public/logo_ofppt.png";
 
 export function LoginForm() {
   const [searchParams] = useSearchParams();
@@ -103,6 +104,8 @@ export function LoginForm() {
   };
 
   return (
+    <>
+    <img src="../../../public/logo_ofppt.png" alt="enssup" style={{width: "100px", height: "100px", display: "block", margin: "0 auto"}}/>
     <div style={styles.container}>
       <h2 style={styles.title}>Login</h2>
       <form onSubmit={handleLogin}>
@@ -157,5 +160,6 @@ export function LoginForm() {
       {error && <p style={styles.error}>{error}</p>}
       {success && <p style={styles.success}>{success}</p>}
     </div>
+    </>
   );
 }

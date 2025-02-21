@@ -67,7 +67,10 @@ export default function ShowGroup() {
                     Name
                   </th>
                   <th className="text-sm text-gray-600 font-medium py-2 px-3 border-b">
-                    Option
+                    Delete
+                  </th>
+                  <th className="text-sm text-gray-600 font-medium py-2 px-3 border-b">
+                    Update
                   </th>
                 </tr>
               </thead>
@@ -85,7 +88,10 @@ export default function ShowGroup() {
                       >
                         <FaTrashAlt />
                       </button>
-                      <button
+
+                    </td>
+                    <td className="py-2 px-3 border-b">
+                    <button
                         onClick={() => handleUpdate(e.id)}
                         className="text-blue-500 hover:text-blue-700"
                         aria-label="Update Group"

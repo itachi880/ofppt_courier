@@ -277,6 +277,7 @@ export default () => {
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             <i className="fa-solid fa-bars"></i>
+   
           </div>
           <div className="relative">
             <button

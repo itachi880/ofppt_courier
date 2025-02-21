@@ -223,8 +223,10 @@ router.post("/validate/:id", async (req, res) => {
   );
   if (err) return res.status(500).end("Backend error");
   if (data.length === 0) return res.status(404).end("Courier not found");
+  console.log(req.body, req.params.id);
   const [updateError] = await Courier.updateByID(req.params.id, {
     is_validated: req.body.is_validated || 0,
+    result_validation: req.body.result_validation || "",
   });
   if (updateError) return res.status(500).end("Backend error");
   return res.end("Courier validated successfully");

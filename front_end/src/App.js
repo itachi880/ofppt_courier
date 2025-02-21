@@ -16,6 +16,7 @@ import { LoadingBar, noLoginRoutes, preventBacklink } from "./utils";
 import { ReseteMDP } from "./Routes/mdpOublie";
 import ResetPass from "./Routes/ResetPass";
 import axios from "axios";
+import ValidateCourier from "./Routes/Courier/ValidateCourier";
 
 function App() {
   Store.navigateTo = useNavigate();
@@ -121,7 +122,6 @@ function App() {
         {/* Wrap Routes with AnimatePresence */}
         <AnimatePresence mode="wait">
           {" "}
-          {/* mode="wait" for smoother transitions */}
           <motion.div
             key={location.pathname}
             variants={variants} // Use animation variants

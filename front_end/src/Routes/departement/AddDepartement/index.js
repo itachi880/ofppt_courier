@@ -60,7 +60,9 @@ export default function AddDepartmentComponent() {
               setLoadingFlag({ loading: false });
             });
           }}
-          className="w-full py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full py-3 bg-green-100 text-green-600 font-semibold rounded-md "
+          // hover:bg-green-500  focus:outline-none focus:ring-2 focus:ring-blue-500
+              //  className="bg-green-100 text-green-600 font-semibold py-2 px-4 rounded-lg shadow-md"
         >
           Ajouter Entite
         </button>

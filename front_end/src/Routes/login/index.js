@@ -133,7 +133,8 @@ export function LoginForm() {
   return (
     <>
       <img
-        src="../../../public/logo_ofppt.png"
+        src={require('../../assets/Logo_ofppt.png')}
+        
         alt="enssup"
         style={{
           width: "100px",

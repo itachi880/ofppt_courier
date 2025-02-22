@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { use, useState,useEffect } from "react";
 import { DeleteDepartment } from "../../../api"; // Assurez-vous que cette fonction existe dans vos APIs.
 import { departements_group_store, loading, User } from "../../../data";
 import { useNavigate } from "react-router-dom";
@@ -50,6 +50,9 @@ export default function ShowDepartments() {
   const handleUpdate = (id) => {
     navigate("update/" + id);
   };
+  useEffect(() => {
+    console.log("start comp", departementsGroups);
+  })
 
   return (
     <>
@@ -111,7 +114,21 @@ export default function ShowDepartments() {
                     {" "}
                     {/* Centered buttons */}
                     <button
-                      onClick={() => handleDelete(e.department_id)}
+                      onClick={() => {
+                        Swal.fire({
+                          title: "vous êtes sûr de vouloir supprimer cette entité?",
+                          icon: "question",
+                          iconHtml: "؟",
+                          confirmButtonText: "Oui",
+                          cancelButtonText: "Non",
+                          showCancelButton: true,
+                          showCloseButton: true
+                        }).then((result)=>{
+                          if(result.isConfirmed){
+                            handleDelete(e.department_id)
+                          }
+                        })
+                       }}
                       className="text-red-600 hover:text-red-800 mr-2 focus:outline-none transition duration-200" /* Improved button styling */
                       aria-label="Delete Department"
                     >

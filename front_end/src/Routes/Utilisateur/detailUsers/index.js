@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { DeleteUserApi, GetUsersById } from "../../../api";
 import { User, departements_group_store, loading } from "../../../data";
 import { FaTrashAlt, FaEdit } from "react-icons/fa";
+import Swal from "sweetalert2"
 
 export function DetailUsers() {
   const [departementsGroups, setDepartmentsGroups] =
@@ -81,14 +82,29 @@ export function DetailUsers() {
                 <button
                   className="text-red-500 hover:text-red-700 mr-2"
                   onClick={() =>
-                    DeleteUserApi(users.id, userData.token)
-                      .then((res) => {
-                        console.log(res);
-                      })
-                      .catch((err) => {
-                        console.log(err);
-                      })
-                  }
+                  {
+                          Swal.fire({
+                                              title: "vous êtes sûr de vouloir supprimer ce utilisateur?",
+                                              icon: "question",
+                                              iconHtml: "؟",
+                                              confirmButtonText: "Oui",
+                                              cancelButtonText: "Non",
+                                              showCancelButton: true,
+                                              showCloseButton: true
+                                            }).then((result)=>{
+                                              if(result.isConfirmed){
+                                                DeleteUserApi(users.id, userData.token)
+                                                .then((res) => {
+                                                  console.log(res);
+                                                })
+                                                .catch((err) => {
+                                                  console.log(err);
+                                                })
+                                                
+                                              }
+                                            })
+                   
+                  }}
                   aria-label="Delete Department"
                 >
                   <FaTrashAlt />

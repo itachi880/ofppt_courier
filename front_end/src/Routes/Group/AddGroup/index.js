@@ -156,7 +156,8 @@ export default function AddGroup() {
         <button
           type="submit"
           onClick={handleSubmit} // Call handleSubmit
-          className="w-full py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          // className="w-full py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full py-3 bg-green-100 text-green-600 font-semibold rounded-md "
         >
           Add Group
         </button>

@@ -82,7 +82,21 @@ export default function ShowGroup() {
                     </td>
                     <td className="py-2 px-3 border-b">
                       <button
-                        onClick={() => handleDelete(e.id)}
+                        onClick={() => {
+                          Swal.fire({
+                            title: "vous êtes sûr de vouloir supprimer cette group?",
+                            icon: "question",
+                            iconHtml: "؟",
+                            confirmButtonText: "Oui",
+                            cancelButtonText: "Nom",
+                            showCancelButton: true,
+                            showCloseButton: true
+                          }).then((result) => {
+                            if (result.isConfirmed) {
+                              handleDelete(e.id)
+                            }
+                          });
+                     }}
                         className="text-red-500 hover:text-red-700 mr-2"
                         aria-label="Delete Group"
                       >

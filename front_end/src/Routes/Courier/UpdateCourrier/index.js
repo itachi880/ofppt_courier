@@ -118,6 +118,7 @@ export default function () {
     const event = eventsStore.data.find((event) => event.id == id);
 
     if (!event) {
+      if (!userData.token) return;
       getCourierById(id, userData.token).then((res) => {
         if (res[0]) return Store.navigateTo("/");
 
@@ -159,7 +160,7 @@ export default function () {
       is_validated: event.is_validated || 0,
       result_validation: event.result_validation || "no result",
     });
-  }, []);
+  }, [userData]);
 
   return (
     <div style={styles.container}>

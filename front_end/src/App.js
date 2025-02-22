@@ -81,13 +81,13 @@ function App() {
           data: { ...tokenRes[1].data },
           token: tokenRes[1].token,
         });
-        const departementsRes = await getDepartements(userData.token);
+        const departementsRes = await getDepartements(tokenRes[1].token);
         if (departementsRes[0]) {
           setLoadingFlag({ loading: false });
           setDataFetched(true);
           return console.log("Error getting departements", departementsRes[0]);
         }
-        const groupsRes = await getGroups(userData.token);
+        const groupsRes = await getGroups(tokenRes[1].token);
         if (groupsRes[0]) {
           setLoadingFlag({ loading: false });
           setDataFetched(true);

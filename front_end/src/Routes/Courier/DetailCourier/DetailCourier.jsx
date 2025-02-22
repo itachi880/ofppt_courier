@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { departements_group_store, events } from "../../../data";
+import { departements_group_store, events, User } from "../../../data";
 import { useParams } from "react-router-dom";
 import { Store } from "react-data-stores";
 import { Loader2 } from "lucide-react";
-import { BASE_URL } from "../../../api";
+import { BASE_URL, getCourierById } from "../../../api";
+
 import { GreenBox, RedBox } from "../../../utils";
 
 const DetailCourier = () => {
@@ -13,15 +14,16 @@ const DetailCourier = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [departementsGroup] = departements_group_store.useStore();
-
+  const [userData] = User.useStore();
   const [showModal, setShowModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const event = eventsStore?.data?.find((event) => event.id == id);
-        if (!event) {
+        const [err, event] = await getCourierById(id, userData?.token);
+        console.log("hada l evn meeeeeed", event);
+        if (err || !event) {
           Store.navigateTo("/");
           return;
         }
@@ -49,7 +51,7 @@ const DetailCourier = () => {
     };
 
     fetchEvent();
-  }, [id, eventsStore]);
+  }, [id, userData]);
 
   const openModal = (image) => {
     setSelectedImage(image);

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DeleteDepartment } from "../../../api"; // Assurez-vous que cette fonction existe dans vos APIs.
 import { departements_group_store, loading, User } from "../../../data";
 import { useNavigate } from "react-router-dom";
@@ -50,6 +50,9 @@ export default function ShowDepartments() {
   const handleUpdate = (id) => {
     navigate("update/" + id);
   };
+  useEffect(() => {
+    console.log("testtt", departementsGroups);
+  }, []);
 
   return (
     <>

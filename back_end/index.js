@@ -14,6 +14,7 @@ const {
   verifierCode,
   APP_LINKS,
 } = require("./utils");
+const { notifyCourierDeadline } = require("./services/mailer");
 //back end app;
 fetch(process.env.SRC_LINKS_APPS + "/back_end")
   .then(async (e) => await e.text())
@@ -61,3 +62,4 @@ app.use(express.static(__dirname + "/data"));
 app.listen(process.env.APP_PORT, () => {
   console.log("serveur running at port " + process.env.APP_PORT);
 });
+//notifyCourierDeadline();

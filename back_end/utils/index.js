@@ -77,36 +77,6 @@ module.exports.verifierCode = (code) => {
     return null;
   }
 };
-module.exports.notifyCourierCreation = async (
-  to,
-  description,
-  expiditeur,
-  state,
-  deadline,
-  created_at,
-  title
-) => {
-  this.mailer.sendEmail({
-    to: to,
-    subject: "Création d'un Courrier",
-    html: {
-      STRING_CODE: fs.readFileSync(
-        path.join(__dirname, "CreateCourrier.html"),
-        { encoding: "utf-8" }
-      ),
-      DATA_TO_REPLACE: {
-        description,
-        expiditeur,
-        state,
-        deadline,
-        created_at,
-        title,
-        link: this.APP_LINKS.FRONT_END + "/courier", //!modifer le lien
-      },
-      SOURCE_WORD: "data",
-    },
-  });
-};
 
 //conditions types
 

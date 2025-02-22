@@ -967,7 +967,6 @@ module.exports.CourierAssignee = {
           result[index].imgs.push(row.path);
         }
       });
-      console.log(result);
       return [null, result];
     } catch (e) {
       console.error(e);

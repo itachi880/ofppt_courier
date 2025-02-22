@@ -10,10 +10,10 @@ const {
   Roles,
   fileSaver,
   documentType,
-  notifyCourierCreation,
 } = require("../../utils");
 const router = require("express").Router();
 const fs = require("fs");
+const { notifyCourierCreation } = require("../../services/mailer");
 router.use(auth_middleware);
 
 router.post("/add", fileSaver.array("files", 3), async (req, res) => {
@@ -79,20 +79,32 @@ router.post("/add", fileSaver.array("files", 3), async (req, res) => {
   }
 
   const [errreadingUsers, usersToNotify] = await Users.read({
-    and: [
-      {
-        role: Roles.admin,
-        or: [
-          ...assigneed_to.departements.map((e) => ({ department_id: e })),
-          ...assigneed_to.groups.map((grp) => ({
-            group_id: grp,
-          })),
-        ],
-      },
+    or: [
+      ...assigneed_to.departements.map((e) => ({
+        departement_id: { value: e, operateur: "=" },
+      })),
+      ...assigneed_to.groups.map((grp) => ({
+        group_id: { value: grp, operateur: "=" },
+      })),
     ],
   });
-
-  notifyCourierCreation(); // courier=>
+  if (!errreadingUsers) {
+    console.log("users to notify:", usersToNotify);
+    usersToNotify.forEach(async (user) => {
+      console.log(
+        await notifyCourierCreation(
+          user.email,
+          req.body.expiditeur,
+          req.body.state,
+          req.body.deadline,
+          req.body.created_at,
+          req.body.titel,
+          response.insertId
+        )
+      );
+      console.log("Email sent to:", user.email);
+    });
+  }
   return res.end(response.insertId + "");
 });
 
@@ -202,7 +214,6 @@ router.get("/bettwen", async (req, res) => {
       console.error(err);
       return res.status(500).send("Backend error");
     }
-    console.log(response);
     return res.json(response);
   } catch (error) {
     console.error("Error fetching couriers:", error);

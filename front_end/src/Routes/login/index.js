@@ -49,9 +49,9 @@ export function LoginForm() {
     localStorage.setItem("token", data.token);
     setSuccess("Login successful!");
     setError(null);
+
     Store.navigateTo(searchParams.get("path") || "/");
   };
-  // Styles internes
   // Styles internes
   const styles = {
     container: {

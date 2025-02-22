@@ -89,20 +89,16 @@ router.post("/add", fileSaver.array("files", 3), async (req, res) => {
     ],
   });
   if (!errreadingUsers) {
-    console.log("users to notify:", usersToNotify);
     usersToNotify.forEach(async (user) => {
-      console.log(
-        await notifyCourierCreation(
-          user.email,
-          req.body.expiditeur,
-          req.body.state,
-          req.body.deadline,
-          req.body.created_at,
-          req.body.titel,
-          response.insertId
-        )
+      await notifyCourierCreation(
+        user.email,
+        req.body.expiditeur,
+        req.body.state,
+        req.body.deadline,
+        req.body.created_at,
+        req.body.titel,
+        response.insertId
       );
-      console.log("Email sent to:", user.email);
     });
   }
   return res.end(response.insertId + "");
@@ -253,7 +249,6 @@ router.post("/validate/:id", async (req, res) => {
   );
   if (err) return res.status(500).end("Backend error");
   if (data.length === 0) return res.status(404).end("Courier not found");
-  console.log(req.body, req.params.id);
   const [updateError] = await Courier.updateByID(req.params.id, {
     is_validated: req.body.is_validated || 0,
     result_validation: req.body.result_validation || "",

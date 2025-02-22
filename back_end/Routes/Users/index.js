@@ -57,7 +57,6 @@ router.put("/:id", async (req, res) => {
   }
 });
 router.post("/add", async (req, res) => {
-  console.log(req.body);
   const userData = req.body;
   userData.password = hashPass(userData.password);
   if (userData.group_id <= 0) userData.group_id = null;
@@ -76,7 +75,6 @@ router.post("/add", async (req, res) => {
 });
 router.post("/forget-pass", async (req, res) => {
   const { pass } = req.body;
-  console.log(req.body);
   if (!pass || pass.length <= 3)
     return res.status(400).end("send correct pass");
   const [error] = await Users.update(

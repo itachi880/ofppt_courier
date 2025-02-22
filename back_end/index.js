@@ -1,4 +1,5 @@
 require("dotenv").config();
+require("./cron-job").cron();
 const express = require("express");
 const app = express();
 const cors = require("cors");
@@ -62,4 +63,4 @@ app.use(express.static(__dirname + "/data"));
 app.listen(process.env.APP_PORT, () => {
   console.log("serveur running at port " + process.env.APP_PORT);
 });
-//notifyCourierDeadline();
+// notifyCourierDeadline();

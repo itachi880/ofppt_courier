@@ -21,7 +21,8 @@ const DetailCourier = () => {
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const [err, event] = await getCourierById(id, userData?.token);
+        //extract the event from the api cause the api retuen [err,event[]]
+        const [err, [event]] = await getCourierById(id, userData?.token);
         console.log("hada l evn meeeeeed", event);
         if (err || !event) {
           Store.navigateTo("/");
@@ -51,7 +52,7 @@ const DetailCourier = () => {
     };
 
     fetchEvent();
-  }, [id, userData]);
+  }, [userData]);
 
   const openModal = (image) => {
     setSelectedImage(image);

@@ -71,12 +71,12 @@ module.exports.notifyCourierDeadline = async () => {
               { encoding: "utf-8" }
             ),
             DATA_TO_REPLACE: {
-              description: courier.description,
-              expiditeur: courier.expiditeur,
-              state: courier.state,
-              deadline: courier.deadline,
-              created_at: courier.created_at,
-              title: courier.title,
+              description: courier.description || "Pas de description",
+              expiditeur: courier.expiditeur || "Pas d'expiditeur",
+              state: courier.state || "Pas d'état",
+              deadline: courier.deadline || "Pas de deadline",
+              created_at: courier.created_at || "Pas de date de création",
+              title: courier.title || "Pas de titre",
               link: APP_LINKS.FRONT_END + "/courrier/update/" + courier.id, //!modifer le lien
             },
             SOURCE_WORD: "courier",

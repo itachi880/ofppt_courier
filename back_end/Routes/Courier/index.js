@@ -13,7 +13,10 @@ const {
 } = require("../../utils");
 const router = require("express").Router();
 const fs = require("fs");
-const { notifyCourierCreation } = require("../../services/mailer");
+const {
+  notifyCourierCreation,
+  notifyCourierValidation,
+} = require("../../services/mailer");
 router.use(auth_middleware);
 
 router.post("/add", fileSaver.array("files", 3), async (req, res) => {
@@ -239,7 +242,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 router.post("/validate/:id", async (req, res) => {
-  if (req.user.role === Roles.admin && (req.user.grpId || req.user.depId))
+  if (req.user.role === Roles.admin && !req.user.grpId && !req.user.depId)
     return res.status(401).end("Don't have access");
   const [err, data] = await CourierAssignee.getCouriers(
     req.user.depId,
@@ -254,6 +257,33 @@ router.post("/validate/:id", async (req, res) => {
     result_validation: req.body.result_validation || "",
   });
   if (updateError) return res.status(500).end("Backend error");
-  return res.end("Courier validated successfully");
+  res.end("Courier validated successfully");
+  //!=> notify the root user
+  const reslts = data[0];
+
+  //=> get the root user
+  const [err1, rootUser] = await Users.read({
+    and: [
+      {
+        role: { value: Roles.admin, operateur: "=" },
+        departement_id: { value: null, operateur: "IS " },
+        group_id: {
+          value: null,
+          operateur: "IS ",
+        },
+      },
+    ],
+  });
+  if (err1) return console.error(err1);
+  return notifyCourierValidation(
+    rootUser[0].email,
+    reslts.expiditeur,
+    reslts.state,
+    reslts.deadline,
+    reslts.created_at,
+    reslts.title,
+    reslts.description,
+    reslts.id
+  );
 });
 module.exports = router;

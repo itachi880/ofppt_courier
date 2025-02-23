@@ -102,7 +102,14 @@ const DetailCourier = () => {
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-gray-50 p-4 rounded-xl">
               <h2 className="text-lg font-semibold">Date Limite :</h2>
-              <p className="text-gray-700">{formData.deadline}</p>
+              <p className="text-gray-700">
+                {new Date(formData.deadline).getTime() >
+                Date.now() + 1 * 24 * 60 * 60 * 1000 ? (
+                  <GreenBox>{formData.deadline}</GreenBox>
+                ) : (
+                  <RedBox>{formData.deadline}</RedBox>
+                )}
+              </p>
             </div>
 
             <div className="bg-gray-50 p-4 rounded-xl">

@@ -3,7 +3,7 @@ import { GreenBox, ImgsWithCancelIcon, RedBox, roles } from "../../../utils";
 import { departements_group_store, events, loading, User } from "../../../data";
 import { Store } from "react-data-stores";
 import { useParams } from "react-router-dom";
-import { BASE_URL, getCourierById, validateCourier } from "../../../api";
+import { BASE_URL, getCourierById, validateCourierAPI } from "../../../api";
 import Swal from "sweetalert2";
 
 /**
@@ -305,9 +305,27 @@ export default function () {
         value="Validate"
         style={styles.submitButton}
         onClick={async () => {
-          console.log(formData);
+          if (
+            !id ||
+            isNaN(id) ||
+            !userData.token ||
+            typeof userData.token !== "string" ||
+            userData.token.trim() === "" ||
+            formData.is_validated === undefined ||
+            typeof formData.is_validated !== "number" ||
+            formData.validation_result === undefined ||
+            typeof formData.validation_result !== "string" ||
+            formData.validation_result.trim() === ""
+          ) {
+            // Show error using SweetAlert if validation fails
+            return Swal.fire({
+              icon: "error",
+              title: "Error!",
+              text: "Failed to validate courier. All fields are required and must be valid.",
+            });
+          }
           setLoadingFlag({ loading: true });
-          const result = await validateCourier(
+          const result = await validateCourierAPI(
             formData.id,
             userData.token,
             formData.is_validated,

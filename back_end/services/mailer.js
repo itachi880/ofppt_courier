@@ -31,7 +31,42 @@ module.exports.notifyCourierCreation = async (
     },
   });
 };
-//!khdama
+
+module.exports.notifyCourierValidation = async (
+  to,
+  expiditeur,
+  state,
+  deadline,
+  created_at,
+  title,
+  description,
+  id_courier
+) => {
+  try {
+    return await mailer.sendEmail({
+      to: to,
+      subject: "validation de courrier",
+      html: {
+        STRING_CODE: fs.readFileSync(
+          path.join(__dirname, "..", "utils", "ValidateCourrier.html"),
+          { encoding: "utf-8" }
+        ),
+        DATA_TO_REPLACE: {
+          expiditeur,
+          state,
+          deadline,
+          description,
+          created_at,
+          title,
+          link: APP_LINKS.FRONT_END + "/courrier/update/" + id_courier,
+        },
+        SOURCE_WORD: "courier",
+      },
+    });
+  } catch (e) {
+    console.log("data base error", e);
+  }
+};
 module.exports.notifyCourierDeadline = async () => {
   /*idea => get all couriers that have deadline in 48h 
     => get all users that are in the departements and groups of the courier 

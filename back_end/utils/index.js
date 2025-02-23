@@ -108,7 +108,12 @@ module.exports.parse_condition = (condition) => {
       );
     } else {
       sql.push(
-        `${key} ${val.operateur} "${module.exports.escapeChar(val.value + "")}"`
+        `${key} ${val.operateur} ${
+          typeof val.value == "object"
+            ? null
+            : "'" + module.exports.escapeChar(val.value + "") + "'"
+        }
+        `
       );
     }
   }

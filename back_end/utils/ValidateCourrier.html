@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Validation d'un Courrier</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 600px;
+        margin: 20px auto;
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        background: #28a745;
+        color: white;
+        padding: 15px;
+        text-align: center;
+        font-size: 20px;
+        font-weight: bold;
+        border-radius: 8px 8px 0 0;
+      }
+      .content {
+        padding: 20px;
+        color: #333;
+        font-size: 16px;
+        line-height: 1.5;
+      }
+      .highlight {
+        font-weight: bold;
+        color: #d9534f;
+      }
+      .footer {
+        text-align: center;
+        padding: 15px;
+        font-size: 14px;
+        color: #777;
+      }
+      .btn {
+        display: inline-block;
+        background: #28a745;
+        color: white;
+        padding: 10px 20px;
+        text-decoration: none;
+        border-radius: 5px;
+        margin-top: 10px;
+      }
+      .btn:hover {
+        background: #218838;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">✅ Validation d'un Courrier</div>
+      <div class="content">
+        <p>Bonjour,</p>
+        <p>
+          Le courrier suivant a ete valide :
+          <span class="highlight">courier.title</span>
+        </p>
+        <p><strong>Détails du courrier :</strong></p>
+        <ul>
+          <li><strong>Titre :</strong> courier.title</li>
+          <li><strong>Description :</strong> courier.description</li>
+          <li>
+            <strong>Date limite :</strong>
+            <span class="highlight">courier.deadline</span>
+          </li>
+          <li><strong>État :</strong> courier.state</li>
+          <li><strong>Expéditeur :</strong> courier.expiditeur</li>
+        </ul>
+        <p>
+          Si ce courrier est conforme, cliquez sur le bouton ci-dessous pour le
+          consulter :
+        </p>
+        <p>
+          <a href="courier.link" class="btn">plus d'informations</a>
+        </p>
+      </div>
+      <div class="footer">
+        <p>Ceci est un message automatique. Merci de ne pas répondre.</p>
+        <p>&copy; year Nom de votre entreprise</p>
+      </div>
+    </div>
+  </body>
+</html>

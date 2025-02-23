@@ -5,7 +5,7 @@ import {
   User,
   loading,
 } from "../../../data";
-import { Calendar, useQuery } from "../../../utils";
+import { Calendar, CourrierColors, useQuery } from "../../../utils";
 import "./index.css";
 import { GetEvents } from "../../../api";
 import { useEffect } from "react";
@@ -89,14 +89,29 @@ export default () => {
       >
         {
           <Calendar
-            events={renderArray.map((e) => ({
-              id: e.id,
-              start: new Date(e.deadline),
-              end: new Date(e.deadline),
-              title: e.title,
-              backgroundColor: "red",
-              description: e.description,
-            }))}
+            events={renderArray.map((e) => {
+              const star = new Date(e.deadline);
+              const end = new Date(e.deadline);
+              const colorStyles =
+                end.getTime() < Date.now()
+                  ? CourrierColors.end
+                  : end.getTime() < Date.now() + 2 * 24 * 60 * 60 * 1000
+                  ? CourrierColors.deadline
+                  : CourrierColors.far;
+              return {
+                id: e.id,
+                start: star,
+                end: end,
+                title: e.title,
+                backgroundColor: "red",
+                description: e.description,
+                style: {
+                  ...colorStyles,
+                  width: "100%",
+                  padding: "5px 2px",
+                },
+              };
+            })}
             onDateRangeChange={fetcheDates}
           />
         }

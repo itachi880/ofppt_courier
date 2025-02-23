@@ -466,7 +466,12 @@ export const getCourierById = async (id, token) => {
     return [e, null];
   }
 };
-export const validateCourier = async (id, token, state, validation_result) => {
+export const validateCourierAPI = async (
+  id,
+  token,
+  state,
+  validation_result
+) => {
   try {
     if (!id || !token) return ["id or token is empty", null];
     const d = await axios.post(

@@ -4,6 +4,7 @@ import moment from "moment";
 import { Store } from "react-data-stores";
 import { useSearchParams } from "react-router-dom";
 import { loading } from "../data";
+import { useState } from "react";
 const localizer = momentLocalizer(moment);
 const CustomNextButton = ({ onClick }) => {
   return (
@@ -12,7 +13,6 @@ const CustomNextButton = ({ onClick }) => {
     </button>
   );
 };
-
 const CustomBackButton = ({ onClick }) => {
   return (
     <button className="custom-button back-button" onClick={onClick}>
@@ -63,24 +63,25 @@ const CustomToolbar = ({ onNavigate, label, onView, view }) => {
     </div>
   );
 };
-const CustomAgenda = ({ events }) => {
+const CustomAgenda = ({ event, date }) => {
   return (
     <div className="custom-agenda">
-      {events.length > 0 ? (
-        events.map((event, index) => (
-          <div key={index} className="custom-agenda-item">
-            <div className="agenda-time">
-              {moment(event.start).format("hh:mm A")}
-            </div>
-            <div className="agenda-event">{event.title}</div>
-            <div className="agenda-description">
-              {event.description || "No description"}
-            </div>
-          </div>
-        ))
-      ) : (
-        <div className="no-events">No events for today</div>
-      )}
+      <div
+        key={date}
+        className="custom-agenda-item"
+        onClick={() => {
+          Store.navigateTo(
+            "/courrier/update/" +
+              event.id +
+              (event.is_courier ? "?event=true" : "")
+          );
+        }}
+      >
+        <div className="agenda-event">Objectife : {event.title} </div>
+        <div className="agenda-description">
+          description : {event.description || "No description"}
+        </div>
+      </div>
     </div>
   );
 };
@@ -92,20 +93,26 @@ export function Calendar({
       title: "Sample Event",
       start: new Date(2024, 11, 22, 10, 0), // Début le 22 décembre à 10h00
       end: new Date(2024, 11, 29, 12, 0), // Fin le 29 décembre à 12h00
-      backgroundColor: "lightgreen",
+      style: {
+        color: "lightgreen",
+        backgroundColor: "green",
+        width: "98%",
+        padding: "5px 2px",
+      },
     },
   ],
   onDateRangeChange = ({ start, end }) => {},
 }) {
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [view, setView] = useState("month");
   return (
     <BigCalendar
       components={{
-        agenda: CustomAgenda, // Custom agenda component
-
         month: {
           event: ({ event }) => (
             <div
-              className="event-month"
+              className=""
+              style={event.style || {}}
               onClick={() => {
                 Store.navigateTo(
                   "/courrier/update/" +
@@ -120,20 +127,31 @@ export function Calendar({
         },
 
         toolbar: CustomToolbar,
+        agenda: {
+          event: CustomAgenda,
+        },
       }}
       onRangeChange={onDateRangeChange}
       messages={{ time: "" }}
-      defaultView="month"
-      eventPropGetter={(event) => {
-        return { style: event.style || {} };
-      }}
       localizer={localizer}
+      view={view}
+      onView={setView}
       events={events}
       startAccessor="start"
       endAccessor="end"
       style={{ height: "500px", aspectRatio: 1 }}
-      views={{ day: false, agenda: true, month: true, week: false }}
+      views={{
+        month: true,
+        agenda: true,
+        day: false,
+        week: false,
+      }}
       doShowMoreDrillDown={true}
+      date={selectedDate}
+      onShowMore={(events, date) => {
+        setSelectedDate(date);
+        setView("agenda");
+      }}
     />
   );
 }
@@ -142,7 +160,7 @@ export const GreenBox = ({ children, onClick = () => {} }) => (
     onClick={onClick}
     style={{
       padding: "2px 8px",
-      background: "rgba(130, 255, 213, 0.48)",
+      background: "#b3ffe673",
       color: "rgb(0, 255, 170)",
       borderRadius: "5px",
       margin: "0 0",
@@ -213,3 +231,10 @@ export const LoadingBar = ({ state = false }) => {
 };
 export const preventBacklink = ["/", "/login"];
 export const noLoginRoutes = ["/new_password"];
+export const CourrierColors = {
+  end: { background: "black", color: "white" },
+  deadline: { background: "#ef4444", color: "white" },
+  far: { background: "#007bff", color: "white" },
+  near: { background: "yellow", color: "black" },
+};
+export const USE_DEV = true;

@@ -128,18 +128,18 @@
 
 .rbc-event {
   color: #ffffff;
-  padding: 6px 12px;
+  padding: 0;
   border-radius: 6px;
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.2s ease, opacity 0.2s ease;
+  background-color: transparent;
 }
 
 .rbc-event:hover {
   opacity: 0.9;
   transform: scale(1.03);
-  background-color: #0073e6; /* Slightly darker blue for hover */
 }
 
 .rbc-header {

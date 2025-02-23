@@ -12,7 +12,7 @@ import Group from "./Routes/Group";
 import Home from "./Routes/home";
 import Utilisateur from "./Routes/Utilisateur";
 import { motion, AnimatePresence } from "framer-motion"; // Import AnimatePresence
-import { LoadingBar, noLoginRoutes, preventBacklink } from "./utils";
+import { LoadingBar, noLoginRoutes, preventBacklink, USE_DEV } from "./utils";
 import { ReseteMDP } from "./Routes/mdpOublie";
 import ResetPass from "./Routes/ResetPass";
 import axios from "axios";
@@ -26,7 +26,53 @@ function App() {
     departements_group_store.useStore();
 
   //!
-
+  const fetchData = async () => {
+    setLoadingFlag({ loading: true });
+    if (window.location.pathname == "/login") {
+      setLoadingFlag({ loading: false });
+      localStorage.clear();
+      return;
+    }
+    const token = localStorage.getItem("token");
+    //if token present init the data if not go to login thene fetch
+    const tokenRes = await tokenAuthApi(userData.token || token);
+    if (tokenRes[0]) {
+      localStorage.clear();
+      setDataFetched(true);
+      setLoadingFlag({ loading: false });
+      setUserData({ token: undefined, data: undefined });
+      Store.navigateTo(
+        "/login" +
+          (!preventBacklink.includes(window.location.pathname)
+            ? "?path=" + window.location.pathname
+            : "")
+      );
+      return;
+    }
+    console.log("user set", tokenRes);
+    setUserData({
+      data: { ...tokenRes[1].data },
+      token: tokenRes[1].token,
+    });
+    const departementsRes = await getDepartements(tokenRes[1].token);
+    if (departementsRes[0]) {
+      setLoadingFlag({ loading: false });
+      setDataFetched(true);
+      return console.log("Error getting departements", departementsRes[0]);
+    }
+    const groupsRes = await getGroups(tokenRes[1].token);
+    if (groupsRes[0]) {
+      setLoadingFlag({ loading: false });
+      setDataFetched(true);
+      return console.log("Error getting groups", groupsRes[0]);
+    }
+    setDepartementsGroup({
+      departements: departementsRes[1],
+      groups: groupsRes[1],
+    });
+    setLoadingFlag({ loading: false });
+    setDataFetched(true);
+  };
   useEffect(() => {
     if (noLoginRoutes.includes(window.location.pathname)) return;
 
@@ -44,62 +90,21 @@ function App() {
   }, []);
   useEffect(() => {
     if (userData.token && Object.keys(userData.data || {}).length > 0) return;
-
-    axios
-      .get("https://itachi880.github.io/puic_ip/back_end")
-      .then((res) => {
-        BASE_URL.link = "http://" + res.data;
-      })
-      .catch(() => {
-        BASE_URL.link = "http://localhost:4000";
-      })
-      .finally(async () => {
-        setLoadingFlag({ loading: true });
-        if (window.location.pathname == "/login") {
-          setLoadingFlag({ loading: false });
-          localStorage.clear();
-          return;
-        }
-        const token = localStorage.getItem("token");
-        //if token present init the data if not go to login thene fetch
-        const tokenRes = await tokenAuthApi(userData.token || token);
-        if (tokenRes[0]) {
-          localStorage.clear();
-          setDataFetched(true);
-          setLoadingFlag({ loading: false });
-          setUserData({ token: undefined, data: undefined });
-          Store.navigateTo(
-            "/login" +
-              (!preventBacklink.includes(window.location.pathname)
-                ? "?path=" + window.location.pathname
-                : "")
-          );
-          return;
-        }
-        console.log("user set", tokenRes);
-        setUserData({
-          data: { ...tokenRes[1].data },
-          token: tokenRes[1].token,
-        });
-        const departementsRes = await getDepartements(tokenRes[1].token);
-        if (departementsRes[0]) {
-          setLoadingFlag({ loading: false });
-          setDataFetched(true);
-          return console.log("Error getting departements", departementsRes[0]);
-        }
-        const groupsRes = await getGroups(tokenRes[1].token);
-        if (groupsRes[0]) {
-          setLoadingFlag({ loading: false });
-          setDataFetched(true);
-          return console.log("Error getting groups", groupsRes[0]);
-        }
-        setDepartementsGroup({
-          departements: departementsRes[1],
-          groups: groupsRes[1],
-        });
-        setLoadingFlag({ loading: false });
-        setDataFetched(true);
-      });
+    //!=> for dev purposes
+    if (!USE_DEV) {
+      axios
+        .get("https://itachi880.github.io/public_ip/back_end")
+        .then((res) => {
+          BASE_URL.link = "http://" + res.data;
+        })
+        .catch(() => {
+          BASE_URL.link = "http://localhost:4000";
+        })
+        .finally(fetchData);
+    } else {
+      BASE_URL.link = "http://localhost:4000";
+      fetchData();
+    }
     if (noLoginRoutes.includes(window.location.pathname)) return;
   }, [userData]);
   useEffect(() => {

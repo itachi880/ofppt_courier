@@ -422,7 +422,36 @@ export default function () {
         value="Update"
         style={styles.submitButton}
         onClick={async () => {
-          console.log(formData);
+          if (
+            !formData.title ||
+            typeof formData.title !== "string" ||
+            formData.title.trim() === "" ||
+            !formData.description ||
+            typeof formData.description !== "string" ||
+            formData.description.trim() === "" ||
+            !formData.id ||
+            isNaN(formData.id) ||
+            !formData.state ||
+            typeof formData.state !== "string" ||
+            !formData.created_at ||
+            isNaN(Date.parse(formData.created_at)) ||
+            !formData.deadline ||
+            isNaN(Date.parse(formData.deadline)) ||
+            formData.critical === undefined ||
+            typeof formData.critical !== "boolean" ||
+            !formData.expiditeur ||
+            typeof formData.expiditeur !== "string" ||
+            !userData.token ||
+            typeof userData.token !== "string" ||
+            userData.token.trim() === ""
+          ) {
+            // Show error using SweetAlert if validation fails
+            return Swal.fire({
+              icon: "error",
+              title: "Error!",
+              text: "Failed to Update courier. All fields are required.",
+            });
+          }
           setLoadingFlag({ loading: true });
           const formDataToSend = new FormData();
           formDataToSend.append("title", formData.title);

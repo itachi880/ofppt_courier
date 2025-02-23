@@ -346,6 +346,43 @@ export default function () {
         value="Send"
         style={styles.submitButton}
         onClick={() => {
+          if (
+            !userData.token ||
+            typeof userData.token !== "string" ||
+            userData.token.trim() === "" ||
+            !formData.title ||
+            typeof formData.title !== "string" ||
+            formData.title.trim() === "" ||
+            !formData.description ||
+            typeof formData.description !== "string" ||
+            formData.description.trim() === "" ||
+            !formData.expiditeur ||
+            typeof formData.expiditeur !== "string" ||
+            formData.expiditeur.trim() === "" ||
+            !formData.state ||
+            typeof formData.state !== "string" ||
+            formData.state.trim() === "" ||
+            !formData.deadline ||
+            isNaN(Date.parse(formData.deadline)) ||
+            !formData.type ||
+            typeof formData.type !== "string" ||
+            formData.type.trim() === "" ||
+            formData.critical === undefined ||
+            typeof formData.critical !== "boolean" ||
+            !formData.created_at ||
+            isNaN(Date.parse(formData.created_at)) ||
+            !Array.isArray(formData.departements) ||
+            formData.departements.length === 0 ||
+            !Array.isArray(formData.groups) ||
+            formData.groups.length === 0
+          ) {
+            // Show error using SweetAlert if validation fails
+            return Swal.fire({
+              icon: "error",
+              title: "Error!",
+              text: "Failed to update. All fields are required, and 'departements' and 'groups' must have at least one item.",
+            });
+          }
           setLoadingFlag({ loading: true });
           const formDataToSend = new FormData();
           formDataToSend.append("token", userData.token);

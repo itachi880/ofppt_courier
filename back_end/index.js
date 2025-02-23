@@ -14,26 +14,28 @@ const {
   generateCode,
   verifierCode,
   APP_LINKS,
+  USE_DEV,
 } = require("./utils");
-const { notifyCourierDeadline } = require("./services/mailer");
 //back end app;
-fetch(process.env.SRC_LINKS_APPS + "/back_end")
-  .then(async (e) => await e.text())
-  .then((e) => {
-    APP_LINKS.BACK_END = "http://" + e;
-  })
-  .catch((e) => {
-    APP_LINKS.BACK_END = "http://localhost:4000";
-  });
-//front_end
-fetch(process.env.SRC_LINKS_APPS + "/front_end")
-  .then(async (e) => await e.text())
-  .then((e) => {
-    APP_LINKS.FRONT_END = "http://" + e;
-  })
-  .catch((e) => {
-    APP_LINKS.FRONT_END = "http://localhost:3000";
-  });
+if (!USE_DEV) {
+  fetch(process.env.SRC_LINKS_APPS + "/back_end")
+    .then(async (e) => await e.text())
+    .then((e) => {
+      APP_LINKS.BACK_END = "http://" + e;
+    })
+    .catch((e) => {
+      APP_LINKS.BACK_END = "http://localhost:4000";
+    });
+  //front_end
+  fetch(process.env.SRC_LINKS_APPS + "/front_end")
+    .then(async (e) => await e.text())
+    .then((e) => {
+      APP_LINKS.FRONT_END = "http://" + e;
+    })
+    .catch((e) => {
+      APP_LINKS.FRONT_END = "http://localhost:3000";
+    });
+}
 app.use(
   express.json(),
   cors({
@@ -63,4 +65,3 @@ app.use(express.static(__dirname + "/data"));
 app.listen(process.env.APP_PORT, () => {
   console.log("serveur running at port " + process.env.APP_PORT);
 });
-// notifyCourierDeadline();

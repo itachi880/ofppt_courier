@@ -71,7 +71,6 @@ module.exports.notifyCourierDeadline = async () => {
   /*idea => get all couriers that have deadline in 48h 
     => get all users that are in the departements and groups of the courier 
     => send email to the users
-
   */
   try {
     const couriers = await CourierAssignee.getCouriers(

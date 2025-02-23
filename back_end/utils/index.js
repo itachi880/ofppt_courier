@@ -161,3 +161,4 @@ module.exports.APP_LINKS = {
   FRONT_END: "http://localhost:3000",
   BACK_END: "http://localhost:4000",
 };
+module.exports.USE_DEV = true;

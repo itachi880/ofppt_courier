@@ -94,8 +94,30 @@ export function DetailUsers() {
                     }).then((result) => {
                       if (result.isConfirmed) {
                         DeleteUserApi(users.id, userData.token)
-                          .then((res) => {})
-                          .catch((err) => {});
+                          .then((res) => {
+                            if (res[0])
+                              return Swal.fire({
+                                icon: "error",
+                                title: "Error!",
+                                text: `Server returned an error: ${
+                                  res[0].status
+                                } - ${res[0].statusText || "Unknown Error"}`, // Display specific error message
+                              });
+                            Swal.fire({
+                              icon: "success",
+                              title: "Success!",
+                              text: "User deleted successfully!",
+                            });
+                          })
+                          .catch((err) => {
+                            Swal.fire({
+                              icon: "error",
+                              title: "Error!",
+                              text: `Server returned an error: ${
+                                err.status
+                              } - ${err.statusText || "Unknown Error"}`, // Display specific error message
+                            });
+                          });
                       }
                     });
                   }}

@@ -4,6 +4,7 @@ import { User, usersStore, departements_group_store } from "../../../data";
 import { useNavigate } from "react-router-dom";
 import { GetUsersById, UpdateUserApi } from "../../../api";
 import { roles } from "../../../utils";
+import Swal from "sweetalert2";
 
 export function UpdateUsers() {
   const { id } = useParams();
@@ -135,7 +136,23 @@ export function UpdateUsers() {
               <button
                 onClick={async () => {
                   await UpdateUserApi(id, userData.token, users)
-                    .then((res) => {})
+                    .then((res) => {
+                      if (res[0]) {
+                        Swal.fire({
+                          icon: "error",
+                          title: "Error!",
+                          text: `Server returned an error: ${res[0].status} - ${
+                            res[0].statusText || "Unknown Error"
+                          }`, // Display specific error message
+                        });
+                        return;
+                      }
+                      Swal.fire({
+                        icon: "success",
+                        title: "Success!",
+                        text: "User added successfully!",
+                      });
+                    })
                     .catch((err) => {});
                 }}
                 className="bg-green-100 text-green-600 font-semibold py-2 px-4 rounded-lg shadow-md"

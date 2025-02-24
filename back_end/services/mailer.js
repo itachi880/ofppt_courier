@@ -31,7 +31,6 @@ module.exports.notifyCourierCreation = async (
     },
   });
 };
-
 module.exports.notifyCourierValidation = async (
   to,
   expiditeur,
@@ -76,7 +75,7 @@ module.exports.notifyCourierDeadline = async () => {
     const couriers = await CourierAssignee.getCouriers(
       undefined,
       undefined,
-      "deadline >= ? AND deadline<= ?",
+      "deadline >= ? AND deadline<= ? AND is_validated = 0 ",
       [
         new Date().toISOString().split("T")[0],
         new Date(new Date().getTime() + 2 * 24 * 60 * 60 * 1000)
@@ -111,7 +110,7 @@ module.exports.notifyCourierDeadline = async () => {
               deadline: courier.deadline || "Pas de deadline",
               created_at: courier.created_at || "Pas de date de création",
               title: courier.title || "Pas de titre",
-              link: APP_LINKS.FRONT_END + "/courrier/update/" + courier.id, //!modifer le lien
+              link: APP_LINKS.FRONT_END + "/courrier/update/" + courier.id,
             },
             SOURCE_WORD: "courier",
           },

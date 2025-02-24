@@ -122,3 +122,19 @@ module.exports.notifyCourierDeadline = async () => {
     process.exit(1);
   }
 };
+module.exports.fogetPasswordEmail = async (to, link) => {
+  return await mailer.sendEmail({
+    to,
+    subject: "Réinitialisation de votre mot de passe",
+    html: {
+      STRING_CODE: fs.readFileSync(
+        path.join(__dirname, "..", "utils", "ForgetPassword.html"),
+        { encoding: "utf-8" }
+      ),
+      DATA_TO_REPLACE: {
+        link,
+      },
+      SOURCE_WORD: "data",
+    },
+  });
+};

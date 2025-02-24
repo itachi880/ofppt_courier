@@ -49,7 +49,6 @@ function App() {
       );
       return;
     }
-    console.log("user set", tokenRes);
     setUserData({
       data: { ...tokenRes[1].data },
       token: tokenRes[1].token,
@@ -100,16 +99,24 @@ function App() {
         .catch(() => {
           BASE_URL.link = "http://localhost:4000";
         })
-        .finally(fetchData);
+        .finally(() => {
+          if (noLoginRoutes.includes(window.location.pathname)) {
+            setLoadingFlag({ loading: false });
+            setDataFetched(true);
+            return;
+          }
+          fetchData();
+        });
     } else {
       BASE_URL.link = "http://localhost:4000";
+      if (noLoginRoutes.includes(window.location.pathname)) {
+        setLoadingFlag({ loading: false });
+        setDataFetched(true);
+        return;
+      }
       fetchData();
     }
-    if (noLoginRoutes.includes(window.location.pathname)) return;
   }, [userData]);
-  useEffect(() => {
-    console.log(departements_group);
-  }, [departements_group]);
 
   //! dyal simo mat9arbch liha
   const location = useLocation();
@@ -126,7 +133,6 @@ function App() {
       <div className="min-h-screen flex flex-col mb-5">
         <NavBar />
 
-        {/* Wrap Routes with AnimatePresence */}
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}
@@ -145,7 +151,7 @@ function App() {
               <Route path="/departement/*" element={<Departement />} />
               <Route path="/group/*" element={<Group />} />
               <Route path="/utilisateur/*" element={<Utilisateur />} />
-              <Route path="/new_password/*" element={<ResetPass />} />
+              <Route path="/forget-pass" element={<ResetPass />} />
               <Route path="*" element={<>404</>} />
             </Routes>
           </motion.div>

@@ -230,7 +230,7 @@ export const LoadingBar = ({ state = false }) => {
   return !loadingFlag.loading ? null : <div className="loadingBar"></div>;
 };
 export const preventBacklink = ["/", "/login"];
-export const noLoginRoutes = ["/new_password"];
+export const noLoginRoutes = ["/forget-pass", "/resetPassword"];
 export const CourrierColors = {
   end: { background: "black", color: "white" },
   deadline: { background: "#ef4444", color: "white" },

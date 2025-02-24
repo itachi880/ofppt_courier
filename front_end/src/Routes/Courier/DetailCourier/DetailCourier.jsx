@@ -23,7 +23,6 @@ const DetailCourier = () => {
       try {
         //extract the event from the api cause the api retuen [err,event[]]
         const [err, [event]] = await getCourierById(id, userData?.token);
-        console.log("hada l evn meeeeeed", event);
         if (err || !event) {
           Store.navigateTo("/");
           return;

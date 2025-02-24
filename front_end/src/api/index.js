@@ -421,7 +421,6 @@ export const UpdateUserApi = async (id, token, data) => {
         },
       }
     );
-    console.log("api dar");
 
     result[1] = response.data; // Stocker le succès
   } catch (err) {
@@ -435,7 +434,7 @@ export const resetPasswordAPI = async (password, token) => {
   }
   try {
     const response = await axios.post(
-      BASE_URL.link + "/users/forget-pass",
+      BASE_URL.link + "/users/verify-forget-pass",
       { pass: password },
       { headers: { Authorization: token } }
     );
@@ -447,9 +446,10 @@ export const resetPasswordAPI = async (password, token) => {
 export const GetForgetPassLinkAPI = async (email) => {
   if (!email) return ["data required", null];
   try {
-    const response = await axios.post(BASE_URL.link + "/data", {
-      email: email,
-    });
+    const response = await axios.get(
+      BASE_URL.link + "/users/request-forget-pass",
+      { params: { email } }
+    );
     return [null, response.data];
   } catch (error) {
     return [error, null];

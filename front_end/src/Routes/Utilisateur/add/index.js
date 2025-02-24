@@ -88,7 +88,6 @@ export function AddUsers() {
     setLoadingFlag({ loading: true });
     AddUserApi(formData)
       .then((response) => {
-        console.log("API Response:", response); // Log the full API response
         if (response[0])
           return (
             setLoadingFlag({ loading: false }) &&

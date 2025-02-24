@@ -42,19 +42,7 @@ app.use(
     origin: "*",
   })
 );
-app.post("/data", (req, res) => {
-  const { email } = req.body;
-  const code = generateCode(email);
-  envoyerEmail(email, APP_LINKS.FRONT_END + "/new_password?token=" + code)
-    .then((res) => {
-      console.log("email sucsess");
-    })
-    .catch((e) => {
-      console.log(e);
-    });
-  const resp = verifierCode(code);
-  return res.end("done");
-});
+
 app.use("/users", UsersRoute);
 app.use("/courier", CourierRoute);
 app.use("/departement", DepartementRoute);

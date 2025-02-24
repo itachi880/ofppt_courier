@@ -6,6 +6,7 @@ const path = require("path");
 const fs = require("fs");
 const multer = require("multer");
 require("dotenv").config(path.join(__dirname, "..", ".env"));
+const noAuthRoutes = ["/users/request-forget-pass"];
 module.exports.fileSaver = multer({ storage: multer.memoryStorage() });
 module.exports.mailer = new EasyMailer({
   user: process.env.MAILER_EMAIL, // Votre email ou nom d'utilisateur SMTP
@@ -18,6 +19,8 @@ module.exports.hashPass = (pass) => {
     .update(pass + process.env.HASH_SALT)
     .digest("hex");
 };
+module.exports.noAuthRoutes = noAuthRoutes;
+
 module.exports.jwt_signe = (data) =>
   jwt.sign(data, process.env.HASH_SALT, { expiresIn: "1d" });
 /**
@@ -37,32 +40,13 @@ module.exports.Roles = {
   normal: "normal",
 };
 module.exports.auth_middleware = function (req, res, next = () => {}) {
+  if (noAuthRoutes.includes(req.originalUrl.split("?")[0])) return next();
   const [auth_error, auth_data] = module.exports.jwt_verify(
     req.headers.authorization + ""
   );
   if (auth_error) return res.status(401).end("token error");
   req.user = auth_data;
   next();
-};
-module.exports.envoyerEmail = async (email, link) => {
-  try {
-    await this.mailer.sendEmail({
-      to: email,
-      subject: "Réinitialisation de votre mot de passe",
-      html: {
-        STRING_CODE: fs.readFileSync(
-          path.join(__dirname, "ForgetPasswordTeamplate.html"),
-          { encoding: "utf-8" }
-        ),
-        DATA_TO_REPLACE: {
-          link: link,
-        },
-        SOURCE_WORD: "data",
-      },
-    });
-  } catch (e) {
-    console.log(e);
-  }
 };
 module.exports.generateCode = (email) => {
   const secret = process.env.HASH_SALT;

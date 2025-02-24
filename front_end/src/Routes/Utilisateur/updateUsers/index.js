@@ -11,7 +11,6 @@ export function UpdateUsers() {
   useEffect(() => {
     GetUsersById(userData.token, id).then((res) => {
       if (res[0]) return console.log(res[0]);
-      console.log("res1", res[1]);
       setUsers(res[1]);
     });
   }, []);
@@ -135,14 +134,9 @@ export function UpdateUsers() {
             <td className="py-3 px-6">
               <button
                 onClick={async () => {
-                  console.log("click");
                   await UpdateUserApi(id, userData.token, users)
-                    .then((res) => {
-                      console.log(res);
-                    })
-                    .catch((err) => {
-                      console.log(err);
-                    });
+                    .then((res) => {})
+                    .catch((err) => {});
                 }}
                 className="bg-green-100 text-green-600 font-semibold py-2 px-4 rounded-lg shadow-md"
               >

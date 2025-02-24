@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
 import { resetPasswordAPI } from "../../api";
+import { useSearchParams } from "react-router-dom";
 
 export default function ResetPass() {
   const token = useSearchParams()[0].get("token");

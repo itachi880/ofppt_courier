@@ -27,9 +27,7 @@ export default () => {
     setOpenDropdown(openDropdown === dropdown ? null : dropdown);
     setIsSettingOpen(false);
   };
-  useEffect(() => {
-    console.log("User data updated:", userData);
-  }, [userData]);
+
   return !userData.token || Object.keys(userData.data || {}).length == 0 ? (
     <></>
   ) : (

@@ -489,7 +489,6 @@ export default function () {
                 text: "Failed to Update courier. Please try again.",
               }) && setLoadingFlag({ loading: false })
             );
-          console.log("result", result);
           Swal.fire({
             icon: "success",
             title: "Success!",

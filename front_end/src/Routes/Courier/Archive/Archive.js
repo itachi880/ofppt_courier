@@ -1,9 +1,9 @@
 import { events, User } from "../../../data";
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import moment from "moment";
 import { getArchive } from "../../../api";
 import { Store } from "react-data-stores";
+import { usePreventAccess } from "../../../utils";
 
 const Archive = () => {
   const [eventsData, setEventData] = events.useStore();
@@ -12,7 +12,7 @@ const Archive = () => {
   const [userData, setUserData] = User.useStore();
   const [fetchedPages, setFetchedPages] = useState({});
   const [totalPages, setTotalPages] = useState(0);
-
+  usePreventAccess(userData);
   useEffect(() => {
     if (!fetchedPages[currentPage]) {
       try {

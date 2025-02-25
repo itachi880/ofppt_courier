@@ -20,7 +20,10 @@ const {
 router.use(auth_middleware);
 
 router.post("/add", fileSaver.array("files", 3), async (req, res) => {
-  if (req.user.role != Roles.admin || req.user.depId || req.user.grpId)
+  if (
+    req.user.role != Roles.admin ||
+    (req.user.role == Roles.admin && (req.user.depId || req.user.grpId))
+  )
     return res.status(401).end("Don't have access");
 
   const [err, response] = await Courier.insert({

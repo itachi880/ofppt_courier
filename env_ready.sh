@@ -41,9 +41,8 @@ sudo ln -s /usr/share/phpmyadmin /var/www/html/phpmyadmin
 sudo systemctl restart apache2
 
 # IMPORT DATABSE
-read -sp "Enter file path to import database: " DATABASE
 
-mysql -u root -p $MYSQL_ROOT_PASS < $DATABASE
+mysql -u root -p $MYSQL_ROOT_PASS < ./ofppt_couriers.sql
 # Install Node.js 18.20.5 and npm 10
 echo "Installing Node.js 18.20.5 and npm 10..."
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -

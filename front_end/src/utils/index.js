@@ -2,9 +2,10 @@ import { Calendar as BigCalendar, momentLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import moment from "moment";
 import { Store } from "react-data-stores";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { loading } from "../data";
 import { useState } from "react";
+import { useEffect } from "react";
 const localizer = momentLocalizer(moment);
 const CustomNextButton = ({ onClick }) => {
   return (
@@ -237,4 +238,32 @@ export const CourrierColors = {
   far: { background: "#007bff", color: "white" },
   near: { background: "yellow", color: "black" },
 };
+
 export const USE_DEV = true;
+
+export const usePreventAccess = (userData) => {
+  useEffect(() => {
+    if (
+      userData.data.role == roles.admin &&
+      (userData.data.departement_id || userData.data.group_id)
+    )
+      return Store.navigateTo("/");
+  }, [userData]);
+};
+
+export const usePreventHistoryBackButton = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleBackButton = () => {
+      navigate(1); // Forces the user to stay on the current page
+    };
+
+    window.history.pushState(null, "", window.location.href);
+    window.addEventListener("popstate", handleBackButton);
+
+    return () => {
+      window.removeEventListener("popstate", handleBackButton);
+    };
+  }, [navigate]);
+};

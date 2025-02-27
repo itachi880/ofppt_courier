@@ -34,8 +34,8 @@ export function DetailUsers() {
             <th className="py-3 px-6 text-left">Prénom</th>
             <th className="py-3 px-6 text-left">Email</th>
             <th className="py-3 px-6 text-left">Rôle</th>
-            <th className="py-3 px-6 text-left">departement</th>
-            <th className="py-3 px-6 text-left">group</th>
+            <th className="py-3 px-6 text-left">Entité</th>
+            <th className="py-3 px-6 text-left">Service</th>
             <th className="py-3 px-6 text-left">Update</th>
             <th className="py-3 px-6 text-left">Delete</th>
           </tr>

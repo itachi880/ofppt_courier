@@ -33,8 +33,8 @@ export function UpdateUsers() {
             <th className="py-3 px-6 text-left">Prénom</th>
             <th className="py-3 px-6 text-left">Email</th>
             <th className="py-3 px-6 text-left">Rôle</th>
-            <th className="py-3 px-6 text-left">departement</th>
-            <th className="py-3 px-6 text-left">group</th>
+            <th className="py-3 px-6 text-left">Entité</th>
+            <th className="py-3 px-6 text-left">Service</th>
             <th className="py-3 px-6 text-left">submit</th>
           </tr>
         </thead>
@@ -99,7 +99,7 @@ export function UpdateUsers() {
                 }}
                 value={users.departement_id}
               >
-                <option>Selectionne le departement </option>
+                <option>Selectionne le Entité </option>
                 {departementsGroups.departements.map((dept) => {
                   return (
                     <option key={dept.department_id} value={dept.department_id}>
@@ -120,7 +120,7 @@ export function UpdateUsers() {
                 }}
                 value={users.group_id}
               >
-                <option>Selectionne le group</option>
+                <option>Selectionne le Service</option>
                 {departementsGroups.departements.map((e) => {
                   return e.groups.map((gp) => {
                     return (

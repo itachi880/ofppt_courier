@@ -90,7 +90,17 @@ CREATE TABLE `departement` (
 --
 
 INSERT INTO `departement` (`id`, `name`, `parent_department_id`, `created_at`, `updated_at`) VALUES
-(2, 'test', NULL, '2025-02-22 20:47:33', '2025-02-22 20:47:33');
+(3, 'Service Audit et Controle de Gestion Casablanca Settat', NULL, '2025-02-27 12:02:12', '2025-02-27 12:02:12'),
+(4, 'Service Services aux Entreprises Casablanca Settat', NULL, '2025-02-27 12:03:17', '2025-02-27 12:03:17'),
+(5, 'Service Logistique  Casablanca Settat', NULL, '2025-02-27 12:04:08', '2025-02-27 12:04:08'),
+(6, 'Service Ressources Humaines  Casablanca Settat', NULL, '2025-02-27 12:08:35', '2025-02-27 12:08:35'),
+(7, 'Correspondants Regionaux Informatiques    Casablanca Settat', NULL, '2025-02-27 12:09:36', '2025-02-27 12:09:36'),
+(8, 'Service Evaluations,Certificats et Diplômes Casablanca Settat', NULL, '2025-02-27 12:10:37', '2025-02-27 12:10:37'),
+(9, 'Service Insertion et Orientation  Casablanca Settat', NULL, '2025-02-27 12:11:36', '2025-02-27 12:11:36'),
+(10, 'Service Contrôle Qualité et Suivi de la Formation Casablanca Settat', NULL, '2025-02-27 12:17:40', '2025-02-27 12:17:40'),
+(11, 'Service Financier et Comptable Casablanca Settat', NULL, '2025-02-27 12:18:12', '2025-02-27 12:18:12'),
+(12, 'Service programmation et suivi de la carte de formation Casablanca Settat', NULL, '2025-02-27 12:18:26', '2025-02-27 12:18:26'),
+(13, 'Division Contrôle Qualité Casablanca Settat', NULL, '2025-02-27 12:18:39', '2025-02-27 12:18:39');
 
 -- --------------------------------------------------------
 

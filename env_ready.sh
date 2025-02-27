@@ -149,7 +149,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/bin/bash /courrier/back_end/auto_launch.sh
+ExecStart=/bin/bash /courrier/back_end/auto_lanche.sh
 WorkingDirectory=/courrier/back_end
 StandardOutput=inherit
 StandardError=inherit

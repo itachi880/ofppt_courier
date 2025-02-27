@@ -48,14 +48,16 @@ export default function ShowGroup() {
     <>
       <header className="bg-gradient-to-r from-green-500 to-green-700 text-white shadow-lg py-4 px-6 md:px-12">
         <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-extrabold tracking-wide">Show Groups</h1>
+          <h1 className="text-2xl font-extrabold tracking-wide">
+            Show Service
+          </h1>
           <nav className="flex space-x-2 md:space-x-6"></nav>
         </div>
       </header>
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <div className="p-4 w-full max-w-4xl bg-white shadow-md rounded-md">
           <h1 className="text-xl font-semibold text-gray-800 mb-3 text-center">
-            Groups
+            services
           </h1>
           {loading ? (
             <p className="text-gray-500 text-center">Loading...</p>
@@ -84,28 +86,28 @@ export default function ShowGroup() {
                       <button
                         onClick={() => {
                           Swal.fire({
-                            title: "vous êtes sûr de vouloir supprimer cette group?",
+                            title:
+                              "vous êtes sûr de vouloir supprimer cette group?",
                             icon: "question",
                             iconHtml: "؟",
                             confirmButtonText: "Oui",
                             cancelButtonText: "Nom",
                             showCancelButton: true,
-                            showCloseButton: true
+                            showCloseButton: true,
                           }).then((result) => {
                             if (result.isConfirmed) {
-                              handleDelete(e.id)
+                              handleDelete(e.id);
                             }
                           });
-                     }}
+                        }}
                         className="text-red-500 hover:text-red-700 mr-2"
                         aria-label="Delete Group"
                       >
                         <FaTrashAlt />
                       </button>
-
                     </td>
                     <td className="py-2 px-3 border-b">
-                    <button
+                      <button
                         onClick={() => handleUpdate(e.id)}
                         className="text-blue-500 hover:text-blue-700"
                         aria-label="Update Group"

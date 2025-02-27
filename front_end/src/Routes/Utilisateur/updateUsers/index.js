@@ -24,7 +24,7 @@ export function UpdateUsers() {
   return (
     <div>
       <h2 className="text-2xl font-semibold text-gray-700 mb-4">
-        Update Users:
+        Modifié utilisateurs:
       </h2>
       <table className="min-w-full bg-white border border-gray-200 shadow-md rounded-lg">
         <thead>
@@ -35,7 +35,7 @@ export function UpdateUsers() {
             <th className="py-3 px-6 text-left">Rôle</th>
             <th className="py-3 px-6 text-left">Entité</th>
             <th className="py-3 px-6 text-left">Service</th>
-            <th className="py-3 px-6 text-left">submit</th>
+            <th className="py-3 px-6 text-left">Enregistré</th>
           </tr>
         </thead>
         <tbody className="text-gray-700 text-sm font-light">
@@ -99,7 +99,7 @@ export function UpdateUsers() {
                 }}
                 value={users.departement_id}
               >
-                <option>Selectionne le Entité </option>
+                <option>Selectionne l'Entité </option>
                 {departementsGroups.departements.map((dept) => {
                   return (
                     <option key={dept.department_id} value={dept.department_id}>
@@ -120,7 +120,7 @@ export function UpdateUsers() {
                 }}
                 value={users.group_id}
               >
-                <option>Selectionne le Service</option>
+                <option>Selectionné le Service</option>
                 {departementsGroups.departements.map((e) => {
                   return e.groups.map((gp) => {
                     return (
@@ -157,7 +157,7 @@ export function UpdateUsers() {
                 }}
                 className="bg-green-100 text-green-600 font-semibold py-2 px-4 rounded-lg shadow-md"
               >
-                Submit
+                Enregistré
               </button>
             </td>
           </tr>

@@ -62,9 +62,9 @@ export default function AddDepartmentComponent() {
           }}
           className="w-full py-3 bg-green-100 text-green-600 font-semibold rounded-md "
           // hover:bg-green-500  focus:outline-none focus:ring-2 focus:ring-blue-500
-              //  className="bg-green-100 text-green-600 font-semibold py-2 px-4 rounded-lg shadow-md"
+          //  className="bg-green-100 text-green-600 font-semibold py-2 px-4 rounded-lg shadow-md"
         >
-          Ajouter Entite
+          Ajouter Entité
         </button>
       </div>
     </div>

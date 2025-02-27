@@ -149,7 +149,7 @@ export function AddUsers() {
           value={formData.email}
           required
         />
-        <label style={styles.label}>Password:</label>
+        <label style={styles.label}>mot de passe:</label>
         <input
           style={styles.input}
           placeholder="Password"
@@ -207,7 +207,7 @@ export function AddUsers() {
           style={styles.submitButton}
           onClick={handleSubmit}
         >
-          Submit
+          Enregistré
         </button>
       </div>
     </div>

@@ -25,12 +25,12 @@ export default function ResetPass() {
     <div className="grid place-items-center h-screen bg-gray-100">
       <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-sm">
         <h1 className="text-2xl font-bold text-center text-gray-800 mb-4">
-          Reset Password
+          Réinitialiser le mot de passe
         </h1>
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
             <label className="block text-sm font-medium text-gray-600">
-              New Password
+              Nouveau mot de passe
             </label>
             <input
               type="password"
@@ -42,7 +42,7 @@ export default function ResetPass() {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-600">
-              Confirm Password
+              Confirmé mot de passe
             </label>
             <input
               type="password"
@@ -56,7 +56,7 @@ export default function ResetPass() {
             type="submit"
             className="w-full py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition duration-200"
           >
-            Reset Password
+            Réinitialiser le mot de passe
           </button>
         </form>
         {message && (

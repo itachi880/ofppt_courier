@@ -70,6 +70,7 @@ export default function Home() {
     };
     get();
   }, [userData]);
+ 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col pb-16">
       <header className="bg-gradient-to-r from-green-500 to-green-700 text-white shadow-lg py-4 px-6 md:px-12">

@@ -4,6 +4,7 @@ import { User, usersStore, departements_group_store } from "../../../data";
 import { useNavigate } from "react-router-dom";
 import { GetUsersById, UpdateUserApi } from "../../../api";
 import { roles } from "../../../utils";
+import Swal from "sweetalert2";
 
 export function UpdateUsers() {
   const { id } = useParams();
@@ -134,9 +135,35 @@ export function UpdateUsers() {
             <td className="py-3 px-6">
               <button
                 onClick={async () => {
+                  // await UpdateUserApi(id, userData.token, users)
+                  //   .then((res) => {console.log(res);})
+                  //   .catch((err) => {console.log(err);});
+                  //   Swal.fire({
+                  //                   icon: "success",
+                  //                   title: "Success!",
+                  //                   text: "L'entité a été ajoutée avec succès.",
+                  //                 });
                   await UpdateUserApi(id, userData.token, users)
-                    .then((res) => {})
-                    .catch((err) => {});
+  .then((res) => {
+    console.log(res);
+    // Vérifie si la mise à jour est réussie avant d'afficher l'alerte
+    if (res) {
+      Swal.fire({
+        icon: "success",
+        title: "Succès!",
+        text: "L'entité a été modifiée avec succès.",
+      });
+    }
+  })
+  .catch((err) => {
+    console.log(err);
+    Swal.fire({
+      icon: "error",
+      title: "Erreur!",
+      text: "Une erreur est survenue lors de la modification.",
+    });
+  });
+
                 }}
                 className="bg-green-100 text-green-600 font-semibold py-2 px-4 rounded-lg shadow-md"
               >

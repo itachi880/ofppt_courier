@@ -69,6 +69,7 @@ npm -v
 
 # Move source directories
 echo "🔄 Moving source directories..."
+ls -l
 if [ -d ./back_end ]; then
   echo "✅ Moving 'back_end' directory..."
   mv ./back_end /courrier/back_end

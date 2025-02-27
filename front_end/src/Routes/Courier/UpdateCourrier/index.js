@@ -7,6 +7,7 @@ import {
   ImgsWithCancelIcon,
   RedBox,
   roles,
+  usePreventAccess,
   useQuery,
 } from "../../../utils";
 import { Store } from "react-data-stores";
@@ -103,6 +104,8 @@ export default function () {
     departements_group_store.useStore();
   const searchQuery = useQuery();
   const [loadingFlag, setLoadingFlag] = loading.useStore();
+  usePreventAccess(userData);
+
   useEffect(() => {
     if (userData.data.role != roles.admin) {
       Store.navigateTo("/courrier/detail/" + id);

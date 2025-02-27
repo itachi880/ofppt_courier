@@ -12,7 +12,13 @@ import Group from "./Routes/Group";
 import Home from "./Routes/home";
 import Utilisateur from "./Routes/Utilisateur";
 import { motion, AnimatePresence } from "framer-motion"; // Import AnimatePresence
-import { LoadingBar, noLoginRoutes, preventBacklink, USE_DEV } from "./utils";
+import {
+  LoadingBar,
+  noLoginRoutes,
+  preventBacklink,
+  USE_DEV,
+  usePreventHistoryBackButton,
+} from "./utils";
 import { ReseteMDP } from "./Routes/mdpOublie";
 import ResetPass from "./Routes/ResetPass";
 import axios from "axios";
@@ -25,7 +31,7 @@ function App() {
   const [departements_group, setDepartementsGroup] =
     departements_group_store.useStore();
 
-  //!
+  usePreventHistoryBackButton();
   const fetchData = async () => {
     setLoadingFlag({ loading: true });
     if (window.location.pathname == "/login") {

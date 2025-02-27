@@ -24,7 +24,7 @@ export function UpdateUsers() {
   return (
     <div>
       <h2 className="text-2xl font-semibold text-gray-700 mb-4">
-        Update Users:
+        Modifié utilisateurs:
       </h2>
       <table className="min-w-full bg-white border border-gray-200 shadow-md rounded-lg">
         <thead>
@@ -33,9 +33,9 @@ export function UpdateUsers() {
             <th className="py-3 px-6 text-left">Prénom</th>
             <th className="py-3 px-6 text-left">Email</th>
             <th className="py-3 px-6 text-left">Rôle</th>
-            <th className="py-3 px-6 text-left">departement</th>
-            <th className="py-3 px-6 text-left">group</th>
-            <th className="py-3 px-6 text-left">submit</th>
+            <th className="py-3 px-6 text-left">Entité</th>
+            <th className="py-3 px-6 text-left">Service</th>
+            <th className="py-3 px-6 text-left">Enregistré</th>
           </tr>
         </thead>
         <tbody className="text-gray-700 text-sm font-light">
@@ -99,7 +99,7 @@ export function UpdateUsers() {
                 }}
                 value={users.departement_id}
               >
-                <option>Selectionne le departement </option>
+                <option>Selectionne l'Entité </option>
                 {departementsGroups.departements.map((dept) => {
                   return (
                     <option key={dept.department_id} value={dept.department_id}>
@@ -120,7 +120,7 @@ export function UpdateUsers() {
                 }}
                 value={users.group_id}
               >
-                <option>Selectionne le group</option>
+                <option>Selectionné le Service</option>
                 {departementsGroups.departements.map((e) => {
                   return e.groups.map((gp) => {
                     return (
@@ -144,30 +144,12 @@ export function UpdateUsers() {
                   //                   text: "L'entité a été ajoutée avec succès.",
                   //                 });
                   await UpdateUserApi(id, userData.token, users)
-  .then((res) => {
-    console.log(res);
-    // Vérifie si la mise à jour est réussie avant d'afficher l'alerte
-    if (res) {
-      Swal.fire({
-        icon: "success",
-        title: "Succès!",
-        text: "L'entité a été modifiée avec succès.",
-      });
-    }
-  })
-  .catch((err) => {
-    console.log(err);
-    Swal.fire({
-      icon: "error",
-      title: "Erreur!",
-      text: "Une erreur est survenue lors de la modification.",
-    });
-  });
-
+                    .then((res) => {})
+                    .catch((err) => {});
                 }}
                 className="bg-green-100 text-green-600 font-semibold py-2 px-4 rounded-lg shadow-md"
               >
-                Submit
+                Enregistré
               </button>
             </td>
           </tr>

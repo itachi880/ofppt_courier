@@ -38,6 +38,7 @@ module.exports.jwt_verify = (token) => {
 module.exports.Roles = {
   admin: "admin",
   normal: "normal",
+  Chef_Dr: "Che_Dr",
 };
 module.exports.auth_middleware = function (req, res, next = () => {}) {
   if (noAuthRoutes.includes(req.originalUrl.split("?")[0])) return next();

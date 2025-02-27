@@ -118,7 +118,7 @@ export default function AddGroup() {
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="p-6 w-full max-w-md bg-white shadow-md rounded-md">
         <label className="block text-sm font-semibold text-gray-700 mb-2">
-          Group Name
+          Service Name
         </label>
         <input
           type="text"
@@ -130,7 +130,7 @@ export default function AddGroup() {
         />
 
         <label className="block text-sm font-semibold text-gray-700 mb-2">
-          Assign Department
+          Assign Entité
         </label>
         <select
           onChange={(e) =>
@@ -141,7 +141,7 @@ export default function AddGroup() {
           required // Add required attribute
         >
           <option value="" hidden>
-            Select Department
+            Select Entité
           </option>{" "}
           {/* Hidden placeholder option */}
           {departementsGroups.departements.map((e) => (
@@ -157,9 +157,9 @@ export default function AddGroup() {
           type="submit"
           onClick={handleSubmit} // Call handleSubmit
           // className="w-full py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            className="w-full py-3 bg-green-100 text-green-600 font-semibold rounded-md "
+          className="w-full py-3 bg-green-100 text-green-600 font-semibold rounded-md "
         >
-          Add Group
+          Add Service
         </button>
       </div>
     </div>

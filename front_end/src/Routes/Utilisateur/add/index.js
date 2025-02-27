@@ -149,7 +149,7 @@ export function AddUsers() {
           value={formData.email}
           required
         />
-        <label style={styles.label}>Password:</label>
+        <label style={styles.label}>mot de passe:</label>
         <input
           style={styles.input}
           placeholder="Password"
@@ -162,7 +162,7 @@ export function AddUsers() {
         />
       </div>
       <div style={styles.section}>
-        <label style={styles.label}>Département:</label>
+        <label style={styles.label}>Entité:</label>
         <select
           style={styles.select}
           onChange={(e) =>
@@ -181,7 +181,7 @@ export function AddUsers() {
           ))}
         </select>
 
-        <label style={styles.label}>Groupe:</label>
+        <label style={styles.label}>Service:</label>
         <select
           style={styles.select}
           onChange={(e) =>
@@ -191,7 +191,7 @@ export function AddUsers() {
           required
         >
           <option value="" hidden>
-            Sélectionner un groupe
+            Sélectionner un Service
           </option>
           {departementsGroup.departements
             .flatMap((dep) => dep.groups)
@@ -207,7 +207,7 @@ export function AddUsers() {
           style={styles.submitButton}
           onClick={handleSubmit}
         >
-          Submit
+          Enregistré
         </button>
       </div>
     </div>

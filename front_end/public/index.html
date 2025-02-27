@@ -27,6 +27,12 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
+    <script>
+      history.pushState(null, "", location.href);
+      window.onpopstate = function () {
+        history.pushState(null, "", location.href);
+      };
+    </script>
     <title>OFPPT | Courrier</title>
   </head>
   <body>

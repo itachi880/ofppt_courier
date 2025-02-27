@@ -7,6 +7,7 @@ import { roles } from "../utils";
 export default () => {
   const [userData, setUserData] = User.useStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [renderSudoActions, setRenderSudoActions] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [eventsData, setEventsData] = events.useStore();
   const [activeNavElement, setActiveNavElement] = useState("");
@@ -27,7 +28,17 @@ export default () => {
     setOpenDropdown(openDropdown === dropdown ? null : dropdown);
     setIsSettingOpen(false);
   };
-
+  useEffect(() => {
+    if (userData.token && Object.keys(userData.data || {}).length > 0) {
+      setRenderSudoActions(
+        !(
+          userData.data.role != roles.admin ||
+          (userData.data.role == roles.admin &&
+            (userData.data.departement_id || userData.data.group_id))
+        )
+      );
+    }
+  }, [userData]);
   return !userData.token || Object.keys(userData.data || {}).length == 0 ? (
     <></>
   ) : (
@@ -59,7 +70,7 @@ export default () => {
           </button>
 
           {/* Départements Dropdown */}
-          {userData.data.role === roles.admin && (
+          {renderSudoActions && (
             <div
               className={`dropdown ${
                 openDropdown === "departement" ? "open" : ""
@@ -85,6 +96,7 @@ export default () => {
                   <i className="fa-solid fa-list"></i>
                   <span>Afficher Entité</span>
                 </button>
+
                 <button
                   onClick={() => {
                     Store.navigateTo("/departement/add");
@@ -99,7 +111,7 @@ export default () => {
           )}
 
           {/* Groupes Dropdown */}
-          {userData.data.role === roles.admin && (
+          {renderSudoActions && (
             <div
               className={`dropdown ${openDropdown === "group" ? "open" : ""}`}
               onMouseEnter={() => handleDropdown("group")}
@@ -123,6 +135,7 @@ export default () => {
                   <i className="fa-solid fa-list"></i>
                   <span>Afficher Groupes</span>
                 </button>
+
                 <button
                   onClick={() => {
                     Store.navigateTo("/Group/add");
@@ -160,7 +173,7 @@ export default () => {
                 <i className="fa-solid fa-list"></i>
                 <span>Afficher Courriers</span>
               </button>
-              {userData.data.role === roles.admin && (
+              {renderSudoActions && (
                 <button
                   onClick={() => {
                     Store.navigateTo("/courrier/add");
@@ -197,7 +210,7 @@ export default () => {
                 <i className="fa-solid fa-list"></i>
                 <span>Afficher events</span>
               </button>
-              {userData.data.role === roles.admin && (
+              {renderSudoActions && (
                 <button
                   onClick={() => {
                     Store.navigateTo(
@@ -213,7 +226,7 @@ export default () => {
             </div>
           </div>
 
-          {userData.data.role === roles.admin && (
+          {renderSudoActions && (
             <div
               className={`dropdown ${
                 openDropdown === "utilisateur" ? "open" : ""
@@ -239,32 +252,36 @@ export default () => {
                   <i className="fa-solid fa-list"></i>
                   <span>Afficher Utilisateurs</span>
                 </button>
-                <button
-                  onClick={() => {
-                    Store.navigateTo("/utilisateur/add");
-                    setActiveNavElement("Utilisateurs");
-                  }}
-                >
-                  <i className="fa-solid fa-plus"></i>
-                  <span>Ajouter Utilisateur</span>
-                </button>
+                {renderSudoActions && (
+                  <button
+                    onClick={() => {
+                      Store.navigateTo("/utilisateur/add");
+                      setActiveNavElement("Utilisateurs");
+                    }}
+                  >
+                    <i className="fa-solid fa-plus"></i>
+                    <span>Ajouter Utilisateur</span>
+                  </button>
+                )}
               </div>
             </div>
           )}
 
           <div className="dropdown">
-            <button
-              title="Archive"
-              className={
-                activeNavElement == "Archive" ? "active-nav-element" : ""
-              }
-              onClick={() => {
-                Store.navigateTo("/courrier/archive");
-                setActiveNavElement("Archive");
-              }}
-            >
-              <i className="fa-solid fa-archive"></i>
-            </button>
+            {renderSudoActions && (
+              <button
+                title="Archive"
+                className={
+                  activeNavElement == "Archive" ? "active-nav-element" : ""
+                }
+                onClick={() => {
+                  Store.navigateTo("/courrier/archive");
+                  setActiveNavElement("Archive");
+                }}
+              >
+                <i className="fa-solid fa-archive"></i>
+              </button>
+            )}
           </div>
         </div>
 

@@ -25,7 +25,7 @@ export function DetailUsers() {
   return (
     <div className="overflow-x-auto p-6">
       <h2 className="text-2xl font-semibold text-gray-700 mb-4">
-        Detail Users:
+        Details utilisateurs:
       </h2>
       <table className="min-w-full bg-white border border-gray-200 shadow-md rounded-lg">
         <thead>
@@ -34,10 +34,10 @@ export function DetailUsers() {
             <th className="py-3 px-6 text-left">Prénom</th>
             <th className="py-3 px-6 text-left">Email</th>
             <th className="py-3 px-6 text-left">Rôle</th>
-            <th className="py-3 px-6 text-left">departement</th>
-            <th className="py-3 px-6 text-left">group</th>
-            <th className="py-3 px-6 text-left">Update</th>
-            <th className="py-3 px-6 text-left">Delete</th>
+            <th className="py-3 px-6 text-left">Entité</th>
+            <th className="py-3 px-6 text-left">Service</th>
+            <th className="py-3 px-6 text-left">modifié</th>
+            <th className="py-3 px-6 text-left">supprimer</th>
           </tr>
         </thead>
         <tbody className="text-gray-700 text-sm font-light">
@@ -94,8 +94,30 @@ export function DetailUsers() {
                     }).then((result) => {
                       if (result.isConfirmed) {
                         DeleteUserApi(users.id, userData.token)
-                          .then((res) => {})
-                          .catch((err) => {});
+                          .then((res) => {
+                            if (res[0])
+                              return Swal.fire({
+                                icon: "error",
+                                title: "Error!",
+                                text: `Server returned an error: ${
+                                  res[0].status
+                                } - ${res[0].statusText || "Unknown Error"}`, // Display specific error message
+                              });
+                            Swal.fire({
+                              icon: "success",
+                              title: "Success!",
+                              text: "User deleted successfully!",
+                            });
+                          })
+                          .catch((err) => {
+                            Swal.fire({
+                              icon: "error",
+                              title: "Error!",
+                              text: `Server returned an error: ${
+                                err.status
+                              } - ${err.statusText || "Unknown Error"}`, // Display specific error message
+                            });
+                          });
                       }
                     });
                   }}

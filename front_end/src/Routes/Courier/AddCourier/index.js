@@ -6,8 +6,17 @@ import {
   loading,
 } from "../../../data";
 import { AddCourier } from "../../../api";
-import { GreenBox, ImgsWithCancelIcon, RedBox, useQuery } from "../../../utils";
+import {
+  GreenBox,
+  ImgsWithCancelIcon,
+  RedBox,
+  roles,
+  usePreventAccess,
+  useQuery,
+} from "../../../utils";
 import Swal from "sweetalert2";
+import { useEffect } from "react";
+import { Store } from "react-data-stores";
 
 /**
  * @type {Record<string,import("react").CSSProperties>}
@@ -99,6 +108,7 @@ export default function () {
   const [userData, setUserData] = User.useStore();
   const [departementsGroup, setDepartementsGroup] =
     departements_group_store.useStore();
+  usePreventAccess(userData);
 
   return (
     <div style={styles.container} className="container mx-auto pb-32">
@@ -372,9 +382,8 @@ export default function () {
             !formData.created_at ||
             isNaN(Date.parse(formData.created_at)) ||
             !Array.isArray(formData.departements) ||
-            formData.departements.length === 0 ||
             !Array.isArray(formData.groups) ||
-            formData.groups.length === 0
+            (formData.departements.length === 0 && formData.groups.length === 0)
           ) {
             // Show error using SweetAlert if validation fails
             return Swal.fire({
@@ -403,11 +412,14 @@ export default function () {
           AddCourier(formDataToSend, formData.departements, formData.groups)
             .then((res) => {
               setLoadingFlag({ loading: false });
+              console.log(res);
               if (res[0])
                 return Swal.fire({
                   icon: "error",
                   title: "Error!",
-                  text: "Failed to add courier. Please try again.",
+                  text:
+                    res[0]?.response?.data ||
+                    "Failed to add courier. Please try again.",
                 });
               Swal.fire({
                 icon: "success",

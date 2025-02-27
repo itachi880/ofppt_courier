@@ -70,27 +70,43 @@ npm -v
 # Move source directories
 echo "🔄 Moving source directories..."
 if [ -d ./back_end ]; then
+  echo "✅ Moving 'back_end' directory..."
   mv ./back_end /courrier/back_end
 else
-  echo "❌ Backend directory not found! Listing contents of the current directory:"
+  echo "❌ 'back_end' directory not found! Listing contents of the current directory:"
   ls -l
   exit 1
 fi
 
 if [ -d ./front_end ]; then
+  echo "✅ Moving 'front_end' directory..."
   mv ./front_end /courrier/front_end
 else
-  echo "❌ Frontend directory not found! Listing contents of the current directory:"
+  echo "❌ 'front_end' directory not found! Listing contents of the current directory:"
   ls -l
   exit 1
 fi
 
 # Install project dependencies
 echo "📦 Installing project dependencies..."
-cd /courrier/back_end || { echo "❌ Backend directory not found!"; exit 1; }
-npm install
-cd /courrier/front_end || { echo "❌ Frontend directory not found!"; exit 1; }
-npm install
+
+# Backend dependencies
+if [ -d /courrier/back_end ]; then
+  cd /courrier/back_end || { echo "❌ Backend directory not found!"; exit 1; }
+  npm install
+else
+  echo "❌ Backend directory is missing. Exiting."
+  exit 1
+fi
+
+# Frontend dependencies
+if [ -d /courrier/front_end ]; then
+  cd /courrier/front_end || { echo "❌ Frontend directory not found!"; exit 1; }
+  npm install
+else
+  echo "❌ Frontend directory is missing. Exiting."
+  exit 1
+fi
 
 # Test MySQL connection
 echo "✅ Testing MySQL connection..."

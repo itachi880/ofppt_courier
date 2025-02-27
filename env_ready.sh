@@ -70,22 +70,37 @@ npm -v
 # Move source directories
 echo "🔄 Moving source directories..."
 
-mkdir -p /courrier
+# Ensure /courrier and subdirectories exist
 mkdir -p /courrier/front_end
 mkdir -p /courrier/back_end
+
+# Moving the 'back_end' directory and its contents
 if [ -d ./back_end ]; then
   echo "✅ Moving 'back_end' directory..."
+
+  # Move the .env file separately (you can add more hidden files if needed)
   mv ./back_end/.env /courrier/back_end
-  mv ./back_end /courrier
+
+  # Ensure hidden files and all files are moved by enabling dotglob
+  shopt -s dotglob
+  mv ./back_end/* /courrier/back_end   # Move all files including hidden ones
+  shopt -u dotglob   # Disable dotglob to avoid affecting other patterns
+
 else
   echo "❌ 'back_end' directory not found! Listing contents of the current directory:"
   ls -l
   exit 1
 fi
 
+# Moving the 'front_end' directory and its contents
 if [ -d ./front_end ]; then
   echo "✅ Moving 'front_end' directory..."
-  mv ./front_end /courrier
+  
+  # Ensure hidden files and all files are moved
+  shopt -s dotglob
+  mv ./front_end/* /courrier/front_end   # Move all files including hidden ones
+  shopt -u dotglob   # Disable dotglob to avoid affecting other patterns
+
 else
   echo "❌ 'front_end' directory not found! Listing contents of the current directory:"
   ls -l

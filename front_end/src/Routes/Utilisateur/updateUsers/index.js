@@ -135,24 +135,16 @@ export function UpdateUsers() {
             <td className="py-3 px-6">
               <button
                 onClick={async () => {
+                  // await UpdateUserApi(id, userData.token, users)
+                  //   .then((res) => {console.log(res);})
+                  //   .catch((err) => {console.log(err);});
+                  //   Swal.fire({
+                  //                   icon: "success",
+                  //                   title: "Success!",
+                  //                   text: "L'entité a été ajoutée avec succès.",
+                  //                 });
                   await UpdateUserApi(id, userData.token, users)
-                    .then((res) => {
-                      if (res[0]) {
-                        Swal.fire({
-                          icon: "error",
-                          title: "Error!",
-                          text: `Server returned an error: ${res[0].status} - ${
-                            res[0].statusText || "Unknown Error"
-                          }`, // Display specific error message
-                        });
-                        return;
-                      }
-                      Swal.fire({
-                        icon: "success",
-                        title: "Success!",
-                        text: "User added successfully!",
-                      });
-                    })
+                    .then((res) => {})
                     .catch((err) => {});
                 }}
                 className="bg-green-100 text-green-600 font-semibold py-2 px-4 rounded-lg shadow-md"

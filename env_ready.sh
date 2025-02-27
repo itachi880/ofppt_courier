@@ -148,15 +148,14 @@ Description=Auto Launch Backend on Boot
 After=network.target
 
 [Service]
-Type=simple
-ExecStart=/bin/bash /courrier/back_end/auto_lanche.sh
+ExecStart=/usr/bin/node /courrier/back_end/index.js   # Lancer Node directement
 WorkingDirectory=/courrier/back_end
-StandardOutput=inherit
-StandardError=inherit
 Restart=always
-
+StandardOutput=append:/var/log/backend.log
+StandardError=append:/var/log/backend.log
 [Install]
 WantedBy=multi-user.target
+
 EOF
 
   # Reload systemd to apply the new service

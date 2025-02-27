@@ -72,17 +72,16 @@ echo "🔄 Moving source directories..."
 if [ -d ./back_end ]; then
   mv ./back_end /courrier/back_end
 else
-  echo "❌ Backend directory not found!"
-  ls 
+  echo "❌ Backend directory not found! Listing contents of the current directory:"
+  ls -l
   exit 1
 fi
 
 if [ -d ./front_end ]; then
   mv ./front_end /courrier/front_end
-
 else
-  echo "❌ Frontend directory not found!"
-  ls
+  echo "❌ Frontend directory not found! Listing contents of the current directory:"
+  ls -l
   exit 1
 fi
 

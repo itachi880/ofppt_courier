@@ -76,7 +76,7 @@ mkdir -p /courrier/back_end
 if [ -d ./back_end ]; then
   echo "✅ Moving 'back_end' directory..."
   mv ./back_end/.env /courrier/back_end
-  mv ./back_end /courrier/back_end
+  mv ./back_end /courrier
 else
   echo "❌ 'back_end' directory not found! Listing contents of the current directory:"
   ls -l
@@ -85,8 +85,7 @@ fi
 
 if [ -d ./front_end ]; then
   echo "✅ Moving 'front_end' directory..."
-  mv ./front_end/.env /courrier/front_end
-  mv ./front_end /courrier/front_end
+  mv ./front_end /courrier
 else
   echo "❌ 'front_end' directory not found! Listing contents of the current directory:"
   ls -l

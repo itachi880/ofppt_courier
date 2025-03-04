@@ -218,6 +218,7 @@ export const ImgsWithCancelIcon = ({
 export const roles = {
   admin: "admin",
   user: "user",
+  Chef_Dr:"Chef_Dr",
 };
 
 export const useQuery = () => {

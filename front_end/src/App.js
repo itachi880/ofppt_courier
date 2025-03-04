@@ -22,6 +22,7 @@ import {
 import { ReseteMDP } from "./Routes/mdpOublie";
 import ResetPass from "./Routes/ResetPass";
 import axios from "axios";
+import Chef_Dr from "./Routes/Chef_Dr";
 
 function App() {
   Store.navigateTo = useNavigate();
@@ -158,6 +159,7 @@ function App() {
               <Route path="/group/*" element={<Group />} />
               <Route path="/utilisateur/*" element={<Utilisateur />} />
               <Route path="/forget-pass" element={<ResetPass />} />
+              <Route path="/AdminDr" element={<Chef_Dr/>} />
               <Route path="*" element={<>404</>} />
             </Routes>
           </motion.div>

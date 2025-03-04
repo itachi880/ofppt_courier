@@ -38,7 +38,7 @@ module.exports.jwt_verify = (token) => {
 module.exports.Roles = {
   admin: "admin",
   normal: "normal",
-  Chef_Dr: "Che_Dr",
+  Chef_Dr: "Chef_Dr",
 };
 module.exports.auth_middleware = function (req, res, next = () => {}) {
   if (noAuthRoutes.includes(req.originalUrl.split("?")[0])) return next();
@@ -146,4 +146,4 @@ module.exports.APP_LINKS = {
   FRONT_END: "http://localhost:3000",
   BACK_END: "http://localhost:4000",
 };
-module.exports.USE_DEV = false;
+module.exports.USE_DEV = true;

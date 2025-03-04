@@ -1,6 +1,11 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { User, usersStore, departements_group_store } from "../../../data";
+import {
+  User,
+  usersStore,
+  departements_group_store,
+  loading,
+} from "../../../data";
 import { useNavigate } from "react-router-dom";
 import { GetUsersById, UpdateUserApi } from "../../../api";
 import { roles } from "../../../utils";
@@ -9,10 +14,15 @@ import Swal from "sweetalert2";
 export function UpdateUsers() {
   const { id } = useParams();
   const [users, setUsers] = useState({});
+  const [loadingFlag, setLoadingFlag] = loading.useStore();
+
   useEffect(() => {
+    setLoadingFlag({ loading: true });
     GetUsersById(userData.token, id).then((res) => {
-      if (res[0]) return console.log(res[0]);
+      if (res[0])
+        return console.log(res[0]) && setLoadingFlag({ loading: false });
       setUsers(res[1]);
+      setLoadingFlag({ loading: false });
     });
   }, []);
   useEffect(() => {
@@ -135,17 +145,30 @@ export function UpdateUsers() {
             <td className="py-3 px-6">
               <button
                 onClick={async () => {
-                  // await UpdateUserApi(id, userData.token, users)
-                  //   .then((res) => {console.log(res);})
-                  //   .catch((err) => {console.log(err);});
-                  //   Swal.fire({
-                  //                   icon: "success",
-                  //                   title: "Success!",
-                  //                   text: "L'entité a été ajoutée avec succès.",
-                  //                 });
+                  setLoadingFlag({ loading: true });
                   await UpdateUserApi(id, userData.token, users)
-                    .then((res) => {})
-                    .catch((err) => {});
+                    .then((res) => {
+                      if (res[0])
+                        return Swal.fire({
+                          icon: "error",
+                          title: "Error!",
+                          text: "Failed to update user.",
+                        });
+                      Swal.fire({
+                        icon: "success",
+                        title: "Success!",
+                        text: "user updated successfully.",
+                      });
+                    })
+                    .catch((err) => {
+                      Swal.fire({
+                        icon: "error",
+                        title: "Error!",
+                        text: "Failed to update user.",
+                      });
+                      console.log(err);
+                    });
+                  setLoadingFlag({ loading: false });
                 }}
                 className="bg-green-100 text-green-600 font-semibold py-2 px-4 rounded-lg shadow-md"
               >

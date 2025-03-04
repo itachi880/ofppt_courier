@@ -486,3 +486,17 @@ export const validateCourierAPI = async (
     return [e, null];
   }
 };
+export const getStatusAPI = async (token, year) => {
+  try {
+    if (!token) return ["token is empty", null];
+    const d = await axios.get(BASE_URL.link + "/courier/status", {
+      headers: { Authorization: token },
+      params: {
+        year,
+      },
+    });
+    return [null, d.data];
+  } catch (e) {
+    return [e, null];
+  }
+};

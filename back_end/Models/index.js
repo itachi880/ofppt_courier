@@ -656,6 +656,15 @@ module.exports.Courier = {
       return [e, null];
     }
   },
+  async getStatusFor(year, month) {
+    try {
+      const query = `call getStatus(?,?)`;
+      return [null, (await db.query(query, [year, month]))[0]];
+    } catch (e) {
+      console.error(e);
+      return [e, null];
+    }
+  },
 };
 
 // ? sholde run as cron job each day & one time at app start up

@@ -222,28 +222,7 @@ router.get("/bettwen", async (req, res) => {
     return res.status(500).send("Server error");
   }
 });
-router.get("/:id", async (req, res) => {
-  try {
-    const resl =
-      req.user.role != Roles.admin && req.user.depId && req.user.grpId
-        ? await CourierAssignee.getCouriers(
-            req.user.grpId,
-            req.user.depId,
-            ` ${TablesNames.courier}.id = ? `,
-            [req.params.id]
-          )
-        : await CourierAssignee.getCouriers(
-            undefined,
-            undefined,
-            ` ${TablesNames.courier}.id = ? `,
-            [req.params.id]
-          );
-    if (resl[0]) return res.status(500).end("error") && console.log(resl[0]);
-    return res.json(resl[1]);
-  } catch (e) {
-    return res.status(500).end("error");
-  }
-});
+
 router.post("/validate/:id", async (req, res) => {
   if (req.user.role === Roles.admin && !req.user.grpId && !req.user.depId)
     return res.status(401).end("Don't have access");
@@ -288,5 +267,50 @@ router.post("/validate/:id", async (req, res) => {
     reslts.description,
     reslts.id
   );
+});
+router.get("/status", async (req, res) => {
+  // Get the year from the query parameter, defaulting to the current year
+  const year = parseInt(req.query.year) || new Date().getFullYear();
+
+  // Get the current month (1-12)
+  const currentMonth = new Date().getMonth() + 1;
+
+  const monthlyData = [];
+
+  for (let month = 1; month <= currentMonth; month++) {
+    const [err, result] = await Courier.getStatusFor(year, month);
+    if (err) {
+      console.log(err);
+      return res.status(500).end("Backend error");
+    }
+
+    // Assuming result[0] contains the required data
+    monthlyData.push(result[0][0]);
+  }
+
+  return res.json(monthlyData);
+});
+
+router.get("/:id", async (req, res) => {
+  try {
+    const resl =
+      req.user.role != Roles.admin && req.user.depId && req.user.grpId
+        ? await CourierAssignee.getCouriers(
+            req.user.grpId,
+            req.user.depId,
+            ` ${TablesNames.courier}.id = ? `,
+            [req.params.id]
+          )
+        : await CourierAssignee.getCouriers(
+            undefined,
+            undefined,
+            ` ${TablesNames.courier}.id = ? `,
+            [req.params.id]
+          );
+    if (resl[0]) return res.status(500).end("error") && console.log(resl[0]);
+    return res.json(resl[1]);
+  } catch (e) {
+    return res.status(500).end("error");
+  }
 });
 module.exports = router;

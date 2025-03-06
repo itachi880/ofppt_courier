@@ -106,7 +106,7 @@ function App() {
     //!=> for dev purposes
     if (!USE_DEV) {
       axios
-        .get("https://itachi880.github.io/public_ip/back_end")
+        .get("https://ofpptsystem.github.io/public_ip/back_end")
         .then((res) => {
           BASE_URL.link = "http://" + res.data;
         })

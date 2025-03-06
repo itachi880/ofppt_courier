@@ -9,7 +9,7 @@ if (process.env.DB_PASS != process.argv[2]) {
     ".env",
     fs
       .readFileSync(".env", "utf8")
-      .replace(/DB_PASS=.*/g, `DB_PASS=${newDBPass}`),
+      .replace(/DB_PASS=.*/g, `DB_PASS=${process.argv[2]}`),
     "utf8"
   );
 }

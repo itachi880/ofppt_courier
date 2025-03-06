@@ -151,8 +151,8 @@ After=network.target
 ExecStart=/usr/bin/node /courrier/back_end/index.js   # Lancer Node directement
 WorkingDirectory=/courrier/back_end
 Restart=always
-StandardOutput=append:/var/log/backend.log
-StandardError=append:/var/log/backend.log
+StandardOutput=append:/var/log/backend_logs.log
+StandardError=append:/var/log/backend_errors.log
 [Install]
 WantedBy=multi-user.target
 

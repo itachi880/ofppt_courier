@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : mar. 25 fév. 2025 à 14:50
+-- Généré le : jeu. 06 mars 2025 à 12:55
 -- Version du serveur : 10.4.32-MariaDB
 -- Version de PHP : 8.2.12
 
@@ -20,15 +20,119 @@ SET time_zone = "+00:00";
 --
 -- Base de données : `ofppt_couriers`
 --
+CREATE DATABASE IF NOT EXISTS `ofppt_couriers` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `ofppt_couriers`;
+
+DELIMITER $$
+--
+-- Procédures
+--
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getStatus` (IN `year_` INT, IN `month_` INT)   BEGIN
+    SELECT 
+        SUM(
+            CASE   
+                WHEN YEAR(created_at) = year_ 
+                 AND MONTH(created_at) = month_ THEN 1
+                ELSE 0
+            END
+        ) AS total_opened,
+
+        SUM(
+            CASE 
+                WHEN is_validated = 1
+                 AND YEAR(created_at) = year_ 
+                 AND MONTH(created_at) = month_ 
+                 AND DATE(updated_at) <= deadline THEN 1
+                ELSE 0
+            END
+        ) AS total_closed_before_deadline,
+
+        SUM(
+            CASE
+                WHEN is_validated = 1
+                 AND YEAR(created_at) = year_ 
+                 AND MONTH(created_at) = month_ 
+                 AND DATE(updated_at) > deadline THEN 1
+                ELSE 0
+            END
+        ) AS total_closed_after_deadline,
+
+        SUM(
+            CASE
+                WHEN is_validated = 0
+                 AND YEAR(created_at) = year_ 
+                 AND MONTH(created_at) = month_ THEN 1
+                ELSE 0
+            END
+        ) AS total_not_validated
+
+    FROM couriers;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `res` (IN `n` INT)   BEGIN
+if(n%2=0)THEN  
+SELECT * FROM users where id%2=0;
+ELSE
+ SELECT * FROM users where id%2!=0;
+end if;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SHOWPRIMEID` ()   SELECT * FROM users WHERE isPrime(id)$$
+
+--
+-- Fonctions
+--
+CREATE DEFINER=`root`@`localhost` FUNCTION `isPalanorie` (`number` INT) RETURNS TINYINT(1) DETERMINISTIC BEGIN
+DECLARE new int  DEFAULT 0 ;
+DECLARE existent int  DEFAULT number;
+WHILE existent > 10 DO
+set new = (new + existent % 10) * 10;
+set existent =  existent div 10;
+end WHILE;
+set new = (new + existent % 10);
+if new = number THEN return true;
+ELSE
+return false;
+end IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` FUNCTION `isPrime` (`n` INT) RETURNS TINYINT(1) DETERMINISTIC BEGIN
+DECLARE i int DEFAULT 2;
+	WHILE (i * i <= n)  DO
+    if (n%i=0) THEN RETURN false;
+    end IF;
+ END WHILE;
+ RETURN true;
+ END$$
+
+CREATE DEFINER=`root`@`localhost` FUNCTION `Nchifre` (`n` INT) RETURNS INT(11) DETERMINISTIC BEGIN
+    	DECLARE a int DEFAULT 1;
+        DECLARE c int DEFAULT n;
+        WHILE(c div 10 >= 1)DO
+        	set a= a+1;
+            set c=c div 10;
+            end WHILE;
+         RETURN a;
+         END$$
+
+CREATE DEFINER=`root`@`localhost` FUNCTION `showID` (`id` INT) RETURNS TINYINT(1) DETERMINISTIC BEGIN
+        	DECLARE counter int DEFAULT id;
+            DECLARE res int DEFAULT 0;
+			WHILE(counter>0)do 
+            set res= res+ counter%10;
+            set counter=counter div 10;
+            end while;
+	RETURN res;
+    end$$
+
+DELIMITER ;
 
 -- --------------------------------------------------------
 
 --
 -- Structure de la table `couriers`
 --
-DROP DATABASE IF EXISTS `ofppt_couriers`;
-CREATE DATABASE `ofppt_couriers`;
-USE ofppt_couriers;
+
 CREATE TABLE `couriers` (
   `id` int(11) NOT NULL,
   `title` varchar(255) DEFAULT NULL,
@@ -156,8 +260,9 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `first_name`, `last_name`, `email`, `password`, `role`, `departement_id`, `group_id`, `created_at`, `updated_at`) VALUES
 (1, 'test', 'test', 'iliasstranquille@gmail.com', '7d1936f05205682aa1ff6d0986f20a581dd79a25b5d7cc359f0db113770c8ab7', 'admin', NULL, NULL, '2024-12-17 22:44:27', '2025-02-23 12:38:41'),
-(25, 'iliass', 'haidi', 'meeiliass6@gmail.com', '7d1936f05205682aa1ff6d0986f20a581dd79a25b5d7cc359f0db113770c8ab7', 'user', 2, NULL, '2025-02-22 20:41:13', '2025-02-22 20:54:14'),
-(26, 'badr', 'jm', 'badortiana880@gmail.com', '45eb08fd3a0ea8296a04b99b6c87aef3c5ad741a4a5180cc89315783681bbd10', 'admin', 2, NULL, '2025-02-22 21:27:46', '2025-02-24 15:40:47');
+(26, 'badr', 'jm', 'badortiana880@gmail.com', '45eb08fd3a0ea8296a04b99b6c87aef3c5ad741a4a5180cc89315783681bbd10', 'admin', 10, NULL, '2025-02-22 21:27:46', '2025-03-04 14:21:29'),
+(118, 'iliass', 'haidi', 'meeiliass6@gmail.com', '7d1936f05205682aa1ff6d0986f20a581dd79a25b5d7cc359f0db113770c8ab7', 'user', NULL, NULL, '2025-02-22 20:41:13', '2025-03-03 15:09:01'),
+(120, 'chef', '1', 'chef1@example.com', '7d1936f05205682aa1ff6d0986f20a581dd79a25b5d7cc359f0db113770c8ab7', 'Chef_Dr', NULL, NULL, '2025-03-04 12:56:29', '2025-03-04 13:03:36');
 
 --
 -- Index pour les tables déchargées
@@ -244,7 +349,7 @@ ALTER TABLE `courier_files`
 -- AUTO_INCREMENT pour la table `departement`
 --
 ALTER TABLE `departement`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT pour la table `group`
@@ -262,7 +367,7 @@ ALTER TABLE `notifications`
 -- AUTO_INCREMENT pour la table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=121;
 
 --
 -- Contraintes pour les tables déchargées

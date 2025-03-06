@@ -16,6 +16,7 @@ import {
   LoadingBar,
   noLoginRoutes,
   preventBacklink,
+  roles,
   USE_DEV,
   usePreventHistoryBackButton,
 } from "./utils";
@@ -60,6 +61,12 @@ function App() {
       data: { ...tokenRes[1].data },
       token: tokenRes[1].token,
     });
+
+    if (tokenRes[1].data.role == roles.Chef_Dr) {
+      setLoadingFlag({ loading: false });
+      setDataFetched(true);
+      return Store.navigateTo("/AdminDr");
+    }
     const departementsRes = await getDepartements(tokenRes[1].token);
     if (departementsRes[0]) {
       setLoadingFlag({ loading: false });
@@ -106,13 +113,13 @@ function App() {
         .catch(() => {
           BASE_URL.link = "http://localhost:4000";
         })
-        .finally(() => {
+        .finally(async () => {
           if (noLoginRoutes.includes(window.location.pathname)) {
             setLoadingFlag({ loading: false });
             setDataFetched(true);
             return;
           }
-          fetchData();
+          await fetchData();
         });
     } else {
       BASE_URL.link = "http://localhost:4000";
@@ -159,7 +166,7 @@ function App() {
               <Route path="/group/*" element={<Group />} />
               <Route path="/utilisateur/*" element={<Utilisateur />} />
               <Route path="/forget-pass" element={<ResetPass />} />
-              <Route path="/AdminDr" element={<Chef_Dr/>} />
+              <Route path="/AdminDr" element={<Chef_Dr />} />
               <Route path="*" element={<>404</>} />
             </Routes>
           </motion.div>

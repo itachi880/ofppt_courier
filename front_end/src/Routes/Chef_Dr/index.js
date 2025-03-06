@@ -29,16 +29,30 @@ export default function Chef_Dr() {
 
   return (
     <>
-      <div className="Container">
-        <h1>Chef Dr</h1>
+      <div
+        className="Container"
+        style={{
+          display: "flex",
+          width: "100%",
+          alignItems: "center",
+          justifyContent: "center",
+          flexDirection: "column",
+        }}
+      >
         <input
           type="number"
           min="2000"
           max={new Date().getFullYear()}
           value={Year}
           onChange={handleYearChange}
+          style={{
+            border: "2px solid rgb(34 197 94)",
+            width: "300px",
+            borderRadius: "10px",
+            padding: "10px",
+            outline: "none",
+          }}
         />
-        <button onClick={handleYearSubmit}>Set Year</button>
         <ChartJs datasets={data} />
       </div>
     </>

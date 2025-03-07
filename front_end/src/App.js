@@ -108,7 +108,7 @@ function App() {
       axios
         .get("https://ofpptsystem.github.io/public_ip/back_end")
         .then((res) => {
-          BASE_URL.link = "http://" + res.data;
+          BASE_URL.link = "https://" + res.data;
         })
         .catch(() => {
           BASE_URL.link = "http://localhost:4000";

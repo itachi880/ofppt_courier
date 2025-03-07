@@ -63,7 +63,7 @@ if (!USE_DEV) {
     console.log("HTTPS Server running on port " + process.env.APP_PORT);
   });
 } else {
-  app.listen(process.env.APP_PORT, () =>
-    console.log("running http: " + process.env.APP_PORT)
-  );
+  app.listen(process.env.APP_PORT, () => {
+    console.log("running http: " + process.env.APP_PORT);
+  });
 }

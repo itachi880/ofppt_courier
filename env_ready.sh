@@ -66,6 +66,17 @@ mysql --version
 php -v
 node -v
 npm -v
+#stop service
+SERVICE_NAME="auto_launch_backend.service"
+echo "🛑 Stopping the service..."
+systemctl stop $SERVICE_NAME 
+systemctl disable $SERVICE_NAME
+rm -rf /etc/systemd/system/$SERVICE_NAME
+systemctl daemon-reload 
+echo "🧹 Cleaning old deployment..."
+# Remove old files
+rm -rf /courrier/*
+
 
 # Move source directories
 echo "🔄 Moving source directories..."
@@ -130,12 +141,12 @@ fi
 
 # Test MySQL connection
 echo "✅ Testing MySQL connection..."
-node /courrier/back_end/test_db.js "$MYSQL_ROOT_PASS"
+node /courrier/back_end/test_db.js $MYSQL_ROOT_PASS
 
 # Setting up auto-start for the backend using systemd
 echo "🎯 Setting up auto-start for the backend using systemd..."
 
-SERVICE_NAME="auto_launch_backend.service"
+
 
 # Check if the systemd service already exists
 if systemctl list-units --type=service | grep -q "$SERVICE_NAME"; then

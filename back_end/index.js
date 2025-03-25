@@ -20,6 +20,7 @@ const {
 } = require("./utils");
 const path = require("path");
 //back end app;
+//!
 if (!USE_DEV) {
   fetch(process.env.SRC_LINKS_APPS + "/back_end")
     .then(async (e) => await e.text())
@@ -54,6 +55,7 @@ app.use("/groups", GroupRoute);
 app.use("/register", inscriptionRoute);
 app.use(express.static(__dirname + "/data"));
 
+//!
 if (!USE_DEV) {
   const options = {
     key: fs.readFileSync(path.join(__dirname, "certs", "key.pem")), // Your private key

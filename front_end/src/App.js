@@ -122,7 +122,7 @@ function App() {
           await fetchData();
         });
     } else {
-      BASE_URL.link = "http://localhost:4000";
+      BASE_URL.link = "http://localhost:4000"; //! modifie ghda
       if (noLoginRoutes.includes(window.location.pathname)) {
         setLoadingFlag({ loading: false });
         setDataFetched(true);

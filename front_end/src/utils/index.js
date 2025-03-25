@@ -240,7 +240,7 @@ export const CourrierColors = {
   near: { background: "yellow", color: "black" },
 };
 
-export const USE_DEV = false;
+export const USE_DEV = false; //!
 
 export const usePreventAccess = (userData) => {
   useEffect(() => {

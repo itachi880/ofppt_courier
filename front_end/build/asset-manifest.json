@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/static/css/main.81a0ccb0.css",
+    "main.js": "/static/js/main.b1ad2539.js",
+    "static/media/Logo_ofppt.png": "/static/media/Logo_ofppt.30e952b982315a771ee8.png",
+    "index.html": "/index.html",
+    "main.81a0ccb0.css.map": "/static/css/main.81a0ccb0.css.map",
+    "main.b1ad2539.js.map": "/static/js/main.b1ad2539.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.81a0ccb0.css",
+    "static/js/main.b1ad2539.js"
+  ]
+}

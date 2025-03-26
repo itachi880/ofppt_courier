@@ -25,7 +25,7 @@ if (!USE_DEV) {
   fetch(process.env.SRC_LINKS_APPS + "/back_end")
     .then(async (e) => await e.text())
     .then((e) => {
-      APP_LINKS.BACK_END = "https://" + e;
+      APP_LINKS.BACK_END = "http://" + e;
     })
     .catch((e) => {
       APP_LINKS.BACK_END = "http://localhost:4000";
@@ -34,7 +34,7 @@ if (!USE_DEV) {
   fetch(process.env.SRC_LINKS_APPS + "/front_end")
     .then(async (e) => await e.text())
     .then((e) => {
-      APP_LINKS.FRONT_END = "https://" + e;
+      APP_LINKS.FRONT_END = "http://" + e;
     })
     .catch((e) => {
       APP_LINKS.FRONT_END = "http://localhost:3000";

@@ -2,19 +2,19 @@
 # check if a certen argument exists in the list of arguments
 check_arg_exists() {
   local target="$1"
-  shift  # remove the first param (the target to check), keep the rest as args
+  shift # remove the first param (the target to check), keep the rest as args
   for arg in "$@"; do
     if [[ "$arg" == "$target" ]]; then
-      return 0  # found
+      return 0 # found
     fi
   done
-  return 1  # not found
+  return 1 # not found
 }
 
 # Update package lists if needed by --force-update
-if ! check_arg_exists "--force-update"; then
+if check_arg_exists "--force-update"; then
   echo "🔄 Updating package lists..."
-  sudo apt update 
+  sudo apt update
 else
   echo "⚠️ Skipping system update ."
 fi
@@ -74,12 +74,12 @@ sudo systemctl restart apache2
 
 # IMPORT DATABASE
 echo "🔄 Importing database..."
-mysql -u root -p"$MYSQL_ROOT_PASS" < ./ofppt_couriers.sql
+mysql -u root -p"$MYSQL_ROOT_PASS" <./ofppt_couriers.sql
 
 # Install Node.js 18.x and npm
 echo "🔧 Installing Node.js and npm..."
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-sudo apt install -y nodejs npm 
+sudo apt install -y nodejs npm
 sudo rm -f ./back_end/package-lock.json
 sudo rm -f ./front_end/package-lock.json
 
@@ -93,10 +93,10 @@ npm -v
 #stop service
 SERVICE_NAME="auto_launch_backend.service"
 echo "🛑 Stopping the service..."
-systemctl stop $SERVICE_NAME 
+systemctl stop $SERVICE_NAME
 systemctl disable $SERVICE_NAME
 rm -rf /etc/systemd/system/$SERVICE_NAME
-systemctl daemon-reload 
+systemctl daemon-reload
 echo "🧹 Cleaning old deployment..."
 # Remove old files
 rm -rf /courrier/*
@@ -117,8 +117,8 @@ if [ -d ./back_end ]; then
 
   # Ensure hidden files and all files are copied by enabling dotglob
   shopt -s dotglob
-  cp -r ./back_end/* /courrier/back_end   # Copy all files including hidden ones
-  shopt -u dotglob   # Disable dotglob to avoid affecting other patterns
+  cp -r ./back_end/* /courrier/back_end # Copy all files including hidden ones
+  shopt -u dotglob                      # Disable dotglob to avoid affecting other patterns
 
 else
   echo "❌ 'back_end' directory not found! Listing contents of the current directory:"
@@ -129,11 +129,11 @@ fi
 # Copy the 'front_end' directory and its contents
 if [ -d ./front_end ]; then
   echo "✅ Copying 'front_end' directory..."
-  
+
   # Ensure hidden files and all files are copied
   shopt -s dotglob
-  cp -r ./front_end/* /courrier/front_end   # Copy all files including hidden ones
-  shopt -u dotglob   # Disable dotglob to avoid affecting other patterns
+  cp -r ./front_end/* /courrier/front_end # Copy all files including hidden ones
+  shopt -u dotglob                        # Disable dotglob to avoid affecting other patterns
 
 else
   echo "❌ 'front_end' directory not found! Listing contents of the current directory:"
@@ -146,7 +146,10 @@ echo "📦 Installing project dependencies..."
 
 # Backend dependencies
 if [ -d /courrier/back_end ]; then
-  cd /courrier/back_end || { echo "❌ Backend directory not found!"; exit 1; }
+  cd /courrier/back_end || {
+    echo "❌ Backend directory not found!"
+    exit 1
+  }
   npm install
 else
   echo "❌ Backend directory is missing. Exiting."
@@ -155,7 +158,10 @@ fi
 
 # Frontend dependencies
 if [ -d /courrier/front_end ]; then
-  cd /courrier/front_end || { echo "❌ Frontend directory not found!"; exit 1; }
+  cd /courrier/front_end || {
+    echo "❌ Frontend directory not found!"
+    exit 1
+  }
   npm install
 else
   echo "❌ Frontend directory is missing. Exiting."
@@ -173,14 +179,15 @@ node test_db.js "$MYSQL_ROOT_PASS"
 cd - || { echo "❌ Failed to return to the original directory!"; }
 
 # Setting up auto-start for the backend using systemd
+
 echo "🎯 Setting up auto-start for the backend using systemd..."
 
 # Check if the systemd service already exists
-if systemctl list-units --type=service | grep -q "$SERVICE_NAME"; then
+if systemctl list-units --type=service | grep -q "$SERVICE_NAME" && ! check_arg_exists "--fresh-service"; then
   echo "⚠️ Service '$SERVICE_NAME' already exists. Skipping creation."
 else
   # Create systemd service unit file if it doesn't exist
-  sudo tee /etc/systemd/system/$SERVICE_NAME > /dev/null <<EOF
+  sudo tee /etc/systemd/system/$SERVICE_NAME >/dev/null <<EOF
 [Unit]
 Description=Auto Launch Backend on Boot
 After=network.target

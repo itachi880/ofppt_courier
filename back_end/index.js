@@ -11,35 +11,37 @@ const DepartementRoute = require("./Routes/Departement");
 const LoginRoute = require("./Routes/Login");
 const GroupRoute = require("./Routes/Group");
 const inscriptionRoute = require("./Routes/Inscription");
-const {
-  envoyerEmail,
-  generateCode,
-  verifierCode,
-  APP_LINKS,
-  USE_DEV,
-} = require("./utils");
+const { APP_LINKS, USE_DEV } = require("./utils");
 const path = require("path");
 //back end app;
 //!
+const protocol =
+  !USE_DEV && fs.existsSync(path.join(__dirname, "certs", "ssl.cert"))
+    ? "https://"
+    : "http://";
+
 if (!USE_DEV) {
+  // Fetch backend link
   fetch(process.env.SRC_LINKS_APPS + "/back_end")
     .then(async (e) => await e.text())
     .then((e) => {
-      APP_LINKS.BACK_END = "http://" + e;
+      APP_LINKS.BACK_END = protocol + e;
     })
     .catch((e) => {
-      APP_LINKS.BACK_END = "http://localhost:4000";
+      APP_LINKS.BACK_END = protocol + "localhost:4000";
     });
-  //front_end
+
+  // Fetch frontend link
   fetch(process.env.SRC_LINKS_APPS + "/front_end")
     .then(async (e) => await e.text())
     .then((e) => {
-      APP_LINKS.FRONT_END = "http://" + e;
+      APP_LINKS.FRONT_END = protocol + e;
     })
     .catch((e) => {
-      APP_LINKS.FRONT_END = "http://localhost:3000";
+      APP_LINKS.FRONT_END = protocol + "localhost:3000";
     });
 }
+
 app.use(
   express.json(),
   cors({
@@ -57,7 +59,7 @@ app.use(express.static(__dirname + "/data"));
 
 //!
 if (!USE_DEV && fs.readdirSync(path.join(__dirname, "certs")).length > 0) {
-  // If you have SSL certificates, use HTTPS
+  // If SSL certificates, use HTTPS
   const options = {
     key: fs.readFileSync(path.join(__dirname, "certs", "ssl.key")), // Your private key
     cert: fs.readFileSync(path.join(__dirname, "certs", "ssl.cert")), // Your certificate

@@ -1,8 +1,23 @@
 #!/bin/bash
+# check if a certen argument exists in the list of arguments
+check_arg_exists() {
+  local target="$1"
+  shift  # remove the first param (the target to check), keep the rest as args
+  for arg in "$@"; do
+    if [[ "$arg" == "$target" ]]; then
+      return 0  # found
+    fi
+  done
+  return 1  # not found
+}
 
-# Update package lists
-echo "🔄 Updating system..."
-sudo apt update && sudo apt upgrade -y
+# Update package lists if needed by --force-update
+if ! check_arg_exists "--force-update"; then
+  echo "🔄 Updating package lists..."
+  sudo apt update 
+else
+  echo "⚠️ Skipping system update ."
+fi
 
 # Install Apache
 echo "🔧 Installing Apache..."
@@ -16,20 +31,29 @@ sudo apt install mysql-server -y
 sudo systemctl enable mysql
 sudo systemctl start mysql
 
-# Secure MySQL installation (automated)
+# 🔒 Secure MySQL
 echo "🔒 Securing MySQL..."
-read -sp "Enter a password for the MySQL root user: " MYSQL_ROOT_PASS
-echo  # Moves to a new line after password input
 
-# Check if the password is provided
+read -sp "Enter a password for the MySQL root user: " MYSQL_ROOT_PASS
+echo
+
 if [ -z "$MYSQL_ROOT_PASS" ]; then
-  echo "❌ No password provided for MySQL root. Exiting."
+  echo "❌ No password provided. Exiting."
   exit 1
 fi
 
-# Secure MySQL root user with the password provided
-sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '$MYSQL_ROOT_PASS'; FLUSH PRIVILEGES;"
+echo "⚙️ Setting root password and auth method..."
+
+# Use sudo mysql to connect via socket and configure root password
+sudo mysql <<EOF
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '${MYSQL_ROOT_PASS}';
+FLUSH PRIVILEGES;
+EOF
+
+# Restart MySQL to apply changes
 sudo systemctl restart mysql
+
+echo "✅ Root password set ."
 
 # Install PHP and necessary modules
 echo "🔧 Installing PHP and required modules..."
@@ -77,24 +101,23 @@ echo "🧹 Cleaning old deployment..."
 # Remove old files
 rm -rf /courrier/*
 
-
-# Move source directories
-echo "🔄 Moving source directories..."
+# Copy source directories
+echo "🔄 Copying source directories..."
 
 # Ensure /courrier and subdirectories exist
 mkdir -p /courrier/front_end
 mkdir -p /courrier/back_end
 
-# Moving the 'back_end' directory and its contents
+# Copy the 'back_end' directory and its contents
 if [ -d ./back_end ]; then
-  echo "✅ Moving 'back_end' directory..."
+  echo "✅ Copying 'back_end' directory..."
 
-  # Move the .env file separately (you can add more hidden files if needed)
-  mv ./back_end/.env /courrier/back_end
+  # Copy the .env file separately (you can add more hidden files if needed)
+  cp ./back_end/.env /courrier/back_end
 
-  # Ensure hidden files and all files are moved by enabling dotglob
+  # Ensure hidden files and all files are copied by enabling dotglob
   shopt -s dotglob
-  mv ./back_end/* /courrier/back_end   # Move all files including hidden ones
+  cp -r ./back_end/* /courrier/back_end   # Copy all files including hidden ones
   shopt -u dotglob   # Disable dotglob to avoid affecting other patterns
 
 else
@@ -103,13 +126,13 @@ else
   exit 1
 fi
 
-# Moving the 'front_end' directory and its contents
+# Copy the 'front_end' directory and its contents
 if [ -d ./front_end ]; then
-  echo "✅ Moving 'front_end' directory..."
+  echo "✅ Copying 'front_end' directory..."
   
-  # Ensure hidden files and all files are moved
+  # Ensure hidden files and all files are copied
   shopt -s dotglob
-  mv ./front_end/* /courrier/front_end   # Move all files including hidden ones
+  cp -r ./front_end/* /courrier/front_end   # Copy all files including hidden ones
   shopt -u dotglob   # Disable dotglob to avoid affecting other patterns
 
 else
@@ -139,14 +162,18 @@ else
   exit 1
 fi
 
-# Test MySQL connection
+# Change to the test_db location, run the test, and return
 echo "✅ Testing MySQL connection..."
-node /courrier/back_end/test_db.js $MYSQL_ROOT_PASS
+cd /courrier/back_end || { echo "❌ Failed to change directory!"; }
+
+# Run the test (Node.js script expects .env in this location)
+node test_db.js "$MYSQL_ROOT_PASS"
+
+# Return to the original directory
+cd - || { echo "❌ Failed to return to the original directory!"; }
 
 # Setting up auto-start for the backend using systemd
 echo "🎯 Setting up auto-start for the backend using systemd..."
-
-
 
 # Check if the systemd service already exists
 if systemctl list-units --type=service | grep -q "$SERVICE_NAME"; then
@@ -159,7 +186,7 @@ Description=Auto Launch Backend on Boot
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/node /courrier/back_end/index.js   # Lancer Node directement
+ExecStart=/usr/bin/node /courrier/back_end/index.js   # Launch Node directly
 WorkingDirectory=/courrier/back_end
 Restart=always
 StandardOutput=append:/var/log/backend_logs.log
@@ -180,5 +207,8 @@ EOF
 
   echo "✅ Auto-start set up using systemd."
 fi
+# Install Certbot and Apache plugin for Let's Encrypt
+echo "🔧 Installing Certbot..."
+sudo apt install certbot python3-certbot-apache -y
 
 echo "✅ Setup complete! Your web environment is ready."

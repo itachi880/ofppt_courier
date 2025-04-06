@@ -56,10 +56,11 @@ app.use("/register", inscriptionRoute);
 app.use(express.static(__dirname + "/data"));
 
 //!
-if (!USE_DEV) {
+if (!USE_DEV && fs.readdirSync(path.join(__dirname, "certs")).length > 0) {
+  // If you have SSL certificates, use HTTPS
   const options = {
-    key: fs.readFileSync(path.join(__dirname, "certs", "key.pem")), // Your private key
-    cert: fs.readFileSync(path.join(__dirname, "certs", "cert.pem")), // Your certificate
+    key: fs.readFileSync(path.join(__dirname, "certs", "ssl.key")), // Your private key
+    cert: fs.readFileSync(path.join(__dirname, "certs", "ssl.cert")), // Your certificate
   };
   https.createServer(options, app).listen(process.env.APP_PORT, () => {
     console.log("HTTPS Server running on port " + process.env.APP_PORT);
